@@ -1,62 +1,20 @@
-# ChefCam.IA 🍳
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+</div>
 
-Una aplicación culinaria impulsada por IA que transforma tus ingredientes en recetas gourmet mediante visión por computadora y lenguaje avanzado.
+# Run and deploy your AI Studio app
 
-## 🚀 Características
+This contains everything you need to run your app locally.
 
-- **Escaneo de Ingredientes**: Usa la cámara para identificar ingredientes automáticamente
-- **Generación de Recetas con IA**: Obtiene recetas personalizadas usando Gemini AI
-- **Interfaz Intuitiva**: Diseño moderno y fácil de usar
-- **Historial de Recetas**: Guarda y accede a tus recetas favoritas
-- **Vista de Detalles**: Instrucciones paso a paso para cada receta
+View your app in AI Studio: https://ai.studio/apps/drive/1e5LVlipzLiNJrprDY6ByJe4edCgdpEZx
 
-## 🛠️ Tecnologías
+## Run Locally
 
-- React + TypeScript
-- Vite
-- Google Gemini AI
-- React Router
-- Material Design
+**Prerequisites:**  Node.js
 
-## 💻 Instalación
 
-```bash
-# Descargar y descomprimir chefcam.ia.zip
-
-# Instalar dependencias
-npm install
-
-# Configurar API Key de Gemini
-# Crear archivo .env con tu API key
-
-# Ejecutar en desarrollo
-npm run dev
-```
-
-## 👨‍🍳 Uso
-
-1. Abre la aplicación
-2. Permite acceso a la cámara
-3. Escanea tus ingredientes o ingrésalos manualmente
-4. Genera recetas instantáneas con IA
-5. Guarda tus favoritas para más tarde
-
-## 📱 Capturas
-
-_(Próximamente)_
-
-## 🤝 Contribuciones
-
-Las contribuciones son bienvenidas. Por favor abre un issue o pull request.
-
-## 📝 Licencia
-
-MIT License
-
-## 👤 Autor
-
-**Luis M. Sarabia** - [GitHub](https://github.com/sarabialuis50)
-
----
-
-Hecho con ❤️ y Gemini AI
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
