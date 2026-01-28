@@ -110,7 +110,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
         {/* Info Grid - Basic Nutrition (4 Columns) */}
         <div className="grid grid-cols-4 gap-2">
           <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">
-            <p className="text-primary text-sm font-bold">{recipe.calories || 'N/A'}</p>
+            <p className="text-primary text-sm font-bold">{recipe.calories?.toString().replace(/kcal/i, '').trim() || 'N/A'}</p>
             <p className="text-[8px] text-zinc-500 uppercase font-bold mt-1">Kcal</p>
           </div>
           <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">

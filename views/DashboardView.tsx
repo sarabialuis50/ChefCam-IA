@@ -82,6 +82,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   const handleGenerate = () => {
     if (!manualInput.trim()) return;
     onStartGeneration(manualInput.split(',').map(i => i.trim()), portions);
+
+    // Limpiar imagen automáticamente tras generar
+    setPreviewImage(null);
+    if (onClearScanned) onClearScanned();
   };
 
   const handleUploadClick = () => {
@@ -103,39 +107,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         // ... rest of logic
         if (identifiedIngredients && identifiedIngredients.length > 0) {
           // Persistencia en Supabase si el usuario está logueado
-          if (user?.id) {
-            try {
-              const fileExt = file.name.split('.').pop();
-              const fileName = `${user.id}/scan_${Date.now()}.${fileExt}`;
-
-              // Convertir base64 optimizado a blob para la subida
-              const byteCharacters = atob(optimizedBase64);
-              const byteNumbers = new Array(byteCharacters.length);
-              for (let i = 0; i < byteCharacters.length; i++) {
-                byteNumbers[i] = byteCharacters.charCodeAt(i);
-              }
-              const byteArray = new Uint8Array(byteNumbers);
-              const blob = new Blob([byteArray], { type: 'image/jpeg' });
-
-              const { data: uploadData, error: uploadError } = await supabase.storage
-                .from('avatars') // Usamos 'avatars' por ahora ya que sabemos que existe, o informamos de crear 'scans'
-                .upload(`scans/${fileName}`, blob);
-
-              if (!uploadError) {
-                const { data: { publicUrl } } = supabase.storage
-                  .from('avatars')
-                  .getPublicUrl(`scans/${fileName}`);
-
-                await supabase.from('ingredient_scans').insert({
-                  user_id: user.id,
-                  image_url: publicUrl,
-                  ingredients: identifiedIngredients
-                });
-              }
-            } catch (storageErr) {
-              console.error("Error saving scan to storage:", storageErr);
-            }
-          }
+          // Persistencia en Supabase REMOVIDA por solicitud del usuario
+          // Solo se mantiene la imagen en memoria temporalmente para la sesión
 
           const names = identifiedIngredients.map(i => i.name).join(', ');
           setManualInput(prev => prev ? `${prev}, ${names}` : names);
@@ -321,7 +294,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             <button
               onClick={handleGenerate}
               disabled={loading || analyzing || (!manualInput.trim())}
-              className="w-full bg-primary text-black font-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] uppercase text-sm active:scale-95 transition-all disabled:opacity-50"
+              className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 uppercase text-sm active:scale-95 transition-all disabled:opacity-50
+                ${manualInput.trim()
+                  ? 'bg-primary text-black font-black shadow-[0_0_20px_rgba(57,255,20,0.4)]'
+                  : 'bg-transparent border border-primary/50 text-primary font-bold shadow-none'}`}
             >
               <span className="material-symbols-outlined font-bold">{loading ? 'sync' : 'skillet'}</span>
               {loading ? "Generando..." : "Generar Recetas"}
