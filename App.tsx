@@ -59,7 +59,7 @@ const App: React.FC = () => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        fetchProfile(session.user.id, session.user.email || '');
+        fetchProfile(session.user.id, session.user.email || '', true);
       }
     });
 
@@ -136,7 +136,7 @@ const App: React.FC = () => {
     }
   };
 
-  const fetchProfile = async (userId: string, email: string) => {
+  const fetchProfile = async (userId: string, email: string, isInitialLoad = false) => {
     let profileData: any = null;
 
     // Try to fetch profile with a small retry mechanism/delay for new users
@@ -224,8 +224,8 @@ const App: React.FC = () => {
           nutriScore: h.recipes.nutri_score
         } : null
       })) || []),
-      // CRÍTICO: No tocamos currentView si ya tenemos una cargada (evita el salto al dashboard al minimizar)
-      currentView: prev.currentView !== 'landing' && prev.currentView !== 'login' ? prev.currentView : 'dashboard',
+      // CRÍTICO: Solo redirigimos al dashboard si es la carga inicial o si explícitamente venimos de login
+      currentView: isInitialLoad && (prev.currentView === 'landing' || prev.currentView === 'login') ? 'dashboard' : prev.currentView,
       botQuestionsRemaining: finalUser.isPremium ? 15 : 5
     }));
   };
@@ -608,7 +608,10 @@ const App: React.FC = () => {
       case 'login':
         return (
           <Layout showNav={false}>
-            <LoginView onLogin={handleLogin} />
+            <LoginView
+              onLogin={handleLogin}
+              onBack={() => navigateTo('landing')}
+            />
           </Layout>
         );
       case 'dashboard':

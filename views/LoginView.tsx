@@ -3,9 +3,10 @@ import { supabase } from '../lib/supabase';
 
 interface LoginViewProps {
   onLogin: (user: any) => void;
+  onBack?: () => void;
 }
 
-const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
+const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -92,13 +93,22 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
       <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] pointer-events-none"></div>
 
       <main className="w-full max-w-md glass-card rounded-[3rem] p-10 relative z-10 border-primary/20">
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="absolute top-8 left-8 text-zinc-600 hover:text-white transition-colors z-[50] flex items-center gap-2 group cursor-pointer bg-transparent border-none p-0"
+          >
+            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            <span className="text-[9px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Volver</span>
+          </button>
+        )}
         <div className="flex flex-col items-center text-center mb-10">
           <div className="w-32 h-32 flex items-center justify-center mb-6 relative">
             <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse"></div>
             <img src="/logo.png" alt="ChefScan Logo" className="w-full h-full object-contain relative z-10" />
           </div>
           <h1 className="text-3xl font-tech font-bold text-white tracking-widest mb-3">
-            ChefScan<span className="text-primary">.IA</span>
+            Chef<span className="text-primary">Scan.IA</span>
           </h1>
           <p className="text-xs text-gray-400 font-medium px-4 leading-relaxed">
             Recetas saludables creadas con IA para tu bienestar diario
