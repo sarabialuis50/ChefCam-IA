@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Recipe } from '../types';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface ExploreViewProps {
   onBack: () => void;
@@ -39,8 +39,8 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
       {/* Search Bar */}
       <div className="relative">
         <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500">search</span>
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Buscar por ingrediente o plato..."
           className="w-full bg-black border border-zinc-800 rounded-xl py-4 pl-12 pr-4 text-sm text-zinc-400 placeholder-zinc-700 outline-none focus:border-primary/50 transition-all"
         />
@@ -52,11 +52,10 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`px-8 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
-              activeFilter === filter 
-                ? 'bg-primary text-black shadow-[0_0_15px_rgba(57,255,20,0.5)]' 
-                : 'bg-zinc-900/50 text-white border border-zinc-800'
-            }`}
+            className={`px-8 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeFilter === filter
+              ? 'bg-primary text-black shadow-[0_0_15px_rgba(57,255,20,0.5)]'
+              : 'bg-zinc-900/50 text-white border border-zinc-800'
+              }`}
           >
             {filter}
           </button>
@@ -66,27 +65,26 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
       {/* Grid */}
       <div className="grid grid-cols-2 gap-4">
         {mockRecipes.map((recipe) => (
-          <div 
+          <div
             key={recipe.id}
             onClick={() => onRecipeClick(recipe as Recipe)}
             className="bg-[#0A0A0A] border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col cursor-pointer active:scale-95 transition-all"
           >
             <div className="relative aspect-square">
-              <img 
-                src={recipe.imageUrl} 
-                className="w-full h-full object-cover" 
-                alt={recipe.title} 
+              <img
+                src={getRecipeImage(recipe as Recipe, 400)}
+                className="w-full h-full object-cover"
+                alt={recipe.title}
               />
               {recipe.matchPercentage && (
                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md border border-primary/40 px-2 py-1 rounded-md">
-                   <span className="text-primary text-[8px] font-black uppercase tracking-tighter">{recipe.matchPercentage}% MATCH</span>
+                  <span className="text-primary text-[8px] font-black uppercase tracking-tighter">{recipe.matchPercentage}% MATCH</span>
                 </div>
               )}
               {recipe.category && (
-                <div className={`absolute top-2 right-2 border px-2 py-1 rounded-md backdrop-blur-md ${
-                  recipe.category === 'Keto' ? 'bg-black/60 border-primary/40 text-primary' : 'bg-green-600/60 border-green-400/40 text-white'
-                }`}>
-                   <span className="text-[8px] font-black uppercase tracking-tighter">{recipe.category}</span>
+                <div className={`absolute top-2 right-2 border px-2 py-1 rounded-md backdrop-blur-md ${recipe.category === 'Keto' ? 'bg-black/60 border-primary/40 text-primary' : 'bg-green-600/60 border-green-400/40 text-white'
+                  }`}>
+                  <span className="text-[8px] font-black uppercase tracking-tighter">{recipe.category}</span>
                 </div>
               )}
             </div>

@@ -273,7 +273,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ onBack, user, onUpdateUser,
                             <div>
                                 <p className="text-white text-sm font-bold uppercase tracking-tight">Estado: {user?.isPremium ? 'PREMIUM' : 'FREE'}</p>
                                 <p className={`${user?.isPremium ? 'text-zinc-500' : 'text-primary'} text-[10px] font-black uppercase tracking-widest`}>
-                                    {user?.isPremium ? 'Soporte Prioritario Activo' : 'Sube a PRO hoy'}
+                                    {user?.isPremium ? 'Soporte Prioritario Activo' : 'Sube a Premium hoy'}
                                 </p>
                             </div>
                         </div>

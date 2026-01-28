@@ -2,8 +2,9 @@
 import React, { useState, useRef } from 'react';
 import { Recipe, Ingredient } from '../types';
 import { analyzeIngredientImage, checkIngredientsConsistency } from '../services/geminiService';
-import { resizeAndCompressImage } from '../utils/imageUtils';
+import { resizeAndCompressImage, getRecipeImage } from '../utils/imageUtils';
 import { supabase } from '../lib/supabase';
+import { getDaysDiff } from '../utils/dateUtils';
 
 interface DashboardViewProps {
   user: any;
@@ -329,8 +330,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         const expiringItems = inventory
           .filter(item => {
             if (!item.expiryDate) return false;
-            const days = Math.ceil((new Date(item.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-            return days >= 0 && days <= 5;
+            const days = getDaysDiff(item.expiryDate);
+            return days <= 5; // Incluimos vencidos (negativos) y hasta 5 días por vencer
           })
           .sort((a, b) => new Date(a.expiryDate!).getTime() - new Date(b.expiryDate!).getTime());
 
@@ -350,7 +351,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
             <div className={`flex gap-4 overflow-x-auto custom-scrollbar pb-4 -mx-1 px-1 ${expiringItems.length === 1 ? 'overflow-hidden' : ''}`}>
               {expiringItems.map((item) => {
-                const days = Math.ceil((new Date(item.expiryDate!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+                const days = getDaysDiff(item.expiryDate!);
                 const urgencyColor = days <= 1 ? 'border-red-500/30' : 'border-primary/20';
                 const textColor = days <= 1 ? 'text-red-500' : 'text-primary';
                 const isSingle = expiringItems.length === 1;
@@ -358,13 +359,13 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} glass-card rounded-[1.5rem] p-5 border ${urgencyColor} relative overflow-hidden group animate-in fade-in duration-500`}
+                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} glass-card rounded-[1.5rem] p-5 border ${urgencyColor} ${days < 0 ? 'shadow-glow-red' : ''} relative overflow-hidden group animate-in fade-in duration-500`}
                   >
                     <div className="flex flex-col h-full justify-between gap-4 relative z-10">
                       <div className="flex justify-between items-start">
                         <div className="space-y-0.5">
                           <span className={`text-[8px] font-black uppercase tracking-widest ${textColor}`}>
-                            {days === 0 ? 'Vence Hoy' : days === 1 ? 'Vence Mañana' : `En ${days} días`}
+                            {days < 0 ? '¡VENCIDO!' : days === 0 ? 'Vence Hoy' : days === 1 ? 'Vence Mañana' : `En ${days} días`}
                           </span>
                           <h4 className="text-white font-black text-sm uppercase italic leading-tight">
                             RESUCITA TU <span className="text-primary">{item.name}</span>
@@ -421,7 +422,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             >
               <div className="w-40 h-40 rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-900">
                 <img
-                  src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=300`}
+                  src={getRecipeImage(recipe, 300)}
                   alt={recipe.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
                 />

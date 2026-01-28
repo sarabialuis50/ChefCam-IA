@@ -57,6 +57,20 @@ export const resizeAndCompressImage = (
 };
 
 /**
+ * Obtiene la URL de imagen para una receta de forma consistente.
+ * Si la receta tiene imageUrl, la usa. Si no, usa un placeholder basado en el ID.
+ * @param recipe Objeto de la receta.
+ * @param width Ancho sugerido para el placeholder.
+ * @returns URL de la imagen.
+ */
+export const getRecipeImage = (recipe: { imageUrl?: string; id: string }, width: number = 800): string => {
+    if (recipe.imageUrl) return recipe.imageUrl;
+
+    // Fallback consistente usando el ID como semilla para Picsum
+    return `https://picsum.photos/seed/${recipe.id}/${width}/${width}`;
+};
+
+/**
  * Convierte una cadena base64 en un objeto Blob.
  * @param base64 La cadena base64 (con o sin prefijo data:).
  * @param type El tipo MIME (por defecto image/jpeg).

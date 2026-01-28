@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Recipe } from '../types';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface FavoritesViewProps {
   recipes: (Recipe & { category?: string })[];
@@ -7,9 +8,9 @@ interface FavoritesViewProps {
   onBack: () => void;
 }
 
-const ImageWithPlaceholder: React.FC<{ src?: string, alt: string }> = ({ src, alt }) => {
+const ImageWithPlaceholder: React.FC<{ recipe: Recipe, alt: string }> = ({ recipe, alt }) => {
   const [loaded, setLoaded] = useState(false);
-  const finalSrc = src || `https://picsum.photos/seed/${alt}/200/200?grayscale`;
+  const finalSrc = getRecipeImage(recipe, 200);
 
   return (
     <div className="w-24 h-24 rounded-2xl bg-zinc-900 border border-white/10 shadow-lg overflow-hidden relative flex-shrink-0">
@@ -114,7 +115,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
               <div className="absolute top-0 right-0 w-24 h-full bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
 
               <div className="relative">
-                <ImageWithPlaceholder src={recipe.imageUrl} alt={recipe.title} />
+                <ImageWithPlaceholder recipe={recipe} alt={recipe.title} />
                 {recipe.category && (
                   <div className="absolute -top-1 -left-1 px-2 py-0.5 bg-primary text-black rounded border border-primary/20 text-[7px] font-black uppercase tracking-widest shadow-glow">
                     {recipe.category}

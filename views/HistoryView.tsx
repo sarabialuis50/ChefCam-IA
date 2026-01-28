@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface HistoryItem {
   id?: string;
@@ -17,9 +18,9 @@ interface HistoryViewProps {
   onRecipeClick: (recipe: any) => void;
 }
 
-const ImageWithPlaceholder: React.FC<{ src?: string, alt: string }> = ({ src, alt }) => {
+const ImageWithPlaceholder: React.FC<{ imageUrl?: string, id: string, alt: string }> = ({ imageUrl, id, alt }) => {
   const [loaded, setLoaded] = useState(false);
-  const finalSrc = src || `https://picsum.photos/seed/${alt}/200/200?grayscale`;
+  const finalSrc = getRecipeImage({ imageUrl, id }, 200);
 
   return (
     <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-white/10 shadow-lg overflow-hidden relative">
@@ -139,7 +140,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
               <div className="absolute top-0 right-0 w-24 h-full bg-primary/5 blur-3xl group-hover:bg-primary/10 transition-colors"></div>
 
               <div className="relative flex-shrink-0">
-                <ImageWithPlaceholder src={item.imageUrl} alt={item.recipe} />
+                <ImageWithPlaceholder imageUrl={item.imageUrl} id={item.id || item.recipe} alt={item.recipe} />
                 {item.category && (
                   <div className="absolute -top-1 -left-1 px-1.5 py-0.5 bg-black/80 backdrop-blur-md rounded border border-white/10 text-[6px] font-black uppercase text-primary tracking-widest">
                     {item.category}

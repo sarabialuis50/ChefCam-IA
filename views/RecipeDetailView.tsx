@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Recipe } from '../types';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface RecipeDetailViewProps {
   recipe: Recipe | null;
@@ -46,7 +46,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
     <div className="min-h-screen bg-pure-black pb-12 text-white">
       <div className="relative h-96 w-full">
         <img
-          src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/800/800`}
+          src={getRecipeImage(recipe, 800)}
           alt={recipe.title}
           className="w-full h-full object-cover"
         />
@@ -75,7 +75,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
           </div>
         </header>
 
-        <div className="absolute bottom-0 left-0 p-6 space-y-2 z-10 w-full">
+        <div className="absolute bottom-[-1.25rem] left-0 px-6 space-y-2 z-20 w-full">
           <div className="flex items-center gap-2">
             <div className={`px-2 py-0.5 rounded-full border text-[10px] font-black uppercase shadow-sm ${recipe.nutriScore === 'A' ? 'bg-green-500/20 border-green-500 text-green-500' :
               recipe.nutriScore === 'B' ? 'bg-lime-500/20 border-lime-500 text-lime-500' :
@@ -94,7 +94,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
               </div>
             )}
           </div>
-          <h1 className="text-3xl font-black font-tech uppercase leading-tight text-white drop-shadow-lg">{recipe.title}</h1>
+          <h1 className="text-3xl font-black font-tech uppercase leading-none text-white drop-shadow-2xl">{recipe.title}</h1>
           <div className="flex items-center gap-4 mt-1">
             <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">Porciones: {recipe.portions || 2}</p>
             {isFavorite && (
@@ -107,51 +107,54 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
       </div>
 
       <div className="p-6 space-y-8">
-        {/* Info Grid - Basic Nutrition (4 Columns) */}
-        <div className="grid grid-cols-4 gap-2">
-          <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">
-            <p className="text-primary text-sm font-bold">{recipe.calories?.toString().replace(/kcal/i, '').trim() || 'N/A'}</p>
-            <p className="text-[8px] text-zinc-500 uppercase font-bold mt-1">Kcal</p>
+        {/* Info Grid - Basic Nutrition (High-Level) */}
+        <div className="grid grid-cols-4 gap-3 py-4 mt-2">
+          <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+            <p className="text-primary text-sm font-black tracking-tight">{recipe.calories?.toString().replace(/kcal/i, '').trim() || 'N/A'}</p>
+            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Kcal</p>
           </div>
-          <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">
-            <p className="text-primary text-sm font-bold">{recipe.protein || 'N/A'}</p>
-            <p className="text-[8px] text-zinc-500 uppercase font-bold mt-1">Prot. (g)</p>
+          <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+            <p className="text-primary text-sm font-black tracking-tight">{recipe.protein || 'N/A'}</p>
+            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Prot</p>
           </div>
-          <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">
-            <p className="text-primary text-sm font-bold">{recipe.carbs || 'N/A'}</p>
-            <p className="text-[8px] text-zinc-500 uppercase font-bold mt-1">Carb. (g)</p>
+          <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+            <p className="text-primary text-sm font-black tracking-tight">{recipe.carbs || 'N/A'}</p>
+            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Carb</p>
           </div>
-          <div className="bg-surface-dark p-3 rounded-2xl border border-white/5 text-center">
-            <p className="text-primary text-sm font-bold">{recipe.fat || 'N/A'}</p>
-            <p className="text-[8px] text-zinc-500 uppercase font-bold mt-1">Grasa (g)</p>
+          <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+            <p className="text-primary text-sm font-black tracking-tight">{recipe.fat || 'N/A'}</p>
+            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Grasa</p>
           </div>
         </div>
 
         {/* Nutrition Banner */}
         <button
           onClick={handleNutritionClick}
-          className="w-full p-4 glass-card rounded-2xl flex items-center justify-between border-primary/20 group"
+          className="w-full p-5 glass-card rounded-[2rem] flex items-center justify-between border-primary/20 group shadow-glow-subtle"
         >
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary group-hover:neon-glow">
-              <span className="material-symbols-outlined text-lg">info</span>
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:neon-glow transition-all">
+              <span className="material-symbols-outlined text-xl">analytics</span>
             </div>
             <div className="text-left">
-              <p className="text-xs font-bold uppercase tracking-wider">Informe Nutricional</p>
-              <p className="text-[10px] text-zinc-500">Hazte PRO para ver detalles completos</p>
+              <p className="text-xs font-black uppercase tracking-widest text-white">Informe Nutricional</p>
+              <p className="text-[10px] text-zinc-500 font-medium">{isPremium ? 'Ver análisis detallado' : 'Hazte Premium para ver detalles completos'}</p>
             </div>
           </div>
           <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">chevron_right</span>
         </button>
 
         {/* Ingredients */}
-        <section className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Ingredientes Base</h2>
-          <ul className="space-y-3">
+        <section className="space-y-6">
+          <div className="flex items-center justify-between px-2">
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Ingredientes Base</h2>
+            <span className="text-[9px] font-bold text-zinc-600 uppercase">{(recipe.ingredients || []).length} items</span>
+          </div>
+          <ul className="space-y-4">
             {(recipe.ingredients || []).length > 0 ? recipe.ingredients.map((ing, idx) => (
-              <li key={idx} className="flex items-center gap-3 text-zinc-300">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                <span className="text-sm">{ing}</span>
+              <li key={idx} className="flex items-center gap-4 group/item">
+                <div className="w-2 h-2 rounded-full border border-primary/40 group-hover/item:bg-primary transition-colors"></div>
+                <span className="text-sm text-zinc-300 font-medium tracking-tight group-hover/item:text-white transition-colors">{ing}</span>
               </li>
             )) : (
               <li className="text-zinc-500 text-xs italic">No hay ingredientes listados.</li>
@@ -167,7 +170,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
                 <span className="material-symbols-outlined text-sm animate-pulse">auto_awesome</span>
                 Toque Gourmet
               </h2>
-              <span className="text-[8px] font-black bg-primary text-black px-2 py-0.5 rounded uppercase tracking-tighter shadow-glow">PRO Suggestion</span>
+              <span className="text-[8px] font-black bg-primary text-black px-2 py-0.5 rounded uppercase tracking-tighter shadow-glow">Premium Suggestion</span>
             </div>
             <p className="text-[10px] text-zinc-400 font-medium">Añade estos ingredientes para elevar tu plato:</p>
             <ul className="grid grid-cols-2 gap-2">
@@ -243,30 +246,28 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
       )}
 
       {/* Premium Modal */}
-      {
-        showPremiumModal && (
-          <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-pure-black/90 backdrop-blur-md">
-            <div className="w-full max-w-sm glass-card rounded-3xl p-8 border-primary/30 space-y-6 text-center">
-              <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center text-primary mx-auto neon-glow">
-                <span className="material-symbols-outlined text-4xl">workspace_premium</span>
-              </div>
-              <div className="space-y-2">
-                <h3 className="text-2xl font-tech font-bold uppercase tracking-tight">Acceso Premium</h3>
-                <p className="text-zinc-400 text-sm">Desbloquea informe nutricional completo, recetas ilimitadas y tu Agente Chef IA personal.</p>
-              </div>
-              <div className="grid gap-3 pt-2">
-                <button className="w-full py-4 bg-primary text-black rounded-xl font-bold uppercase text-xs tracking-widest neon-glow">
-                  Subir a PRO • $9.99/mes
-                </button>
-                <button onClick={() => setShowPremiumModal(false)} className="w-full py-4 text-zinc-500 font-bold uppercase text-[10px] tracking-widest">
-                  Tal vez más tarde
-                </button>
-              </div>
+      {showPremiumModal && (
+        <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-pure-black/90 backdrop-blur-md">
+          <div className="w-full max-w-sm glass-card rounded-3xl p-8 border-primary/30 space-y-6 text-center">
+            <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center text-primary mx-auto neon-glow">
+              <span className="material-symbols-outlined text-4xl">workspace_premium</span>
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-2xl font-tech font-bold uppercase tracking-tight">Acceso Premium</h3>
+              <p className="text-zinc-400 text-sm">Desbloquea informe nutricional completo, recetas ilimitadas y tu Agente Chef IA personal.</p>
+            </div>
+            <div className="grid gap-3 pt-2">
+              <button className="w-full py-4 bg-primary text-black rounded-xl font-bold uppercase text-xs tracking-widest neon-glow">
+                Subir a Premium • $19.900 IVA Incluido/mes
+              </button>
+              <button onClick={() => setShowPremiumModal(false)} className="w-full py-4 text-zinc-500 font-bold uppercase text-[10px] tracking-widest">
+                Tal vez más tarde
+              </button>
             </div>
           </div>
-        )
-      }
-    </div >
+        </div>
+      )}
+    </div>
   );
 };
 

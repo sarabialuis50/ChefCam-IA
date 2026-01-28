@@ -1,6 +1,6 @@
-
 import React, { useState, useMemo } from 'react';
 import { Recipe } from '../types';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface ResultsViewProps {
   recipes: Recipe[];
@@ -74,12 +74,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             >
               {/* Background Image Preview */}
               <div className="absolute top-0 right-0 w-32 h-full opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <img src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=400`} alt="" className="w-full h-full object-cover" />
+                <img src={getRecipeImage(recipe, 400)} alt="" className="w-full h-full object-cover" />
               </div>
 
               <div className="flex gap-4 relative z-10">
                 <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
-                  <img src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=300`} alt={recipe.title} className="w-full h-full object-cover" />
+                  <img src={getRecipeImage(recipe, 300)} alt={recipe.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start">
@@ -156,7 +156,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             <div className="space-y-3">
               <h3 className="text-2xl font-tech font-bold uppercase tracking-tight">Acceso Premium</h3>
               <p className="text-zinc-400 text-sm leading-relaxed">
-                Hazte PRO para ver hasta <span className="text-primary font-bold">15 versiones</span> de recetas (en lotes de 5), informe nutricional detallado y acceso ilimitado a tu Agente Chef IA.
+                Hazte Premium para ver hasta <span className="text-primary font-bold">15 versiones</span> de recetas (en lotes de 5), informe nutricional detallado y acceso ilimitado a tu Agente Chef IA.
               </p>
             </div>
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2">
@@ -175,7 +175,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             </div>
             <div className="grid gap-3 pt-2">
               <button className="w-full py-4 bg-primary text-black rounded-xl font-bold uppercase text-xs tracking-widest neon-glow shadow-strong">
-                Subir a PRO • $9.99/mes
+                Subir a Premium • $19.900 IVA Incluido/mes
               </button>
               <button onClick={() => setShowPremiumModal(false)} className="w-full py-2 text-zinc-500 font-bold uppercase text-[10px] tracking-widest">
                 Tal vez más tarde

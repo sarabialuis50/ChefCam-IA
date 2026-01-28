@@ -14,15 +14,15 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             case 'recipes':
                 return 'Has alcanzado el límite diario de recetas gratuitas.';
             case 'nutrition':
-                return 'El análisis nutricional detallado es una función exclusiva para usuarios PRO.';
+                return 'El análisis nutricional detallado es una función exclusiva para usuarios Premium.';
             case 'chefbot':
                 return 'Has agotado tus consultas gratuitas con el Agente Chef IA.';
             case 'more-recipes':
                 return 'Generar más de 5 variantes de recetas es una función Premium.';
             case 'community-post':
-                return 'Publicar tus creaciones en la comunidad es una función exclusiva para usuarios PRO.';
+                return 'Publicar tus creaciones en la comunidad es una función exclusiva para usuarios Premium.';
             case 'community-save':
-                return 'Guardar recetas de otros chefs es una función exclusiva para usuarios PRO.';
+                return 'Guardar recetas de otros chefs es una función exclusiva para usuarios Premium.';
             case 'community-comment':
                 return 'Has alcanzado el límite de 5 comentarios mensuales para usuarios gratuitos.';
             case 'upgrade':
@@ -49,7 +49,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                 <div className="space-y-3">
                     <h3 className="text-2xl font-outfit font-bold uppercase tracking-tight">Acceso Premium</h3>
                     <p className="text-zinc-400 text-sm leading-relaxed">
-                        {getReasonText()} Hazte PRO para disfrutar de una experiencia sin límites.
+                        {getReasonText()} Hazte Premium para disfrutar de una experiencia sin límites.
                     </p>
                 </div>
 
@@ -74,7 +74,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
 
                 <div className="grid gap-3 pt-2">
                     <button className="w-full py-4 bg-primary text-black rounded-xl font-bold uppercase text-xs tracking-widest neon-glow shadow-strong active:scale-95 transition-all">
-                        Subir a PRO • $9.99/mes
+                        Subir a Premium • $19.900 IVA Incluido/mes
                     </button>
                     <button onClick={onClose} className="w-full py-2 text-zinc-500 font-bold uppercase text-[10px] tracking-widest">
                         Tal vez más tarde

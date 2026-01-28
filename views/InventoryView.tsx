@@ -1,6 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { InventoryItem } from '../types';
+import { getDaysDiff } from '../utils/dateUtils';
 
 interface InventoryViewProps {
     inventory: InventoryItem[];
@@ -37,7 +38,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({
 
     const getStatusColor = (expiryDate?: string) => {
         if (!expiryDate) return 'text-zinc-500';
-        const daysLeft = Math.ceil((new Date(expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+        const daysLeft = getDaysDiff(expiryDate);
         if (daysLeft < 0) return 'text-red-500';
         if (daysLeft <= 3) return 'text-orange-500';
         return 'text-primary';
@@ -115,7 +116,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                 ) : (
                     filteredInventory.map(item => {
                         const daysLeft = item.expiryDate
-                            ? Math.ceil((new Date(item.expiryDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
+                            ? getDaysDiff(item.expiryDate)
                             : null;
                         const isExpired = daysLeft !== null && daysLeft < 0;
                         const isNearExpiry = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
@@ -130,7 +131,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                         <div className="flex items-center gap-2">
                                             <h4 className="text-white text-sm font-bold truncate uppercase tracking-tight">{item.name}</h4>
                                             {isExpired ? (
-                                                <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase rounded tracking-widest">Producto Vencido</span>
+                                                <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase rounded tracking-widest animate-pulse">Producto Vencido</span>
                                             ) : (isNearExpiry && item.id === acceptedChallengeId) ? (
                                                 <button
                                                     onClick={() => onStartGeneration([item.name], 2, item.id)}

@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Recipe } from '../types';
+import { getRecipeImage } from '../utils/imageUtils';
 
 interface NutritionalDetailViewProps {
     recipe: Recipe | null;
@@ -22,36 +22,55 @@ const NutritionalDetailView: React.FC<NutritionalDetailViewProps> = ({ recipe, o
 
     return (
         <div className="min-h-screen bg-pure-black pb-12">
-            <header className="p-6 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+            <header className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-black/50 backdrop-blur-md sticky top-0 z-50">
                 <button onClick={onBack} className="w-10 h-10 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center">
                     <span className="material-symbols-outlined">arrow_back</span>
                 </button>
-                <h1 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Informe Nutricional</h1>
+                <div className="text-center">
+                    <h1 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Informe Nutricional</h1>
+                    <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-[0.2em] mt-0.5">Análisis Detallado por Porción</p>
+                </div>
                 <div className="w-10"></div> {/* Spacer */}
             </header>
 
             <div className="p-6 space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                {/* Header Section */}
-                <div className="text-center space-y-2">
-                    <h2 className="text-2xl font-black uppercase tracking-tight text-white">{recipe.title}</h2>
-                    <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Análisis Detallado por Porción</p>
-                </div>
-
-                {/* Macro Chart (CSS Bars) */}
-                <section className="bg-surface-dark border border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-2xl">
-                    <div className="flex justify-around items-end h-40 gap-4">
-                        <MacroBar label="Carbs" value={55} color="#39FF14" amount={`${recipe.carbs}g`} />
-                        <MacroBar label="Proteína" value={25} color="#00E5FF" amount={`${recipe.protein}g`} />
-                        <MacroBar label="Grasas" value={20} color="#FF00E5" amount={`${recipe.fat}g`} />
+                {/* Nutritional Card */}
+                <section className="bg-surface-dark border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+                    {/* Header Section with Image */}
+                    <div className="h-[280px] w-full relative">
+                        <img
+                            src={getRecipeImage(recipe, 400)}
+                            alt={recipe.title}
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-surface-dark via-transparent to-transparent"></div>
                     </div>
 
-                    <div className="pt-4 border-t border-white/5 flex justify-between items-center">
-                        <div className="space-y-1">
-                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Calorías Totales</p>
-                            <p className="text-3xl font-black text-white">{recipe.calories} <span className="text-primary text-sm uppercase">Kcal</span></p>
-                        </div>
-                        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20">
-                            <span className="material-symbols-outlined text-primary">bolt</span>
+                    <div className="p-8 space-y-6 relative z-10 bg-surface-dark">
+                        <div className="space-y-3">
+                            <div className="text-left">
+                                <h2 className="text-xl font-black uppercase tracking-normal text-white px-2 leading-tight">{recipe.title}</h2>
+                            </div>
+
+                            {/* Info Grid - Exact match to RecipeDetailView */}
+                            <div className="grid grid-cols-4 gap-3 py-2">
+                                <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+                                    <p className="text-primary text-sm font-black tracking-tight">{recipe.calories?.toString().replace(/kcal/i, '').trim() || 'N/A'}</p>
+                                    <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Kcal</p>
+                                </div>
+                                <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+                                    <p className="text-primary text-sm font-black tracking-tight">{recipe.protein || 'N/A'}</p>
+                                    <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Prot</p>
+                                </div>
+                                <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+                                    <p className="text-primary text-sm font-black tracking-tight">{recipe.carbs || 'N/A'}</p>
+                                    <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Carb</p>
+                                </div>
+                                <div className="bg-surface-dark/60 p-4 rounded-3xl border border-white/5 text-center shadow-inner hover:border-primary/20 transition-all">
+                                    <p className="text-primary text-sm font-black tracking-tight">{recipe.fat || 'N/A'}</p>
+                                    <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Grasa</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -95,23 +114,5 @@ const NutritionalDetailView: React.FC<NutritionalDetailViewProps> = ({ recipe, o
         </div>
     );
 };
-
-const MacroBar = ({ label, value, color, amount }: { label: string, value: number, color: string, amount: string }) => (
-    <div className="flex-1 flex flex-col items-center gap-3">
-        <div className="w-full relative flex flex-col items-center group">
-            <div
-                className="w-full rounded-t-xl transition-all duration-1000 ease-out"
-                style={{ height: `${value}%`, backgroundColor: color, opacity: 0.8, boxShadow: `0 0 20px ${color}33` }}
-            ></div>
-            <div className="absolute -top-8 opacity-0 group-hover:opacity-100 transition-opacity bg-black border border-white/10 px-2 py-1 rounded text-[10px] font-bold text-white whitespace-nowrap z-10">
-                {value}% del plato
-            </div>
-        </div>
-        <div className="text-center">
-            <p className="text-[10px] font-black text-white uppercase tracking-tighter">{amount}</p>
-            <p className="text-[8px] font-bold text-zinc-600 uppercase tracking-widest">{label}</p>
-        </div>
-    </div>
-);
 
 export default NutritionalDetailView;
