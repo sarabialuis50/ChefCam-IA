@@ -64,6 +64,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
     if (activeFilter === 'Todas') return true;
     if (activeFilter === 'Recetas') return n.type === 'recipe';
     if (activeFilter === 'Sistema') return n.type === 'system';
+    if (activeFilter === 'Alertas') return n.type === 'alert';
     return true;
   });
 
@@ -86,12 +87,12 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
       </header>
 
       {/* Filter Chips */}
-      <div className="flex gap-3 pt-2">
-        {['Todas', 'Recetas', 'Sistema'].map(filter => (
+      <div className="flex gap-3 pt-2 overflow-x-auto no-scrollbar">
+        {['Todas', 'Recetas', 'Sistema', 'Alertas'].map(filter => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
-            className={`px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${activeFilter === filter
+            className={`px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all whitespace-nowrap ${activeFilter === filter
               ? 'bg-primary text-black shadow-neon-glow'
               : 'bg-zinc-900/50 text-zinc-500 border border-zinc-800'
               }`}
@@ -107,7 +108,12 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
           filteredNotifications.map((notif) => (
             <div
               key={notif.id}
-              className={`relative glass-card rounded-[1.5rem] p-4 flex gap-4 border transition-all ${notif.unread ? 'border-primary/30 bg-primary/5' : 'border-white/5'
+              onClick={() => {
+                setNotifications(prev => prev.map(n =>
+                  n.id === notif.id ? { ...n, unread: !n.unread } : n
+                ));
+              }}
+              className={`relative glass-card rounded-[1.5rem] p-4 flex gap-4 border transition-all cursor-pointer active:scale-95 ${notif.unread ? 'border-primary/30 bg-primary/5' : 'border-white/5'
                 }`}
             >
               <div className={`w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center border ${notif.unread ? 'bg-primary/20 border-primary text-primary shadow-neon-glow' : 'bg-zinc-900 border-zinc-800 text-zinc-600'

@@ -188,7 +188,9 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
                     {/* Quick Ingredients Reference (Premium Touch) */}
                     <div className="bg-zinc-900/40 border border-white/5 rounded-3xl p-6 space-y-3">
                         <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 text-center">Tips del Chef</h4>
-                        <p className="text-xs text-zinc-400 text-center italic">"Asegúrate de que el fuego sea medio para no quemar los aromáticos."</p>
+                        <p className="text-xs text-zinc-400 text-center italic">
+                            "{recipe.tips && recipe.tips[currentStep] ? recipe.tips[currentStep] : "Sigue el paso cuidadosamente para un resultado perfecto."}"
+                        </p>
                     </div>
                 </div>
             </main>

@@ -30,6 +30,7 @@ export interface Recipe {
   suggestedExtras?: string[];
   nutriScore?: 'A' | 'B' | 'C' | 'D' | 'E';
   photoQuery?: string;
+  tips?: string[];
 }
 
 export interface InventoryItem {

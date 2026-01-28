@@ -126,29 +126,27 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                 ? 'border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.5),inset_0_0_10px_rgba(220,38,38,0.2)] animate-pulse'
                                 : 'border-white/5 hover:border-primary/20 shadow-none'
                                 }`}>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-1">
-                                        <div className="flex items-center gap-2">
+                                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
+                                    <div className="flex items-start justify-between">
+                                        <div className="flex flex-col">
                                             <h4 className="text-white text-sm font-bold truncate uppercase tracking-tight">{item.name}</h4>
                                             {isExpired ? (
-                                                <span className="px-2 py-0.5 bg-red-500 text-white text-[7px] font-black uppercase rounded tracking-widest animate-pulse">Producto Vencido</span>
+                                                <span className="text-red-500 text-[8px] font-black uppercase tracking-widest animate-pulse mt-0.5">● Vencido</span>
                                             ) : (isNearExpiry && item.id === acceptedChallengeId) ? (
                                                 <button
                                                     onClick={() => onStartGeneration([item.name], 2, item.id)}
-                                                    className="px-2 py-0.5 bg-primary/20 border border-primary/40 text-primary text-[7px] font-black uppercase rounded tracking-widest hover:bg-primary hover:text-black transition-colors"
+                                                    className="mt-1 px-2 py-0.5 bg-primary/20 border border-primary/40 text-primary text-[7px] font-black uppercase rounded tracking-widest hover:bg-primary hover:text-black transition-colors w-fit"
                                                 >
                                                     Re-generar Reto
                                                 </button>
-                                            ) : null}
+                                            ) : <span className="text-[9px] text-zinc-600 font-medium truncate">Añadido {new Date(item.createdAt).toLocaleDateString()}</span>}
                                         </div>
-                                        <span className={`text-[9px] font-black uppercase tracking-tighter ${getStatusColor(item.expiryDate)}`}>
-                                            {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'Sin fecha'}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-[10px] text-zinc-500 font-bold uppercase">{item.quantity} {item.unit}</span>
-                                        <span className="w-1 h-1 rounded-full bg-zinc-800"></span>
-                                        <span className="text-[10px] text-zinc-600 font-medium">Añadido {new Date(item.createdAt).toLocaleDateString()}</span>
+                                        <div className="text-right">
+                                            <span className={`text-[10px] font-black uppercase tracking-tighter block ${getStatusColor(item.expiryDate)}`}>
+                                                {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'Sin fecha'}
+                                            </span>
+                                            <span className="text-[9px] text-zinc-500 font-bold uppercase">{item.quantity} {item.unit}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">

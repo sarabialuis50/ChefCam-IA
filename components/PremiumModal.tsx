@@ -56,7 +56,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        90 Recetas Diarias (vs 10 Free)
+                        6 Consultas Diarias (vs 2 Free)
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
@@ -72,7 +72,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        Despensa de 30 ítems (vs 5)
+                        (Despensa de 30 ítems vs 5)
                     </div>
                 </div>
 

@@ -92,6 +92,7 @@ export const generateRecipes = async (
     ${isPremium ? "SUGIERE también un arreglo de 2-3 'suggestedExtras' (ingredientes que el usuario NO mencionó pero que elevarían la receta a nivel gourmet)." : "NO sugieras ingredientes extra."}
     IMPORTANTE: Los títulos, la descripción, los nombres de los ingredientes y el modo de preparación DEBEN ESTAR EXCLUSIVAMENTE EN ESPAÑOL.
     Para el campo 'photoQuery', genera un término de búsqueda corto y descriptivo EN INGLÉS que ayude a encontrar una foto profesional del plato en un banco de imágenes (ej: 'gourmet salmon asparagus').
+    Para el campo 'tips', genera un arreglo de consejos cortos. Intenta generar UN consejo por cada paso de la instrucción si es posible, o al menos consejos generales útiles.
     Formatea la salida como un arreglo JSON de objetos Recipe.`;
 
   try {
@@ -136,7 +137,12 @@ export const generateRecipes = async (
                 items: { type: Type.STRING },
                 description: "Ingredientes extra sugeridos para mejorar la receta (Solo usuarios Premium)"
               },
-              photoQuery: { type: Type.STRING, description: "Término de búsqueda en inglés para Pexels" }
+              photoQuery: { type: Type.STRING, description: "Término de búsqueda en inglés para Pexels" },
+              tips: {
+                type: Type.ARRAY,
+                items: { type: Type.STRING },
+                description: "Consejo corto y útil (tip) específico para cada paso de las instrucciones."
+              }
             },
             required: ["id", "title", "ingredients", "instructions", "photoQuery"]
           }
@@ -206,7 +212,7 @@ export const chatWithChef = async (history: { role: string; parts: string[] }[],
       Usa este contexto para personalizar tus consejos y EVITA ingredientes alérgicos.
       
       CONOCIMIENTO DE LA APP CHEFSCAN.IA (Para Soporte):
-      - Plan Premium: Cuesta $19.900 COP/mes. Incluye: ChefBot Ilimitado, 90 recetas/día, Despensa de 30 ítems, NutriScore completo, Guardar Favoritos.
+      - Plan Premium: Cuesta $19.900 COP/mes. Incluye: ChefBot Ilimitado, 6 consultas/día (30 recetas), Despensa de 30 ítems, NutriScore completo, Guardar Favoritos.
       - Plan Free: Límite de 2 consultas diarias (10 recetas), Despensa de 5 ítems, 10 créditos de ChefBot, Sin favoritos.
       - Si el usuario pregunta por límites o cómo mejorar, explícale las ventajas de Premium amablemente.`
     }
