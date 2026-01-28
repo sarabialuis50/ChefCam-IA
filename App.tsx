@@ -37,7 +37,7 @@ const App: React.FC = () => {
     recentRecipes: [],
     favoriteRecipes: [],
     recipeGenerationsToday: 0,
-    chefCredits: 5,
+    chefCredits: 10,
     inventory: [],
     history: [],
     userTags: [],
@@ -231,7 +231,7 @@ const App: React.FC = () => {
       userTags: finalTags,
       // CRÍTICO: Solo redirigimos al dashboard si es la carga inicial o si explícitamente venimos de login
       currentView: isInitialLoad && (prev.currentView === 'landing' || prev.currentView === 'login') ? 'dashboard' : prev.currentView,
-      chefCredits: finalUser.isPremium ? 999 : 5
+      chefCredits: finalUser.isPremium ? 999 : 10
     }));
   };
 
@@ -264,7 +264,7 @@ const App: React.FC = () => {
       ...prev,
       user,
       currentView: 'dashboard',
-      chefCredits: user.isPremium ? 999 : 5
+      chefCredits: user.isPremium ? 999 : 10
     }));
   };
 
@@ -375,6 +375,13 @@ const App: React.FC = () => {
 
   const handleInventoryAdd = async (name: string, quantity: number, unit: string, expiryDate?: string) => {
     if (!state.user?.id) return;
+
+    // Check Inventory Limits
+    const limit = state.user?.isPremium ? 30 : 5;
+    if (state.inventory.length >= limit) {
+      setPremiumModal({ isOpen: true, reason: 'more-recipes' });
+      return;
+    }
     const { data, error } = await supabase
       .from('inventory')
       .insert({
@@ -471,13 +478,11 @@ const App: React.FC = () => {
     }
 
     // Check Limits
-    // Bypass temporal para pruebas: permitimos generar recetas sin límites
-    /*
-    if (!state.user?.isPremium && state.recipeGenerationsToday >= 1) {
+    const dailyLimit = state.user?.isPremium ? 6 : 2;
+    if (state.recipeGenerationsToday >= dailyLimit) {
       setPremiumModal({ isOpen: true, reason: 'recipes' });
       return;
     }
-    */
 
     setLastUsedIngredients(ingredients);
     setLastUsedPortions(portions);
@@ -553,6 +558,12 @@ const App: React.FC = () => {
   };
 
   const handleGenerateMore = async () => {
+    // Free users see the button as a hook, but clicking triggers premium modal
+    if (!state.user?.isPremium) {
+      setPremiumModal({ isOpen: true, reason: 'more-recipes' });
+      return;
+    }
+
     if (state.recentRecipes.length >= 15 || loadingMore) return;
 
     setLoadingMore(true);
@@ -603,12 +614,11 @@ const App: React.FC = () => {
     if (!state.user?.id) return;
 
     // Bypass temporal para pruebas: permitimos guardar favoritos sin ser premium
-    /*
-    if (!state.user?.isPremium) {
+    if (!state.user?.isPremium && !state.favoriteRecipes.some(r => r.id === recipe.id)) {
+      // Solo bloqueamos añadir nuevos favoritos, no eliminar
       setPremiumModal({ isOpen: true, reason: 'recipes' });
       return;
     }
-    */
 
     const isFavorite = state.favoriteRecipes.some(r => r.id === recipe.id);
 

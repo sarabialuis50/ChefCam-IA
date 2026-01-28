@@ -12,13 +12,13 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
     const getReasonText = () => {
         switch (reason) {
             case 'recipes':
-                return 'Has alcanzado el límite diario de recetas gratuitas.';
+                return 'Has alcanzado el límite diario de 2 consultas (10 recetas) gratuitas.';
             case 'nutrition':
                 return 'El análisis nutricional detallado es una función exclusiva para usuarios Premium.';
             case 'chefbot':
                 return 'Has agotado tus consultas gratuitas con el Agente Chef IA.';
             case 'more-recipes':
-                return 'Generar más de 5 variantes de recetas es una función Premium.';
+                return 'Los usuarios Free ven 5 recetas. ¡Premium ve hasta 15 por consulta!';
             case 'community-post':
                 return 'Publicar tus creaciones en la comunidad es una función exclusiva para usuarios Premium.';
             case 'community-save':
@@ -56,7 +56,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2">
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        Ver hasta 15 versiones de recetas
+                        90 Recetas Diarias (vs 10 Free)
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
@@ -64,11 +64,15 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        Consultas ilimitadas con ChefBot
+                        ChefBot Ilimitado (vs 10 créditos)
                     </div>
                     <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
                         Guardar recetas favoritas
+                    </div>
+                    <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+                        <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
+                        Despensa de 30 ítems (vs 5)
                     </div>
                 </div>
 

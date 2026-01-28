@@ -22,7 +22,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
 
   const [stabilityProgress, setStabilityProgress] = useState(0);
   const [isStable, setIsStable] = useState(false);
-  const lastFrameRef = useRef<ImageData | null>(null);
+  const lastFrameRef = useRef<Uint8ClampedArray | null>(null);
   const detectionCanvasRef = useRef<HTMLCanvasElement>(null);
   const stabilityTimerRef = useRef<number | null>(null);
 
@@ -81,23 +81,26 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
 
         // Dibujar frame pequeño para optimizar comparación
         ctx.drawImage(videoRef.current, 0, 0, 64, 64);
-        const currentFrame = ctx.getImageData(0, 0, 64, 64);
+        const currentFrame = ctx.getImageData(0, 0, 64, 64).data;
 
         if (lastFrameRef.current) {
           let diff = 0;
-          const data1 = currentFrame.data;
-          const data2 = lastFrameRef.current.data;
-          for (let i = 0; i < data1.length; i += 4) {
-            diff += Math.abs(data1[i] - data2[i]); // Solo canal Rojo para velocidad
+          const prevFrame = lastFrameRef.current;
+          for (let i = 0; i < currentFrame.length; i += 8) { // Muestreo cada 8 pixeles para velocidad
+            diff += Math.abs(currentFrame[i] - prevFrame[i]); // Canal Rojo
           }
 
-          const threshold = 150000; // Sensibilidad al movimiento
+          const threshold = 50000; // Ajustado para ser sensible pero no disparar con ruido
           if (diff < threshold) {
             setStabilityProgress(prev => {
               const next = Math.min(prev + 2, 100);
-              if (next === 100 && !isStable) {
-                setIsStable(true);
-                handleScan();
+              // Trigger scan only once when hitting 100
+              if (next >= 100 && !isStable) {
+                // Use a timeout to avoid immediate state updates during render loop
+                setTimeout(() => {
+                  setIsStable(true);
+                  handleScan();
+                }, 0);
               }
               return next;
             });
@@ -108,7 +111,11 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
             setStatus("Encuadra tus ingredientes...");
           }
         }
-        lastFrameRef.current = currentFrame;
+        lastFrameRef.current = currentFrame; // Store just the data array if needed, or keep ref logic
+        // Actually lastFrameRef.current needs to store the data for next comparison.
+        // We'll update the ref with current data copy.
+        // Creating a new Uint8ClampedArray to detach from canvas buffer
+        lastFrameRef.current = new Uint8ClampedArray(currentFrame);
       }
       animationFrame = requestAnimationFrame(checkStability);
     };
@@ -314,9 +321,19 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
                 )}
               </div>
 
+              {/* Manual Trigger Button (Fallback) */}
+              {!cameraError && (
+                <button
+                  onClick={handleScan}
+                  className="w-full py-4 bg-primary text-black font-black rounded-[2rem] uppercase text-[10px] tracking-widest shadow-neon-glow active:scale-95 transition-all text-center"
+                >
+                  Capturar Manualmente
+                </button>
+              )}
+
               <button
                 onClick={handleClose}
-                className="w-full text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] hover:text-white transition-colors"
+                className="w-full text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] hover:text-white transition-colors mt-2"
               >
                 Abortar Operación
               </button>
