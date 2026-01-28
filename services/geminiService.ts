@@ -1,6 +1,7 @@
 
 import { GoogleGenAI, Type, GenerateContentResponse, Modality } from "@google/genai";
 import { Recipe, Ingredient } from "../types";
+import { getRecipeImage } from "./pexelsService";
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
 
@@ -90,6 +91,7 @@ export const generateRecipes = async (
     SISTEMA NUTRISCORE: Evalúa la salud de la receta y asigna un 'nutriScore' de 'A' (muy saludable) a 'E' (menos saludable).
     ${isPremium ? "SUGIERE también un arreglo de 2-3 'suggestedExtras' (ingredientes que el usuario NO mencionó pero que elevarían la receta a nivel gourmet)." : "NO sugieras ingredientes extra."}
     IMPORTANTE: Los títulos, la descripción, los nombres de los ingredientes y el modo de preparación DEBEN ESTAR EXCLUSIVAMENTE EN ESPAÑOL.
+    Para el campo 'photoQuery', genera un término de búsqueda corto y descriptivo EN INGLÉS que ayude a encontrar una foto profesional del plato en un banco de imágenes (ej: 'gourmet salmon asparagus').
     Formatea la salida como un arreglo JSON de objetos Recipe.`;
 
   try {
@@ -133,15 +135,24 @@ export const generateRecipes = async (
                 type: Type.ARRAY,
                 items: { type: Type.STRING },
                 description: "Ingredientes extra sugeridos para mejorar la receta (Solo usuarios Premium)"
-              }
+              },
+              photoQuery: { type: Type.STRING, description: "Término de búsqueda en inglés para Pexels" }
             },
-            required: ["id", "title", "ingredients", "instructions"]
+            required: ["id", "title", "ingredients", "instructions", "photoQuery"]
           }
         }
       }
     });
 
-    return JSON.parse(response.text || "[]");
+    const recipes: any[] = JSON.parse(response.text || "[]");
+
+    // Enriquecer con imágenes de Pexels
+    const recipesWithImages = await Promise.all(recipes.map(async (recipe) => {
+      const imageUrl = await getRecipeImage(recipe.photoQuery || recipe.title);
+      return { ...recipe, imageUrl };
+    }));
+
+    return recipesWithImages;
   } catch (error) {
     console.error("Error generating recipes:", error);
     return [];

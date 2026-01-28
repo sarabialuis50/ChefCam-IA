@@ -421,7 +421,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             >
               <div className="w-40 h-40 rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-900">
                 <img
-                  src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/300/300?grayscale`}
+                  src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=300`}
                   alt={recipe.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
                 />

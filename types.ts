@@ -29,6 +29,7 @@ export interface Recipe {
   category?: 'Desayuno' | 'Almuerzo' | 'Cena' | 'Saludable';
   suggestedExtras?: string[];
   nutriScore?: 'A' | 'B' | 'C' | 'D' | 'E';
+  photoQuery?: string;
 }
 
 export interface InventoryItem {

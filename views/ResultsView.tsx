@@ -74,12 +74,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             >
               {/* Background Image Preview */}
               <div className="absolute top-0 right-0 w-32 h-full opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
-                <img src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/200/400`} alt="" className="w-full h-full object-cover" />
+                <img src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=400`} alt="" className="w-full h-full object-cover" />
               </div>
 
               <div className="flex gap-4 relative z-10">
                 <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
-                  <img src={recipe.imageUrl || `https://picsum.photos/seed/${recipe.id}/200/200`} alt={recipe.title} className="w-full h-full object-cover" />
+                  <img src={recipe.imageUrl || `https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=300`} alt={recipe.title} className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start">
