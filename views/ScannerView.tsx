@@ -20,6 +20,12 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [stabilityProgress, setStabilityProgress] = useState(0);
+  const [isStable, setIsStable] = useState(false);
+  const lastFrameRef = useRef<ImageData | null>(null);
+  const detectionCanvasRef = useRef<HTMLCanvasElement>(null);
+  const stabilityTimerRef = useRef<number | null>(null);
+
   const startCamera = async () => {
     setCameraError(null);
     setStatus('Iniciando cámara...');
@@ -45,7 +51,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
             console.error("Video play error:", e);
             setCameraError("Error al reproducir el video de la cámara.");
           });
-          setStatus('Cámara activa');
+          setStatus('Encuadra tus ingredientes...');
         };
       }
     } catch (err: any) {
@@ -63,6 +69,54 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
     }
   };
 
+  // Algoritmo de detección de estabilidad
+  useEffect(() => {
+    let animationFrame: number;
+    const checkStability = () => {
+      if (videoRef.current && !scanning && !cameraError && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+        const canvas = detectionCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (!ctx) return;
+
+        // Dibujar frame pequeño para optimizar comparación
+        ctx.drawImage(videoRef.current, 0, 0, 64, 64);
+        const currentFrame = ctx.getImageData(0, 0, 64, 64);
+
+        if (lastFrameRef.current) {
+          let diff = 0;
+          const data1 = currentFrame.data;
+          const data2 = lastFrameRef.current.data;
+          for (let i = 0; i < data1.length; i += 4) {
+            diff += Math.abs(data1[i] - data2[i]); // Solo canal Rojo para velocidad
+          }
+
+          const threshold = 150000; // Sensibilidad al movimiento
+          if (diff < threshold) {
+            setStabilityProgress(prev => {
+              const next = Math.min(prev + 2, 100);
+              if (next === 100 && !isStable) {
+                setIsStable(true);
+                handleScan();
+              }
+              return next;
+            });
+            setStatus("Estabilizando... Mantén la cámara quieta");
+          } else {
+            setStabilityProgress(0);
+            setIsStable(false);
+            setStatus("Encuadra tus ingredientes...");
+          }
+        }
+        lastFrameRef.current = currentFrame;
+      }
+      animationFrame = requestAnimationFrame(checkStability);
+    };
+
+    animationFrame = requestAnimationFrame(checkStability);
+    return () => cancelAnimationFrame(animationFrame);
+  }, [scanning, cameraError, isStable]);
+
   useEffect(() => {
     startCamera();
     return () => {
@@ -73,7 +127,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
   }, []);
 
   const handleScan = async () => {
-    if (!videoRef.current || !canvasRef.current || !!cameraError) return;
+    if (!videoRef.current || !canvasRef.current || !!cameraError || scanning) return;
 
     setScanning(true);
     setProgress(0);
@@ -110,6 +164,8 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
         clearInterval(interval);
         setStatus("Error en identificación");
         setScanning(false);
+        setStabilityProgress(0);
+        setIsStable(false);
       }
     }
   };
@@ -153,6 +209,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
             </div>
           )}
           <canvas ref={canvasRef} className="hidden" />
+          <canvas ref={detectionCanvasRef} width="64" height="64" className="hidden" />
         </div>
 
         <header className="relative z-50 w-full flex justify-start p-6">
@@ -165,11 +222,21 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
         </header>
 
         <div className="relative z-10 flex-1 w-full flex flex-col items-center justify-center -mt-16">
+          {/* Stability Progress Bar (Over the scan area) */}
+          {!scanning && !cameraError && (
+            <div className="absolute top-1/4 w-48 h-1 bg-white/10 rounded-full overflow-hidden blur-[1px]">
+              <div
+                className="h-full bg-primary neon-glow transition-all duration-100"
+                style={{ width: `${stabilityProgress}%` }}
+              ></div>
+            </div>
+          )}
+
           <div className="relative w-72 h-72 flex items-center justify-center">
-            <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-2xl shadow-strong"></div>
-            <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-2xl shadow-strong"></div>
-            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-2xl shadow-strong"></div>
-            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-2xl shadow-strong"></div>
+            <div className={`absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 ${stabilityProgress > 50 ? 'border-primary' : 'border-white/30'} rounded-tl-2xl shadow-strong transition-colors duration-300`}></div>
+            <div className={`absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 ${stabilityProgress > 50 ? 'border-primary' : 'border-white/30'} rounded-tr-2xl shadow-strong transition-colors duration-300`}></div>
+            <div className={`absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 ${stabilityProgress > 50 ? 'border-primary' : 'border-white/30'} rounded-bl-2xl shadow-strong transition-colors duration-300`}></div>
+            <div className={`absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 ${stabilityProgress > 50 ? 'border-primary' : 'border-white/30'} rounded-br-2xl shadow-strong transition-colors duration-300`}></div>
 
             {!cameraError && !scanning && <div className="scanner-line animate-scan"></div>}
 
@@ -187,7 +254,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
 
           <div className="mt-12 text-center space-y-2 px-4">
             <h2 className="text-2xl font-tech font-bold text-white tracking-tight">
-              {detected.length > 0 ? "Resultados IA" : scanning ? "Codificando datos..." : cameraError ? "Error de Sistema" : "Escaneo Biométrico"}
+              {detected.length > 0 ? "Resultados IA" : scanning ? "Codificando datos..." : cameraError ? "Error de Sistema" : isStable ? "Fotocaptura..." : "Escaneo Biométrico"}
             </h2>
             <p className="text-sm text-gray-400 max-w-xs">{status}</p>
           </div>
@@ -231,15 +298,22 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              <button
-                onClick={handleScan}
-                disabled={!!cameraError}
-                className={`w-full h-16 rounded-[2rem] font-black text-lg flex items-center justify-center gap-3 transition-all ${cameraError ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-primary text-black shadow-strong active:scale-95'
-                  }`}
-              >
-                <span className="material-symbols-outlined font-black">center_focus_strong</span>
-                <span className="uppercase tracking-widest text-sm">Capturar Ingredientes</span>
-              </button>
+              {/* Botón informativo de estado automático */}
+              <div className="w-full h-16 rounded-[2rem] border border-primary/20 bg-primary/5 flex items-center justify-center gap-3 backdrop-blur-sm">
+                {cameraError ? (
+                  <span className="text-red-500 text-[10px] font-bold uppercase tracking-widest">Sin señal de video</span>
+                ) : (
+                  <>
+                    <span className={`material-symbols-outlined ${stabilityProgress > 0 ? 'text-primary animate-spin' : 'text-zinc-600'}`}>
+                      {stabilityProgress === 100 ? 'check_circle' : 'motion_photos_on'}
+                    </span>
+                    <span className="text-zinc-400 font-bold uppercase tracking-widest text-[10px]">
+                      {stabilityProgress > 0 ? 'Detectando estabilidad...' : 'Mantén la cámara quieta'}
+                    </span>
+                  </>
+                )}
+              </div>
+
               <button
                 onClick={handleClose}
                 className="w-full text-[10px] text-zinc-500 font-black uppercase tracking-[0.3em] hover:text-white transition-colors"
