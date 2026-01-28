@@ -50,6 +50,7 @@ const NutritionalDetailView: React.FC<NutritionalDetailViewProps> = ({ recipe, o
                         <div className="space-y-3">
                             <div className="text-left">
                                 <h2 className="text-xl font-black uppercase tracking-normal text-white px-2 leading-tight">{recipe.title}</h2>
+                                <p className="text-primary font-bold text-[10px] uppercase tracking-[0.2em] px-2 mt-1">Porciones: {recipe.portions || 2}</p>
                             </div>
 
                             {/* Info Grid - Exact match to RecipeDetailView */}
