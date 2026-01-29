@@ -19,7 +19,7 @@ export const analyzeIngredientImage = async (base64Image: string): Promise<Ingre
         {
           role: 'user',
           parts: [
-            { text: "Analiza esta imagen y identifica los ingredientes comestibles. Devuelve un arreglo JSON de objetos con: name, confidence, properties, nutrients. TODO EN ESPAÑOL." },
+            { text: "Analiza esta imagen e identifica ÚNICAMENTE los ingredientes comestibles que sean el sujeto principal de la foto. Ignora ruidos de fondo, logos o decoraciones no comestibles. Si solo hay un ingrediente central, devuelve solo ese. Devuelve un arreglo JSON de objetos con: name (en español y minúsculas), confidence (0.0 a 1.0), properties, nutrients. TODO EN ESPAÑOL." },
             {
               inlineData: {
                 mimeType: "image/jpeg",
@@ -33,7 +33,9 @@ export const analyzeIngredientImage = async (base64Image: string): Promise<Ingre
 
     const text = response.text || "";
     const cleanJson = text.replace(/```json\s*|\s*```/g, "").trim();
-    return JSON.parse(cleanJson || "[]");
+    const ingredients: Ingredient[] = JSON.parse(cleanJson || "[]");
+    // Filtramos por confianza mínima para evitar falsos positivos
+    return ingredients.filter(ing => !ing.confidence || ing.confidence > 0.7);
   } catch (error) {
     console.error("Error en visión:", error);
     return [];
