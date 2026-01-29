@@ -44,7 +44,8 @@ export const generateRecipes = async (
   portions: number,
   isPremium: boolean = false,
   allergies: string[] = [],
-  cookingGoal: string = 'explorar'
+  cookingGoal: string = 'explorar',
+  count: number = 5
 ): Promise<Recipe[]> => {
   try {
     const response = await ai.models.generateContent({
@@ -52,7 +53,7 @@ export const generateRecipes = async (
       contents: [{
         role: 'user',
         parts: [{
-          text: `Actúa como Chef Ejecutivo. Crea 5 recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
+          text: `Actúa como Chef Ejecutivo. Crea ${count} recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
         IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones, sin saludos y sin explicaciones. 
         Formato: arreglo JSON de objetos Recipe (id, title, description, ingredients, instructions, nutriScore, photoQuery). 
         Asegúrate de que "photoQuery" sean 2-3 palabras clave en INGLÉS descriptivas del plato para búsqueda de imágenes. Todo lo demás en ESPAÑOL.` }]

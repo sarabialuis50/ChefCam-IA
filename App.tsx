@@ -495,12 +495,15 @@ const App: React.FC = () => {
     try {
       // Normalize ingredients
       const normalizedIngredients = ingredients.map(i => i.trim().toLowerCase());
+      const recipeCount = state.user?.isPremium ? 5 : 3;
+
       const recipes = await generateRecipes(
         normalizedIngredients,
         portions,
         !!state.user?.isPremium,
         state.user?.allergies,
-        state.user?.cookingGoal
+        state.user?.cookingGoal,
+        recipeCount
       );
       setIsAIFinished(true);
 
@@ -616,9 +619,10 @@ const App: React.FC = () => {
   const toggleFavorite = async (recipe: Recipe, category: string = 'Otra') => {
     if (!state.user?.id) return;
 
-    // Bypass temporal para pruebas: permitimos guardar favoritos sin ser premium
-    if (!state.user?.isPremium && !state.favoriteRecipes.some(r => r.id === recipe.id)) {
-      // Solo bloqueamos añadir nuevos favoritos, no eliminar
+    // Permitimos hasta 5 favoritos para usuarios FREE
+    if (!state.user?.isPremium &&
+      !state.favoriteRecipes.some(r => r.id === recipe.id) &&
+      state.favoriteRecipes.length >= 5) {
       setPremiumModal({ isOpen: true, reason: 'recipes' });
       return;
     }
