@@ -133,22 +133,22 @@ const SettingsView: React.FC<SettingsViewProps> = ({
     };
 
     return (
-        <div className="flex flex-col bg-pure-black min-h-screen p-6 space-y-8 pb-32">
+        <div style={{ backgroundColor: 'var(--bg-app)' }} className="flex flex-col min-h-screen p-6 space-y-8 pb-2">
             <header className="flex items-center gap-4 pt-2">
-                <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 active:scale-90 transition-all">
+                <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border active:scale-90 transition-all">
                     <span className="material-symbols-outlined text-primary">arrow_back</span>
                 </button>
-                <h1 className="text-white font-bold text-xl uppercase tracking-wider font-outfit">Configuración<span className="text-primary">.IA</span></h1>
+                <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Configuración<span className="text-primary">.IA</span></h1>
             </header>
 
             <section className="flex flex-col items-center gap-6 py-4">
                 <div className="relative">
-                    <div className="w-28 h-28 rounded-full border-2 border-primary/30 overflow-hidden bg-zinc-900 flex items-center justify-center shadow-2xl shadow-primary/20">
+                    <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'rgba(var(--primary-rgb), 0.3)' }} className="w-28 h-28 rounded-full border-2 overflow-hidden flex items-center justify-center shadow-2xl">
                         {user?.avatarUrl ? (
                             <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
                             <div className="w-full h-full bg-primary flex items-center justify-center">
-                                <span className="material-symbols-outlined text-5xl text-white">person</span>
+                                <span className="material-symbols-outlined text-5xl text-black">person</span>
                             </div>
                         )}
                         {uploading && (
@@ -158,14 +158,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         )}
                     </div>
                     {/* Badge de Verificado / Premium */}
-                    <div className="absolute bottom-1 right-1 w-8 h-8 bg-zinc-900 rounded-full border-2 border-pure-black flex items-center justify-center">
+                    <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--bg-app)' }} className="absolute bottom-1 right-1 w-8 h-8 rounded-full border-2 flex items-center justify-center">
                         <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-glow">
                             <span className="material-symbols-outlined text-black text-[14px] font-bold">check</span>
                         </div>
                     </div>
                     <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="absolute top-0 right-0 w-8 h-8 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center text-white active:scale-95 transition-all shadow-lg"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="absolute top-0 right-0 w-8 h-8 rounded-full border flex items-center justify-center text-primary active:scale-95 transition-all shadow-lg"
                     >
                         <span className="material-symbols-outlined text-sm">photo_camera</span>
                     </button>
@@ -179,8 +179,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 </div>
 
                 <div className="text-center space-y-1">
-                    <h2 className="text-white font-black text-2xl tracking-tight font-outfit">{user?.name || 'Chef Usuario'}</h2>
-                    <p className="text-zinc-500 text-xs font-medium max-w-[200px] leading-relaxed">
+                    <h2 style={{ color: 'var(--text-main)' }} className="font-black text-2xl tracking-tight font-outfit">{user?.name || 'Chef Usuario'}</h2>
+                    <p style={{ color: 'var(--text-muted)' }} className="text-xs font-medium max-w-[200px] leading-relaxed">
                         {user?.bio || 'Sin biografía definida'}
                     </p>
                 </div>
@@ -188,15 +188,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 <div className="grid grid-cols-3 gap-8 pt-2">
                     <div className="text-center">
                         <p className="text-primary font-black text-lg">{stats.recipes}</p>
-                        <p className="text-zinc-600 text-[8px] font-black uppercase tracking-widest">Despensa</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Despensa</p>
                     </div>
                     <div className="text-center border-x border-white/5 px-8">
                         <p className="text-primary font-black text-lg">{stats.favorites}</p>
-                        <p className="text-zinc-600 text-[8px] font-black uppercase tracking-widest">Favoritas</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Favoritas</p>
                     </div>
                     <div className="text-center">
                         <p className="text-primary font-black text-lg">{stats.generated}</p>
-                        <p className="text-zinc-600 text-[8px] font-black uppercase tracking-widest">Generadas</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Generadas</p>
                     </div>
                 </div>
             </section>
@@ -207,14 +207,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <button
                         onClick={() => setIsEditingProfile(true)}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">person</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Editar Perfil</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Editar Perfil</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Nombre, Bio y Datos</p>
                             </div>
                         </div>
@@ -223,14 +224,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <button
                         onClick={() => setShowNotificationsModal(true)}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">notifications</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Notificaciones</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Notificaciones</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Configura tus alertas</p>
                             </div>
                         </div>
@@ -239,14 +241,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <button
                         onClick={() => setShowPrivacyModal(true)}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">shield</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Privacidad</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Privacidad</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Controla tus datos</p>
                             </div>
                         </div>
@@ -259,14 +262,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <button
                         onClick={() => setShowCulinaryModal(true)}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">restaurant_menu</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Personalización Culinaria</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Personalización Culinaria</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Dieta, Metas y Alergias</p>
                             </div>
                         </div>
@@ -295,14 +299,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <button
                         onClick={() => !user?.isPremium && setShowPremiumModal(true)}
-                        className={`w-full p-4 rounded-3xl border flex items-center justify-between transition-all ${user?.isPremium ? 'bg-zinc-900/40 border-white/5 cursor-default' : 'bg-primary/5 border-primary/20 hover:bg-primary/10 active:scale-[0.98]'}`}
+                        style={{ backgroundColor: user?.isPremium ? 'var(--bg-surface-soft)' : 'rgba(var(--primary-rgb), 0.1)', borderColor: user?.isPremium ? 'var(--card-border)' : 'rgba(var(--primary-rgb), 0.2)' }}
+                        className={`w-full p-4 rounded-3xl border flex items-center justify-between transition-all ${user?.isPremium ? 'cursor-default' : 'hover:bg-primary/10 active:scale-[0.98]'}`}
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">verified_user</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Estado: {user?.isPremium ? 'PREMIUM' : 'FREE'}</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Estado: {user?.isPremium ? 'PREMIUM' : 'FREE'}</p>
                                 <p className={`${user?.isPremium ? 'text-zinc-500' : 'text-primary'} text-[10px] font-black uppercase tracking-widest`}>
                                     {user?.isPremium ? 'Soporte Prioritario Activo' : 'Sube a Premium • $19.900/mes'}
                                 </p>
@@ -315,14 +320,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                     {/* Soporte Button */}
                     <button
                         onClick={() => setShowSupportModal(true)}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">support_agent</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Soporte</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Soporte</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">¿Necesitas ayuda?</p>
                             </div>
                         </div>
@@ -332,40 +338,41 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                     {/* Compartir App Button */}
                     <button
                         onClick={handleShareApp}
-                        className="w-full p-4 rounded-3xl border border-white/5 bg-zinc-900/40 hover:bg-zinc-900/60 transition-all flex items-center justify-between active:scale-[0.98]"
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
                     >
                         <div className="flex items-center gap-4 text-left">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">share</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Compartir App</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Compartir App</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Invita a tus amigos</p>
                             </div>
                         </div>
                         <span className="material-symbols-outlined text-zinc-600">chevron_right</span>
                     </button>
 
-                    <div className="flex items-center justify-between p-4 bg-zinc-900/40 rounded-3xl border border-white/5">
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-4 rounded-3xl border">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">language</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Idioma</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Idioma</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">{language}</p>
                             </div>
                         </div>
                         <span className="material-symbols-outlined text-zinc-600">expand_more</span>
                     </div>
 
-                    <div className="flex items-center justify-between p-4 bg-zinc-900/40 rounded-3xl border border-white/5">
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-4 rounded-3xl border">
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
                                 <span className="material-symbols-outlined">storage</span>
                             </div>
                             <div>
-                                <p className="text-white text-sm font-bold uppercase tracking-tight">Almacenamiento Local</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Almacenamiento Local</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">12.4 MB utilizados</p>
                             </div>
                         </div>
@@ -384,70 +391,70 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 </div>
             </section>
 
-            <div className="pt-10 flex flex-col items-center gap-2">
-                <p className="text-[10px] text-zinc-700 font-black uppercase tracking-[0.3em]">ChefScan IA Engine v2.5.4</p>
-                <p className="text-[8px] text-zinc-800 font-bold uppercase tracking-[0.2em]">© 2024 DeepMind Inspired Agent</p>
+            <div className="pt-4 flex flex-col items-center gap-1">
+                <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-black uppercase tracking-[0.3em]">ChefScan IA Engine v2.5.4</p>
+                <p style={{ color: 'var(--text-muted)', opacity: 0.6 }} className="text-[8px] font-bold uppercase tracking-[0.2em]">© 2024 DeepMind Inspired Agent</p>
             </div>
 
             {/* Goal Info Modal */}
             {showGoalInfo && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-[80vh] glass-card rounded-3xl p-8 border-primary/30 flex flex-col gap-6 relative overflow-hidden">
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-6 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[80vh] rounded-3xl p-8 border flex flex-col gap-6 relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         <div className="flex justify-between items-center relative z-10">
-                            <h3 className="text-xl font-black uppercase tracking-tighter text-white">
+                            <h3 style={{ color: 'var(--text-main)' }} className="text-xl font-black uppercase tracking-tighter">
                                 META DEL <span className="text-primary">CHEFBOT</span>
                             </h3>
-                            <button onClick={() => setShowGoalInfo(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 hover:text-white transition-colors">
+                            <button onClick={() => setShowGoalInfo(false)} style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-8 h-8 rounded-full flex items-center justify-center border text-zinc-500 hover:text-white transition-colors">
                                 <span className="material-symbols-outlined text-lg">close</span>
                             </button>
                         </div>
 
                         <div className="flex-1 space-y-4 relative z-10 overflow-y-auto custom-scrollbar pr-2 -mr-2">
-                            <p className="text-xs text-zinc-400 leading-relaxed font-medium">
+                            <p style={{ color: 'var(--text-muted)' }} className="text-xs leading-relaxed font-medium">
                                 Esta configuración le da un "contexto" permanente al ChefBot. Define cómo la IA prioriza y selecciona las recetas para ti.
                             </p>
 
                             <div className="space-y-4 pt-2">
-                                <div className="p-4 rounded-2xl bg-zinc-900/50 border border-white/5">
+                                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-4 rounded-2xl border">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-primary text-sm">fitness_center</span>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-tight">Bajar de Peso</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Bajar de Peso</h4>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 leading-relaxed">
+                                    <p style={{ color: 'var(--text-muted)' }} className="text-[10px] leading-relaxed">
                                         La IA priorizará recetas bajas en calorías, ricas en fibra y con porciones controladas. Al sugerir ingredientes o platos, buscará opciones ligeras y saciantes.
                                     </p>
                                 </div>
 
-                                <div className="p-4 rounded-2xl bg-zinc-900/50 border border-white/5">
+                                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-4 rounded-2xl border">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-primary text-sm">bolt</span>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-tight">Ganar Músculo</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Ganar Músculo</h4>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 leading-relaxed">
+                                    <p style={{ color: 'var(--text-muted)' }} className="text-[10px] leading-relaxed">
                                         El ChefBot se enfocará en recetas con alto contenido proteico. Buscará ingredientes como carnes magras, huevos, legumbres y te sugerirá comidas ideales para el post-entrenamiento.
                                     </p>
                                 </div>
 
-                                <div className="p-4 rounded-2xl bg-zinc-900/50 border border-white/5">
+                                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-4 rounded-2xl border">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-primary text-sm">schedule</span>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-tight">Ahorrar Tiempo</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Ahorrar Tiempo</h4>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 leading-relaxed">
+                                    <p style={{ color: 'var(--text-muted)' }} className="text-[10px] leading-relaxed">
                                         La IA buscará recetas "express". Priorizará platos que se puedan cocinar en menos de 20 minutos, con menos pasos de preparación y utilizando técnicas de cocina rápida.
                                     </p>
                                 </div>
 
-                                <div className="p-4 rounded-2xl bg-zinc-900/50 border border-white/5">
+                                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-4 rounded-2xl border">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="material-symbols-outlined text-primary text-sm">restaurant</span>
-                                        <h4 className="text-sm font-bold text-white uppercase tracking-tight">Gourmet / Explorar</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Gourmet / Explorar</h4>
                                     </div>
-                                    <p className="text-[10px] text-zinc-400 leading-relaxed">
+                                    <p style={{ color: 'var(--text-muted)' }} className="text-[10px] leading-relaxed">
                                         Aquí la IA se pone creativa. Te sugerirá combinaciones de sabores más atrevidas, técnicas de cocina más refinadas y platos visualmente impresionantes, ideal para cuando quieres cocinar algo especial.
                                     </p>
                                 </div>
@@ -466,18 +473,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
             {/* Edit Profile Modal */}
             {isEditingProfile && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-auto max-h-[85vh] glass-card rounded-[2.5rem] p-6 border-primary/30 flex flex-col relative overflow-hidden shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[85vh] rounded-[2.5rem] p-6 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         {/* Header */}
                         <div className="flex items-center justify-center relative z-10 mb-6 flex-shrink-0">
-                            <h3 className="text-white font-bold text-lg uppercase tracking-wider font-outfit">Información Personal</h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-lg uppercase tracking-wider font-outfit">Información Personal</h3>
                             <button
                                 onClick={() => setIsEditingProfile(false)}
-                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-90 transition-all z-20"
+                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 active:scale-90 transition-all z-20"
                             >
                                 <span className="material-symbols-outlined text-zinc-400 text-lg">close</span>
                             </button>
@@ -487,7 +495,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 relative z-10 px-1">
                             <div className="flex justify-center mb-2">
                                 <div className="relative group">
-                                    <div className="w-24 h-24 rounded-full border-2 border-primary/30 overflow-hidden bg-black flex items-center justify-center shadow-neon-glow">
+                                    <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'rgba(var(--primary-rgb), 0.3)' }} className="w-24 h-24 rounded-full border-2 overflow-hidden flex items-center justify-center shadow-neon-glow">
                                         {user?.avatarUrl ? (
                                             <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                                         ) : (
@@ -501,7 +509,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                     </div>
                                     <button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-black shadow-lg border-2 border-pure-black active:scale-95 transition-all"
+                                        style={{ borderColor: 'var(--bg-app)' }}
+                                        className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center text-black shadow-lg border-2 active:scale-95 transition-all"
                                     >
                                         <span className="material-symbols-outlined text-sm">edit</span>
                                     </button>
@@ -515,7 +524,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         type="text"
                                         value={editName}
                                         onChange={(e) => setEditName(e.target.value)}
-                                        className="w-full bg-zinc-900/40 border border-white/5 rounded-2xl py-4 px-4 text-xs text-white focus:border-primary/40 outline-none transition-all"
+                                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border rounded-2xl py-4 px-4 text-xs focus:border-primary/40 outline-none transition-all"
                                         placeholder="Tu nombre aquí"
                                     />
                                 </div>
@@ -526,7 +536,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         type="email"
                                         value={editEmail}
                                         disabled
-                                        className="w-full bg-zinc-900/40 border border-white/5 rounded-2xl py-4 px-4 text-xs text-zinc-500 cursor-not-allowed"
+                                        style={{ backgroundColor: 'var(--bg-surface-soft)', color: 'var(--text-muted)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border rounded-2xl py-4 px-4 text-xs cursor-not-allowed"
                                     />
                                 </div>
 
@@ -536,7 +547,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         type="tel"
                                         value={editPhone}
                                         onChange={(e) => setEditPhone(e.target.value)}
-                                        className="w-full bg-zinc-900/40 border border-white/5 rounded-2xl py-4 px-4 text-xs text-white focus:border-primary/40 outline-none transition-all"
+                                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border rounded-2xl py-4 px-4 text-xs focus:border-primary/40 outline-none transition-all"
                                         placeholder="+52 000 000 0000"
                                     />
                                 </div>
@@ -547,7 +559,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         value={editBio}
                                         onChange={(e) => setEditBio(e.target.value.slice(0, 50))}
                                         maxLength={50}
-                                        className="w-full bg-zinc-900/40 border border-white/5 rounded-2xl py-4 px-4 text-xs text-white focus:border-primary/40 outline-none transition-all min-h-[80px] resize-none"
+                                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border rounded-2xl py-4 px-4 text-xs focus:border-primary/40 outline-none transition-all min-h-[80px] resize-none"
                                         placeholder="Cuéntanos un poco sobre tus gustos culinarios..."
                                     />
                                     <p className="text-[9px] text-zinc-600 font-medium uppercase tracking-widest text-right">{editBio.length}/50</p>
@@ -557,7 +570,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             <div className="flex gap-3 pt-4 pb-10">
                                 <button
                                     onClick={() => setIsEditingProfile(false)}
-                                    className="flex-1 py-4 rounded-xl border border-white/10 text-white font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
+                                    style={{ color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                    className="flex-1 py-4 rounded-xl border font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
                                 >
                                     Cancelar
                                 </button>
@@ -575,18 +589,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
             {/* Notifications Modal */}
             {showNotificationsModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-auto max-h-[85vh] glass-card rounded-[2.5rem] p-6 border-primary/30 flex flex-col relative overflow-hidden shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[85vh] rounded-[2.5rem] p-6 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         {/* Header */}
                         <div className="flex items-center justify-center relative z-10 mb-6 flex-shrink-0">
-                            <h3 className="text-white font-bold text-lg uppercase tracking-wider font-outfit">Notificaciones<span className="text-primary">.IA</span></h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-lg uppercase tracking-wider font-outfit">Notificaciones<span className="text-primary">.IA</span></h3>
                             <button
                                 onClick={() => setShowNotificationsModal(false)}
-                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-90 transition-all z-20"
+                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 active:scale-90 transition-all z-20"
                             >
                                 <span className="material-symbols-outlined text-zinc-400 text-lg">close</span>
                             </button>
@@ -647,7 +662,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             <div className="flex gap-3 pt-8 pb-10">
                                 <button
                                     onClick={() => setShowNotificationsModal(false)}
-                                    className="flex-1 py-4 rounded-xl border border-white/10 text-white font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
+                                    style={{ color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                    className="flex-1 py-4 rounded-xl border font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
                                 >
                                     Cancelar
                                 </button>
@@ -665,18 +681,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
             {/* Privacy Modal */}
             {showPrivacyModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-auto max-h-[85vh] glass-card rounded-[2.5rem] p-6 border-primary/30 flex flex-col relative overflow-hidden shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[85vh] rounded-[2.5rem] p-6 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         {/* Header */}
                         <div className="flex items-center justify-center relative z-10 mb-6 flex-shrink-0">
-                            <h3 className="text-white font-bold text-lg uppercase tracking-wider font-outfit">Privacidad</h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-lg uppercase tracking-wider font-outfit">Privacidad</h3>
                             <button
                                 onClick={() => setShowPrivacyModal(false)}
-                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-90 transition-all z-20"
+                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 active:scale-90 transition-all z-20"
                             >
                                 <span className="material-symbols-outlined text-zinc-400 text-lg">close</span>
                             </button>
@@ -720,12 +737,12 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 />
                             </div>
 
-                            <div className="p-4 rounded-3xl border border-white/5 bg-zinc-900/40 space-y-3 mt-4">
+                            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-4 rounded-3xl border space-y-3 mt-4">
                                 <div className="flex items-center gap-3">
                                     <span className="material-symbols-outlined text-primary">info</span>
-                                    <h5 className="text-[11px] text-white font-bold uppercase tracking-widest">Tu seguridad primero</h5>
+                                    <h5 style={{ color: 'var(--text-main)' }} className="text-[11px] font-bold uppercase tracking-widest">Tu seguridad primero</h5>
                                 </div>
-                                <p className="text-[9px] text-zinc-500 leading-relaxed font-medium">
+                                <p style={{ color: 'var(--text-muted)' }} className="text-[9px] leading-relaxed font-medium">
                                     En ChefScan IA, tus datos están cifrados de extremo a extremo. Nunca vendemos tu información personal a terceros.
                                 </p>
                             </div>
@@ -733,7 +750,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             <div className="space-y-3 pt-6">
                                 <h4 className="text-[10px] text-red-500 font-black uppercase tracking-widest ml-1">Zona de Peligro</h4>
                                 <div className="space-y-3 pt-1">
-                                    <button className="w-full py-3 rounded-xl border border-zinc-800 text-xs text-white font-bold uppercase tracking-widest active:scale-95 transition-all">
+                                    <button style={{ borderColor: 'var(--card-border)', color: 'var(--text-main)' }} className="w-full py-3 rounded-xl border text-xs font-bold uppercase tracking-widest active:scale-95 transition-all">
                                         Descargar mis datos
                                     </button>
                                     <button className="w-full py-3 rounded-xl border border-red-500/30 text-xs text-red-500 font-black uppercase tracking-widest active:scale-95 transition-all">
@@ -745,7 +762,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             <div className="flex gap-3 pt-4 pb-10">
                                 <button
                                     onClick={() => setShowPrivacyModal(false)}
-                                    className="flex-1 py-4 rounded-xl border border-white/10 text-white font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
+                                    style={{ color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                    className="flex-1 py-4 rounded-xl border font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
                                 >
                                     Cancelar
                                 </button>
@@ -763,18 +781,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
             {/* Culinary Personalization Modal */}
             {showCulinaryModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-auto max-h-[90vh] glass-card rounded-[2.5rem] p-6 border-primary/30 flex flex-col relative overflow-hidden shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[90vh] rounded-[2.5rem] p-6 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         {/* Header */}
                         <div className="flex items-center justify-between relative z-10 mb-6 flex-shrink-0">
-                            <h3 className="text-white font-bold text-lg uppercase tracking-wider font-outfit">Personalización Culinaria</h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-lg uppercase tracking-wider font-outfit">Personalización Culinaria</h3>
                             <button
                                 onClick={() => setShowCulinaryModal(false)}
-                                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 hover:text-white transition-colors"
+                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                className="w-8 h-8 rounded-full flex items-center justify-center border text-zinc-500 hover:text-white transition-colors"
                             >
                                 <span className="material-symbols-outlined text-lg">close</span>
                             </button>
@@ -784,17 +803,17 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 relative z-10 px-1">
 
                             {/* Meta del ChefBot Section */}
-                            <div className="p-5 rounded-3xl border border-white/5 bg-zinc-900/40 space-y-4 shadow-glow-subtle">
+                            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-5 rounded-3xl border space-y-4 shadow-glow-subtle">
                                 <div className="flex items-center gap-3">
                                     <span className="material-symbols-outlined text-primary text-xl">bolt</span>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2">
-                                            <h4 className="text-[11px] text-white font-black uppercase tracking-widest">Meta del ChefBot</h4>
+                                            <h4 style={{ color: 'var(--text-main)' }} className="text-[11px] font-black uppercase tracking-widest">Meta del ChefBot</h4>
                                             <button
                                                 onClick={() => setShowGoalInfo(true)}
                                                 className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-primary hover:bg-primary/30 transition-all active:scale-90"
                                             >
-                                                <span className="material-symbols-outlined text-[14px]">info</span>
+                                                <span className="material-symbols-outlined text-xs">info</span>
                                             </button>
                                         </div>
                                         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest leading-tight">IA priorizará recetas según tu objetivo</p>
@@ -810,7 +829,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         <button
                                             key={goal.id}
                                             onClick={() => onUpdateUser({ cookingGoal: goal.id })}
-                                            className={`flex items-center gap-2 p-2.5 rounded-2xl border transition-all ${user?.cookingGoal === goal.id ? 'bg-primary/10 border-primary/40 text-primary' : 'bg-white/5 border-white/5 text-zinc-500'}`}
+                                            className={`flex items-center gap-2 p-2.5 rounded-2xl border transition-all ${user?.cookingGoal === goal.id
+                                                ? 'bg-primary/10 border-primary/40 text-primary'
+                                                : 'bg-black/5 border-black/5 text-zinc-500'}`}
+                                            style={{
+                                                backgroundColor: user?.cookingGoal === goal.id ? 'rgba(var(--primary-rgb), 0.1)' : 'var(--bg-surface-soft)',
+                                                borderColor: user?.cookingGoal === goal.id ? 'rgba(var(--primary-rgb), 0.4)' : 'var(--card-border)'
+                                            }}
                                         >
                                             <span className="material-symbols-outlined text-sm">{goal.icon}</span>
                                             <span className="text-[9.5px] font-bold uppercase tracking-tighter leading-tight">{goal.label}</span>
@@ -820,11 +845,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             </div>
 
                             {/* Dieta y Estilo de Vida */}
-                            <div className="p-5 rounded-3xl border border-white/5 bg-zinc-900/40 space-y-4">
+                            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-5 rounded-3xl border space-y-4">
                                 <div className="flex items-center gap-3">
                                     <span className="material-symbols-outlined text-primary text-xl">spa</span>
                                     <div>
-                                        <h4 className="text-[11px] text-white font-black uppercase tracking-widest">Dieta y Estilo de Vida</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-[11px] font-black uppercase tracking-widest">Dieta y Estilo de Vida</h4>
                                         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Selecciona tus preferencias alimentarias</p>
                                     </div>
                                 </div>
@@ -839,10 +864,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                         <button
                                             key={diet.id}
                                             onClick={() => setCulinarySettings({ ...culinarySettings, diet: diet.id })}
-                                            className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all ${culinarySettings.diet === diet.id ? 'bg-primary/5 border-primary/30' : 'bg-black/20 border-white/5'}`}
+                                            style={{
+                                                backgroundColor: culinarySettings.diet === diet.id ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-surface-soft)',
+                                                borderColor: culinarySettings.diet === diet.id ? 'rgba(var(--primary-rgb), 0.3)' : 'var(--card-border)'
+                                            }}
+                                            className="w-full flex items-center justify-between p-3 rounded-2xl border transition-all"
                                         >
                                             <div className="text-left">
-                                                <p className={`text-[10px] font-bold uppercase ${culinarySettings.diet === diet.id ? 'text-primary' : 'text-white'}`}>{diet.label}</p>
+                                                <p className={`text-[10px] font-bold uppercase ${culinarySettings.diet === diet.id ? 'text-primary' : ''}`} style={{ color: culinarySettings.diet === diet.id ? '' : 'var(--text-main)' }}>{diet.label}</p>
                                                 <p className="text-[8px] text-zinc-600 font-medium uppercase tracking-widest">{diet.desc}</p>
                                             </div>
                                             <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${culinarySettings.diet === diet.id ? 'border-primary bg-primary/20' : 'border-zinc-700'}`}>
@@ -854,11 +883,11 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             </div>
 
                             {/* Restricciones Alimentarias */}
-                            <div className="p-5 rounded-3xl border border-white/5 bg-zinc-900/40 space-y-4">
+                            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="p-5 rounded-3xl border space-y-4">
                                 <div className="flex items-center gap-3">
                                     <span className="material-symbols-outlined text-primary text-xl">no_food</span>
                                     <div>
-                                        <h4 className="text-[11px] text-white font-black uppercase tracking-widest">Restricciones Alimentarias</h4>
+                                        <h4 style={{ color: 'var(--text-main)' }} className="text-[11px] font-black uppercase tracking-widest">Restricciones Alimentarias</h4>
                                         <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">Ingredientes que prefieres evitar</p>
                                     </div>
                                 </div>
@@ -876,14 +905,18 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                                     : [...culinarySettings.restrictions, rest.id];
                                                 setCulinarySettings({ ...culinarySettings, restrictions: newR });
                                             }}
-                                            className={`w-full flex items-center justify-between p-3 rounded-2xl border transition-all ${culinarySettings.restrictions.includes(rest.id) ? 'bg-primary/5 border-primary/30' : 'bg-black/20 border-white/5'}`}
+                                            style={{
+                                                backgroundColor: culinarySettings.restrictions.includes(rest.id) ? 'rgba(var(--primary-rgb), 0.05)' : 'var(--bg-surface-soft)',
+                                                borderColor: culinarySettings.restrictions.includes(rest.id) ? 'rgba(var(--primary-rgb), 0.3)' : 'var(--card-border)'
+                                            }}
+                                            className="w-full flex items-center justify-between p-3 rounded-2xl border transition-all"
                                         >
                                             <div className="text-left">
-                                                <p className={`text-[10px] font-bold uppercase ${culinarySettings.restrictions.includes(rest.id) ? 'text-primary' : 'text-white'}`}>{rest.label}</p>
+                                                <p className={`text-[10px] font-bold uppercase ${culinarySettings.restrictions.includes(rest.id) ? 'text-primary' : ''}`} style={{ color: culinarySettings.restrictions.includes(rest.id) ? '' : 'var(--text-main)' }}>{rest.label}</p>
                                                 <p className="text-[8px] text-zinc-600 font-medium uppercase tracking-widest">{rest.desc}</p>
                                             </div>
                                             <div className={`w-10 h-5 rounded-full relative transition-all ${culinarySettings.restrictions.includes(rest.id) ? 'bg-primary' : 'bg-zinc-800'}`}>
-                                                <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all ${culinarySettings.restrictions.includes(rest.id) ? 'left-6' : 'left-1'}`}></div>
+                                                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${culinarySettings.restrictions.includes(rest.id) ? 'left-7' : 'left-1'}`}></div>
                                             </div>
                                         </button>
                                     ))}
@@ -891,7 +924,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             </div>
 
                             {/* Alergias Alimentarias */}
-                            <div className="p-5 rounded-3xl border border-red-500/20 bg-red-500/5 space-y-4">
+                            <div style={{ borderColor: 'rgba(239, 68, 68, 0.2)', backgroundColor: 'rgba(239, 68, 68, 0.05)' }} className="p-5 rounded-3xl border space-y-4">
                                 <div className="flex items-center gap-3">
                                     <span className="material-symbols-outlined text-red-500 text-xl">warning_amber</span>
                                     <div>
@@ -909,10 +942,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                                     : [...culinarySettings.detailedAllergies, allergy];
                                                 setCulinarySettings({ ...culinarySettings, detailedAllergies: newA });
                                             }}
-                                            className={`flex items-center gap-2 p-3 rounded-xl border transition-all ${culinarySettings.detailedAllergies.includes(allergy) ? 'bg-red-500/20 border-red-500/40 text-red-500' : 'bg-black/40 border-white/5 text-zinc-500'}`}
+                                            style={{
+                                                backgroundColor: culinarySettings.detailedAllergies.includes(allergy) ? 'rgba(239, 68, 68, 0.2)' : 'var(--bg-surface-inner)',
+                                                borderColor: culinarySettings.detailedAllergies.includes(allergy) ? 'rgba(239, 68, 68, 0.4)' : 'var(--card-border)'
+                                            }}
+                                            className="flex items-center gap-2 p-3 rounded-xl border transition-all text-zinc-500"
                                         >
                                             <div className={`w-3 h-3 rounded-full border ${culinarySettings.detailedAllergies.includes(allergy) ? 'border-red-500 bg-red-500' : 'border-zinc-700'}`}></div>
-                                            <span className="text-[10px] font-bold uppercase tracking-tight">{allergy}</span>
+                                            <span className={`text-[10px] font-bold uppercase tracking-tight ${culinarySettings.detailedAllergies.includes(allergy) ? 'text-red-500' : ''}`}>{allergy}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -922,7 +959,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                             <div className="flex gap-3 pt-4 pb-10">
                                 <button
                                     onClick={() => setShowCulinaryModal(false)}
-                                    className="flex-1 py-4 rounded-xl border border-white/10 text-white font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
+                                    style={{ color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                    className="flex-1 py-4 rounded-xl border font-bold uppercase text-[10px] tracking-widest hover:bg-white/5 active:scale-95 transition-all text-center"
                                 >
                                     Cancelar
                                 </button>
@@ -944,38 +982,40 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
             {/* Support Modal */}
             {showSupportModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-pure-black/95 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="w-full max-w-sm h-auto max-h-[85vh] glass-card rounded-[2.5rem] p-6 border-primary/30 flex flex-col relative overflow-hidden shadow-2xl">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm h-auto max-h-[85vh] rounded-[2.5rem] p-6 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         {/* Background Splashes */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full -translate-y-1/2 translate-x-1/2"></div>
                         <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
                         {/* Header */}
                         <div className="flex items-center justify-center relative z-10 mb-6 flex-shrink-0">
-                            <h3 className="text-white font-bold text-lg uppercase tracking-wider font-outfit">Soporte</h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-lg uppercase tracking-wider font-outfit">Soporte</h3>
                             <button
                                 onClick={() => setShowSupportModal(false)}
-                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full bg-white/5 border border-white/10 hover:bg-white/10 active:scale-90 transition-all z-20"
+                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                className="absolute -top-1 -right-1 w-8 h-8 flex items-center justify-center rounded-full border hover:bg-white/10 active:scale-90 transition-all z-20"
                             >
                                 <span className="material-symbols-outlined text-zinc-400 text-lg">close</span>
                             </button>
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 space-y-4 relative z-10 px-1">
-                            <p className="text-zinc-400 text-xs text-center pb-4">
+                        <div className="flex-1 space-y-4 relative z-10 px-1 overflow-y-auto custom-scrollbar">
+                            <p className="text-zinc-500 text-xs text-center pb-4 uppercase font-bold tracking-widest">
                                 Estamos aquí para ayudarte. Contáctanos si tienes dudas, problemas o sugerencias.
                             </p>
 
                             <a
                                 href="mailto:info@chefscania.com"
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center gap-4 active:scale-[0.98]"
+                                style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                                className="w-full p-4 rounded-2xl border transition-all flex items-center gap-4 active:scale-[0.98]"
                             >
                                 <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center">
                                     <span className="material-symbols-outlined">mail</span>
                                 </div>
                                 <div>
-                                    <p className="text-white text-sm font-bold uppercase tracking-tight">Email</p>
+                                    <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Email</p>
                                     <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">info@chefscania.com</p>
                                 </div>
                                 <span className="material-symbols-outlined text-zinc-600 ml-auto leading-none">open_in_new</span>
@@ -985,13 +1025,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 href="https://wa.me/573017810256"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all flex items-center gap-4 active:scale-[0.98]"
+                                style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                                className="w-full p-4 rounded-2xl border transition-all flex items-center gap-4 active:scale-[0.98]"
                             >
                                 <div className="w-10 h-10 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center">
                                     <span className="material-symbols-outlined">chat</span>
                                 </div>
                                 <div>
-                                    <p className="text-white text-sm font-bold uppercase tracking-tight">WhatsApp</p>
+                                    <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">WhatsApp</p>
                                     <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">+57 301 781 0256</p>
                                 </div>
                                 <span className="material-symbols-outlined text-zinc-600 ml-auto leading-none">open_in_new</span>
@@ -1014,14 +1055,15 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 const SettingToggle = ({ icon, title, description, active, onToggle }: { icon: string, title: string, description: string, active: boolean, onToggle: () => void }) => (
     <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between p-4 bg-zinc-900/40 rounded-3xl border border-white/5 active:scale-[0.98] transition-all"
+        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+        className="w-full flex items-center justify-between p-4 rounded-3xl border active:scale-[0.98] transition-all"
     >
         <div className="flex items-center gap-4">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${active ? 'bg-primary/20 text-primary shadow-glow' : 'bg-white/5 text-zinc-600'}`}>
                 <span className="material-symbols-outlined">{icon}</span>
             </div>
             <div className="text-left">
-                <p className="text-white text-sm font-bold uppercase tracking-tight">{title}</p>
+                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{title}</p>
                 <p className="text-zinc-500 text-[10px] font-medium leading-tight max-w-[160px]">{description}</p>
             </div>
         </div>

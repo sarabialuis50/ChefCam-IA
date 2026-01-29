@@ -25,6 +25,8 @@ interface DashboardViewProps {
   inventory?: any[];
   acceptedChallengeId?: string | null;
   onBack?: () => void;
+  isDarkMode: boolean;
+  onThemeToggle: () => void;
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
@@ -45,7 +47,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   onAddItem,
   inventory = [],
   acceptedChallengeId,
-  onBack
+  onBack,
+  isDarkMode,
+  onThemeToggle
 }) => {
   const [manualInput, setManualInput] = useState('');
   const [portions, setPortions] = useState(2);
@@ -55,6 +59,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   const [aiSuggestion, setAiSuggestion] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleTheme = () => {
+    onThemeToggle();
+  };
 
   // Sincronizar imagen y entrada manual del escáner
   React.useEffect(() => {
@@ -142,7 +150,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-pure-black p-5 space-y-4 relative">
+    <div className="flex flex-col min-h-screen p-5 pb-0 space-y-4 relative" style={{ backgroundColor: 'var(--bg-app)' }}>
       {onBack && (
         <button
           onClick={onBack}
@@ -162,7 +170,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
       <header className="flex justify-between items-center w-full pt-2">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-black border-2 border-primary rounded-full flex items-center justify-center shadow-[0_0_10px_rgba(57,255,20,0.4)] overflow-hidden">
+          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--primary)' }} className="w-12 h-12 border-2 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 shadow-[0_0_12px_rgba(57,255,20,0.3)]">
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -170,46 +178,61 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             )}
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none mb-1">Bienvenido</span>
-            <h2 className="text-white font-bold text-lg leading-none">Chef <span className="text-primary">{user?.name || 'Alejandro'}</span></h2>
-            <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest leading-none mt-1.5">¿Qué vas a cocinar hoy?</span>
+            <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-widest leading-none mb-1">Bienvenido</span>
+            <h2 style={{ color: 'var(--text-main)' }} className="font-bold text-lg leading-none">Chef <span className="text-primary">{user?.name || 'Alejandro'}</span></h2>
+            <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-widest leading-none mt-1.5">¿Qué vas a cocinar hoy?</span>
           </div>
         </div>
 
         <div className="flex gap-2">
           <button
-            onClick={onNotificationsClick}
-            className="w-10 h-10 bg-zinc-900/50 rounded-xl border border-white/5 flex items-center justify-center relative active:scale-95 transition-all"
+            onClick={toggleTheme}
+            style={{
+              backgroundColor: isDarkMode ? 'rgba(57,255,20,0.1)' : 'var(--bg-surface-soft)',
+              borderColor: isDarkMode ? 'var(--primary)' : 'var(--card-border)'
+            }}
+            className="w-10 h-10 rounded-xl border flex items-center justify-center active:scale-90 transition-all duration-500 group"
+            title="Cambiar Tema"
           >
-            <span className="material-symbols-outlined text-zinc-400 notranslate text-xl">notifications</span>
+            <span className={`material-symbols-outlined notranslate text-xl transition-transform duration-500 ${isDarkMode ? 'text-primary rotate-[360deg]' : 'text-zinc-500 rotate-0'}`}>
+              {isDarkMode ? 'light_mode' : 'dark_mode'}
+            </span>
+          </button>
+          <button
+            onClick={onNotificationsClick}
+            style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+            className="w-10 h-10 rounded-xl border flex items-center justify-center relative active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-zinc-500 notranslate text-xl">notifications</span>
             <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
           </button>
           <button
             onClick={onSettingsClick}
-            className="w-10 h-10 bg-zinc-900/50 rounded-xl border border-white/5 flex items-center justify-center active:scale-95 transition-all"
+            style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+            className="w-10 h-10 rounded-xl border flex items-center justify-center active:scale-95 transition-all"
           >
-            <span className="material-symbols-outlined text-zinc-400 notranslate text-xl">settings</span>
+            <span className="material-symbols-outlined text-zinc-500 notranslate text-xl">settings</span>
           </button>
         </div>
       </header>
 
       <div className="space-y-1.5 pt-2 relative">
-        <h1 className="text-4xl font-black tracking-tighter text-white leading-none">
+        <h1 style={{ color: 'var(--text-main)' }} className="text-4xl font-black tracking-tighter leading-none">
           Chef<span className="text-primary">Scan.IA</span>
         </h1>
-        <p className="text-primary font-bold text-[9px] uppercase tracking-[0.25em] opacity-80">
+        <p style={{ color: 'var(--text-main)' }} className="font-bold text-[9px] uppercase tracking-[0.25em] opacity-80">
           Transforma tus ingredientes en obras maestras
         </p>
       </div>
 
-      <section className="bg-[#0A0A0A] border border-zinc-800 rounded-[2rem] p-6 space-y-6 w-full">
+      <section style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="border rounded-[2.5rem] p-6 space-y-6 w-full shadow-sm">
         <div className="flex items-center gap-3">
           <span className="material-symbols-outlined text-primary text-2xl notranslate">photo_camera</span>
-          <h3 className="text-white font-bold uppercase tracking-[0.2em] text-[10px]">Imagen de ingredientes</h3>
+          <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.2em] text-[10px] opacity-80">Imagen de ingredientes</h3>
         </div>
 
         {/* Preview Box - Image Preview + Results */}
-        <div className="w-full min-h-[18rem] bg-black/40 border-2 border-dashed border-primary/30 rounded-[1.5rem] relative overflow-hidden transition-all group">
+        <div style={{ backgroundColor: 'var(--bg-surface-inner)' }} className="w-full min-h-[18rem] border-2 border-dashed border-primary/30 rounded-[1.5rem] relative overflow-hidden transition-all group">
           {previewImage ? (
             <>
               <img
@@ -227,7 +250,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                   </div>
                 ) : (
                   <div className="flex flex-col items-center gap-4 w-full">
-                    <span className="text-white text-[10px] font-black uppercase tracking-widest drop-shadow-lg animate-in fade-in duration-500 bg-black/40 px-3 py-1 rounded-full backdrop-blur-sm">
+                    <span style={{ background: 'var(--bg-surface-inner)', color: 'var(--text-main)' }} className="text-[10px] font-black uppercase tracking-widest drop-shadow-lg animate-in fade-in duration-500 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
                       Captura Exitosa
                     </span>
 
@@ -237,9 +260,10 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                         {scannedIngredients.map((ing, i) => (
                           <div
                             key={i}
-                            className="bg-primary/20 border border-primary/40 backdrop-blur-md px-3 py-1.5 rounded-xl flex flex-col items-center shadow-lg"
+                            style={{ backgroundColor: 'rgba(var(--primary-rgb), 0.2)', borderColor: 'rgba(var(--primary-rgb), 0.4)' }}
+                            className="border backdrop-blur-md px-3 py-1.5 rounded-xl flex flex-col items-center shadow-lg"
                           >
-                            <span className="text-[10px] font-black uppercase tracking-tight text-white">{ing.name}</span>
+                            <span style={{ color: 'var(--text-main)' }} className="text-[10px] font-black uppercase tracking-tight">{ing.name}</span>
                             {ing.nutrients && (
                               <span className="text-[8px] font-bold text-primary/80 uppercase tracking-tighter">
                                 {ing.nutrients.calories} kcal
@@ -292,16 +316,16 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       </section>
 
       {/* Suggested Recipes Section */}
-      <section className="bg-[#0A0A0A] border border-zinc-800 rounded-[2rem] p-6 space-y-6 w-full">
+      <section style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="border rounded-[2.5rem] p-6 space-y-6 w-full shadow-sm">
         <div className="flex items-center gap-3">
           <span className="material-symbols-outlined text-primary text-2xl notranslate">auto_awesome</span>
-          <h3 className="text-white font-bold uppercase tracking-[0.2em] text-[10px]">Recetas sugeridas</h3>
+          <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.2em] text-[10px] opacity-80">Recetas sugeridas</h3>
         </div>
 
         <div className="space-y-5">
           <div className="space-y-2">
-            <label className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest block ml-1">
-              Entrada manual: <span className="text-[9px] text-zinc-600 font-medium normal-case">(verifica la ortografía)</span>
+            <label style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-widest block ml-1">
+              Entrada manual: <span className="text-[9px] font-medium normal-case opacity-60">(verifica la ortografía)</span>
             </label>
             <div className="relative group">
               <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary opacity-60">edit_note</span>
@@ -310,7 +334,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 placeholder="Ej: pollo, arroz, aguacate"
                 value={manualInput}
                 onChange={(e) => setManualInput(e.target.value)}
-                className="w-full bg-black border border-primary/40 rounded-2xl py-5 pl-12 pr-4 text-sm text-white placeholder-zinc-700 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all"
+                style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                className="w-full border rounded-2xl py-5 pl-12 pr-4 text-sm placeholder-zinc-500 focus:border-primary focus:ring-1 focus:ring-primary/20 outline-none transition-all"
               />
             </div>
             {aiSuggestion && (
@@ -321,9 +346,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             )}
           </div>
 
-          <div className="bg-black border border-primary/40 rounded-2xl p-4 flex items-center justify-between">
-            <span className="text-white font-black text-xs uppercase tracking-widest">Porciones:</span>
-            <div className="flex items-center gap-6 bg-zinc-900/50 rounded-xl px-4 py-1.5 border border-white/5">
+          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="border rounded-2xl p-4 flex items-center justify-between shadow-sm">
+            <span style={{ color: 'var(--text-main)' }} className="font-black text-xs uppercase tracking-widest">Porciones:</span>
+            <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="flex items-center gap-6 rounded-xl px-4 py-1.5 border">
               <button onClick={() => setPortions(Math.max(1, portions - 1))} className="text-zinc-500 hover:text-primary transition-colors">
                 <span className="material-symbols-outlined text-xl">remove</span>
               </button>
@@ -341,7 +366,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 uppercase text-sm active:scale-95 transition-all disabled:opacity-50
                 ${manualInput.trim()
                   ? 'bg-primary text-black font-black shadow-[0_0_20px_rgba(57,255,20,0.4)]'
-                  : 'bg-transparent border border-primary/50 text-primary font-bold shadow-none'}`}
+                  : 'bg-transparent border-2 border-primary/50 text-primary font-bold shadow-none'}`}
             >
               <span className="material-symbols-outlined font-bold">{loading ? 'sync' : 'skillet'}</span>
               {loading ? "Generando..." : "Generar Recetas"}
@@ -349,7 +374,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
             <button
               onClick={resetSystem}
-              className="w-full bg-transparent border-2 border-zinc-800 text-zinc-400 font-bold py-4 rounded-2xl flex items-center justify-center gap-2 uppercase text-[11px] active:scale-95 transition-all"
+              className="w-full bg-transparent border border-primary/40 text-primary font-bold py-4 rounded-2xl flex items-center justify-center gap-2 uppercase text-[11px] active:scale-95 transition-all"
             >
               <span className="material-symbols-outlined text-sm">refresh</span>
               Reiniciar Sistema
@@ -373,16 +398,19 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         return (
           <section className="space-y-4">
             <div className="flex justify-between items-center px-1">
-              <h3 className="text-white font-bold uppercase tracking-[0.15em] text-[11px]">Retos por Vencer</h3>
+              <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.15em] text-[11px] opacity-80">Retos por Vencer</h3>
               <button
                 onClick={() => onNavClick?.('challenges')}
-                className="text-primary text-[10px] font-black uppercase tracking-tighter hover:underline"
+                className="text-primary text-[10px] font-black uppercase tracking-tighter transition-opacity hover:opacity-70"
               >
                 Ver más
               </button>
             </div>
 
-            <div className={`flex gap-4 overflow-x-auto custom-scrollbar pb-4 -mx-1 px-1 ${expiringItems.length === 1 ? 'overflow-hidden' : ''}`}>
+            <div
+              className={`flex gap-4 overflow-x-auto pb-6 -mx-1 px-1 [&::-webkit-scrollbar]:hidden ${expiringItems.length === 1 ? 'overflow-hidden' : ''}`}
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
               {expiringItems.map((item) => {
                 const days = getDaysDiff(item.expiryDate!);
                 const urgencyColor = days <= 1 ? 'border-red-500/30' : 'border-primary/20';
@@ -392,7 +420,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 return (
                   <div
                     key={item.id}
-                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} glass-card rounded-[1.5rem] p-5 border ${urgencyColor} ${days < 0 ? 'shadow-glow-red' : ''} relative overflow-hidden group animate-in fade-in duration-500`}
+                    style={{
+                      backgroundColor: 'var(--bg-surface)',
+                      borderColor: days <= 1 ? 'rgba(239, 68, 68, 0.4)' : 'var(--card-border)',
+                      boxShadow: 'none'
+                    }}
+                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} rounded-[1.5rem] p-5 border relative overflow-hidden group animate-in fade-in duration-500`}
                   >
                     <div className="flex flex-col h-full justify-between gap-4 relative z-10">
                       <div className="flex justify-between items-start">
@@ -400,11 +433,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                           <span className={`text-[8px] font-black uppercase tracking-widest ${textColor}`}>
                             {days < 0 ? '¡VENCIDO!' : days === 0 ? 'Vence Hoy' : days === 1 ? 'Vence Mañana' : `En ${days} días`}
                           </span>
-                          <h4 className="text-white font-black text-sm uppercase italic leading-tight">
+                          <h4 style={{ color: 'var(--text-main)' }} className="font-black text-sm uppercase italic leading-tight">
                             RESUCITA TU <span className="text-primary">{item.name}</span>
                           </h4>
                         </div>
-                        <div className="w-8 h-8 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center">
+                        <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--glass-border)' }} className="w-8 h-8 rounded-lg border flex items-center justify-center">
                           <span className="material-symbols-outlined text-primary text-sm">skillet</span>
                         </div>
                       </div>
@@ -418,7 +451,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                         </button>
                         <button
                           onClick={() => onNavClick?.('inventory')}
-                          className="flex-1 bg-zinc-900 text-zinc-400 py-2 rounded-lg text-[8px] font-bold uppercase tracking-widest border border-white/5 active:scale-95 transition-all whitespace-nowrap"
+                          style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                          className="flex-1 text-zinc-400 py-2 rounded-lg text-[8px] font-bold uppercase tracking-widest border active:scale-95 transition-all whitespace-nowrap"
                         >
                           VER DESPENSA
                         </button>
@@ -434,35 +468,63 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
       {/* Recent Discoveries */}
       <section className="space-y-4">
-        <div className="flex justify-between items-center px-1">
-          <h3 className="text-white font-bold uppercase tracking-[0.15em] text-[11px]">Recetas Favoritas</h3>
-          <button onClick={() => onNavClick?.('favorites')} className="text-primary text-[10px] font-black uppercase tracking-tighter hover:underline">Ver más</button>
+        <div className="flex justify-between items-end px-1">
+          <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.15em] text-[11px] opacity-80">Recetas Favoritas</h3>
+          <button onClick={() => onNavClick?.('favorites')} className="text-primary text-[10px] font-black uppercase tracking-tighter flex items-center gap-1 transition-opacity hover:opacity-70">
+            Ver más
+            <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+          </button>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto custom-scrollbar pb-4">
+        <div className="flex gap-4 overflow-x-auto pb-6 -mx-1 px-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {recentRecipes.length > 0 ? recentRecipes.slice(0, 4).map((recipe, idx) => (
             <button
               key={recipe.id}
-              onClick={() => {
-                // Lógica Premium de Prueba: Mostramos modal si es free pero permitimos ver la receta
-                if (!user?.isPremium) {
-                  // Simulamos la llamada al modal de App.tsx (usando un alert por ahora o asumiendo que el onRecipeClick manejará la navegación)
-                  console.log("Mostrando aviso Premium de prueba...");
-                }
-                onRecipeClick(recipe);
-              }}
-              className="flex-shrink-0 w-40 space-y-3 group"
+              onClick={() => onRecipeClick(recipe)}
+              style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+              className="flex-shrink-0 w-44 rounded-[2rem] border overflow-hidden group shadow-lg transition-transform active:scale-95 text-left"
             >
-              <div className="w-40 h-40 rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-900">
+              {/* Imagen con botón de favorito flotante */}
+              <div className="relative h-32 w-full overflow-hidden">
                 <img
                   src={getRecipeImage(recipe, 300)}
                   alt={recipe.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 opacity-80"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
+                <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-sm text-red-500 font-variation-fill">favorite</span>
+                </div>
               </div>
-              <p className="text-primary font-black text-[9px] uppercase tracking-widest text-center px-1 leading-tight group-hover:neon-text-glow line-clamp-2 min-h-[1.5rem] flex items-center justify-center">
-                {recipe.title}
-              </p>
+
+              {/* Información de la receta */}
+              <div className="p-4 space-y-3">
+                <h4
+                  style={{
+                    color: 'var(--text-main)',
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    height: '2.5em',
+                    lineHeight: '1.25'
+                  }}
+                  className="font-bold text-[10px] uppercase tracking-tight"
+                >
+                  {recipe.title}
+                </h4>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px] text-zinc-400">schedule</span>
+                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">{recipe.prepTime || '25 min'}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px] text-orange-500">local_fire_department</span>
+                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">320 kcal</span>
+                  </div>
+                </div>
+              </div>
             </button>
           )) : (
             <>
@@ -477,11 +539,32 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 };
 
 const DiscoveryCard = ({ image, title, onClick }: { image: string, title: string, onClick?: () => void }) => (
-  <div className="flex-shrink-0 w-40 space-y-3 cursor-pointer" onClick={onClick}>
-    <div className="w-40 h-40 rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-900 shadow-xl">
-      <img src={image} className="w-full h-full object-cover grayscale opacity-60" />
+  <div
+    onClick={onClick}
+    style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+    className="flex-shrink-0 w-44 rounded-[2rem] border overflow-hidden group shadow-lg transition-transform active:scale-95 text-left cursor-pointer"
+  >
+    <div className="relative h-32 w-full overflow-hidden bg-zinc-100">
+      <img src={image} className="w-full h-full object-cover grayscale opacity-40 group-hover:opacity-60 transition-opacity" />
+      <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/50 backdrop-blur-sm flex items-center justify-center">
+        <span className="material-symbols-outlined text-sm text-zinc-400">favorite_border</span>
+      </div>
     </div>
-    <p className="text-primary font-black text-[10px] uppercase tracking-widest text-center truncate px-2 leading-tight">{title}</p>
+    <div className="p-4 space-y-3">
+      <h4 style={{ color: 'var(--text-main)' }} className="font-bold text-[11px] uppercase tracking-tight leading-tight line-clamp-2 min-h-[2rem] opacity-60">
+        {title}
+      </h4>
+      <div className="flex items-center justify-between opacity-30">
+        <div className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-[14px]">schedule</span>
+          <span className="text-[9px] font-bold">-- min</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="material-symbols-outlined text-[14px]">local_fire_department</span>
+          <span className="text-[9px] font-bold">-- kcal</span>
+        </div>
+      </div>
+    </div>
   </div>
 );
 

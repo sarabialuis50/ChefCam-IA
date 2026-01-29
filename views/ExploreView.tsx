@@ -22,16 +22,16 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
   const filters = ['TODOS', 'Vegano', 'Rápido', 'Keto'];
 
   return (
-    <div className="flex flex-col bg-pure-black min-h-full p-5 space-y-6 pb-32">
+    <div style={{ backgroundColor: 'var(--bg-app)' }} className="flex flex-col min-h-full p-5 space-y-6 pb-6">
       {/* Header */}
       <header className="flex justify-between items-center pt-2">
         <div className="flex items-center gap-4">
           <button onClick={onBack} className="flex items-center justify-center">
             <span className="material-symbols-outlined text-primary text-4xl font-bold">chevron_left</span>
           </button>
-          <h1 className="text-white font-bold text-xl uppercase tracking-wider font-outfit">Explorar Recetas</h1>
+          <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Explorar Recetas</h1>
         </div>
-        <button className="w-10 h-10 bg-zinc-900/50 rounded-full border border-white/5 flex items-center justify-center">
+        <button style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
           <span className="material-symbols-outlined text-primary text-2xl">tune</span>
         </button>
       </header>
@@ -42,7 +42,8 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
         <input
           type="text"
           placeholder="Buscar por ingrediente o plato..."
-          className="w-full bg-black border border-zinc-800 rounded-xl py-4 pl-12 pr-4 text-sm text-zinc-400 placeholder-zinc-700 outline-none focus:border-primary/50 transition-all"
+          style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+          className="w-full border rounded-xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 outline-none focus:border-primary/50 transition-all"
         />
       </div>
 
@@ -54,8 +55,13 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
             onClick={() => setActiveFilter(filter)}
             className={`px-8 py-2.5 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${activeFilter === filter
               ? 'bg-primary text-black shadow-[0_0_15px_rgba(57,255,20,0.5)]'
-              : 'bg-zinc-900/50 text-white border border-zinc-800'
+              : 'border'
               }`}
+            style={{
+              backgroundColor: activeFilter === filter ? 'var(--primary)' : 'var(--bg-surface-soft)',
+              borderColor: 'var(--card-border)',
+              color: activeFilter === filter ? '#000' : 'var(--text-main)'
+            }}
           >
             {filter}
           </button>
@@ -68,7 +74,8 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
           <div
             key={recipe.id}
             onClick={() => onRecipeClick(recipe as Recipe)}
-            className="bg-[#0A0A0A] border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col cursor-pointer active:scale-95 transition-all"
+            style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+            className="border rounded-[2rem] overflow-hidden flex flex-col cursor-pointer active:scale-95 transition-all shadow-sm"
           >
             <div className="relative aspect-square">
               <img
@@ -89,7 +96,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
               )}
             </div>
             <div className="p-4 space-y-2">
-              <h3 className="text-white font-bold text-xs uppercase leading-tight tracking-wide min-h-[2.5rem] line-clamp-2">
+              <h3 style={{ color: 'var(--text-main)' }} className="font-bold text-xs uppercase leading-tight tracking-wide min-h-[2.5rem] line-clamp-2">
                 {recipe.title}
               </h3>
               <div className="flex items-center gap-2">

@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { InventoryItem } from '../types';
-import { getDaysDiff } from '../utils/dateUtils';
+import { getDaysDiff, formatLocalDate } from '../utils/dateUtils';
 
 interface InventoryViewProps {
     inventory: InventoryItem[];
@@ -54,15 +54,15 @@ const InventoryView: React.FC<InventoryViewProps> = ({
     };
 
     return (
-        <div className="min-h-screen bg-pure-black pb-20 p-6">
+        <div style={{ backgroundColor: 'var(--bg-app)' }} className="min-h-screen p-6">
             <header className="flex flex-col gap-6 mt-6 mb-8">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <button onClick={onBack} className="w-10 h-10 rounded-full bg-black/40 border border-white/10 flex items-center justify-center">
-                            <span className="material-symbols-outlined text-white">arrow_back</span>
+                        <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
+                            <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
                         </button>
                         <div>
-                            <h2 className="text-2xl font-black tracking-tighter uppercase text-white">DESPENSA<span className="text-primary">.IA</span></h2>
+                            <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">DESPENSA<span className="text-primary">.IA</span></h2>
                             <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">Gestión Inteligente</p>
                         </div>
                     </div>
@@ -76,12 +76,18 @@ const InventoryView: React.FC<InventoryViewProps> = ({
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="bg-zinc-900/40 border border-white/5 p-4 rounded-2xl">
-                        <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1">Total Items</p>
-                        <p className="text-2xl font-black text-white">{inventory.length}</p>
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl">
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[10px]">inventory_2</span>
+                            Total Items
+                        </p>
+                        <p style={{ color: 'var(--text-main)' }} className="text-2xl font-black">{inventory.length}</p>
                     </div>
-                    <div className="bg-zinc-900/40 border border-white/5 p-4 rounded-2xl">
-                        <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1">Por Caducar</p>
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl">
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1 flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[10px]">timer</span>
+                            Por Caducar
+                        </p>
                         <p className="text-2xl font-black text-orange-500">
                             {inventory.filter(item => {
                                 if (!item.expiryDate) return false;
@@ -99,7 +105,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                         placeholder="Buscar en tu despensa..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-black border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 text-sm text-white placeholder-zinc-700 focus:border-primary/40 outline-none transition-all"
+                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                        className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 focus:border-primary/40 outline-none transition-all"
                     />
                 </div>
             </header>
@@ -108,8 +115,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({
             <div className="space-y-3">
                 {filteredInventory.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                        <div className="w-16 h-16 bg-zinc-900 rounded-full flex items-center justify-center border border-white/5 opacity-40">
-                            <span className="material-symbols-outlined text-3xl">inventory_2</span>
+                        <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-16 h-16 rounded-full flex items-center justify-center border opacity-40">
+                            <span className="material-symbols-outlined text-3xl text-zinc-500">inventory_2</span>
                         </div>
                         <p className="text-zinc-500 text-sm">Tu inventario está vacío.</p>
                     </div>
@@ -122,16 +129,24 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                         const isNearExpiry = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
 
                         return (
-                            <div key={item.id} className={`group relative flex items-center gap-4 glass-card p-4 rounded-3xl transition-all duration-500 ${isExpired
-                                ? 'border-red-600 shadow-[0_0_20px_rgba(220,38,38,0.5),inset_0_0_10px_rgba(220,38,38,0.2)] animate-pulse'
-                                : 'border-white/5 hover:border-primary/20 shadow-none'
-                                }`}>
+                            <div key={item.id}
+                                style={{ backgroundColor: 'var(--bg-surface)', borderColor: isExpired ? '#dc2626' : 'var(--card-border)' }}
+                                className={`group relative flex items-center gap-4 p-4 rounded-3xl transition-all duration-500 border shadow-sm ${isExpired
+                                    ? 'shadow-[0_0_20px_rgba(220,38,38,0.5),inset_0_0_10px_rgba(220,38,38,0.2)] animate-pulse'
+                                    : 'hover:border-primary/20'
+                                    }`}>
                                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                                     <div className="flex items-start justify-between">
                                         <div className="flex flex-col">
-                                            <h4 className="text-white text-sm font-bold truncate uppercase tracking-tight">{item.name}</h4>
+                                            <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold truncate uppercase tracking-tight">{item.name}</h4>
                                             {isExpired ? (
                                                 <span className="text-red-500 text-[8px] font-black uppercase tracking-widest animate-pulse mt-0.5">● Vencido</span>
+                                            ) : daysLeft === 0 ? (
+                                                <span className="text-orange-500 text-[8px] font-black uppercase tracking-widest animate-pulse mt-0.5">● Vence Hoy</span>
+                                            ) : daysLeft === 1 ? (
+                                                <span className="text-orange-400 text-[8px] font-black uppercase tracking-widest mt-0.5">● Vence Mañana</span>
+                                            ) : isNearExpiry ? (
+                                                <span className="text-primary text-[8px] font-black uppercase tracking-widest mt-0.5">● Próximo a vencer</span>
                                             ) : (isNearExpiry && item.id === acceptedChallengeId) ? (
                                                 <button
                                                     onClick={() => onStartGeneration([item.name], 2, item.id)}
@@ -143,14 +158,14 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                         </div>
                                         <div className="text-right">
                                             <span className={`text-[10px] font-black uppercase tracking-tighter block ${getStatusColor(item.expiryDate)}`}>
-                                                {item.expiryDate ? new Date(item.expiryDate).toLocaleDateString() : 'Sin fecha'}
+                                                {item.expiryDate ? formatLocalDate(item.expiryDate) : 'Sin fecha'}
                                             </span>
                                             <span className="text-[9px] text-zinc-500 font-bold uppercase">{item.quantity} {item.unit}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1 bg-black/40 rounded-lg p-1 border border-white/5 transition-opacity">
+                                    <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="flex items-center gap-1 rounded-lg p-1 border transition-opacity">
                                         <button
                                             onClick={() => onUpdateItem(item.id, { quantity: Math.max(0, item.quantity - 1) })}
                                             className="w-6 h-6 flex items-center justify-center text-zinc-500 hover:text-white"
@@ -179,16 +194,18 @@ const InventoryView: React.FC<InventoryViewProps> = ({
 
             {/* Add Item Modal */}
             {isAdding && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-pure-black/90 backdrop-blur-md">
-                    <form onSubmit={handleSubmit} className="w-full max-w-sm max-h-[90vh] glass-card rounded-3xl p-8 border-primary/30 flex flex-col relative overflow-hidden">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md animate-in fade-in duration-300" style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.95)' }}>
+                    <form onSubmit={handleSubmit}
+                        style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+                        className="w-full max-w-sm max-h-[90vh] rounded-3xl p-8 border flex flex-col relative overflow-hidden shadow-2xl animate-in zoom-in duration-300">
                         <div className="flex justify-between items-center mb-6 flex-shrink-0">
-                            <h3 className="text-xl font-black uppercase tracking-tighter">NUEVO ITEM</h3>
+                            <h3 style={{ color: 'var(--text-main)' }} className="text-xl font-black uppercase tracking-tighter">NUEVO ITEM</h3>
                             <button type="button" onClick={() => setIsAdding(false)} className="text-zinc-500 hover:text-white">
                                 <span className="material-symbols-outlined">close</span>
                             </button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 pr-1 -mr-1">
+                        <div className="flex-1 overflow-y-auto custom-scrollbar space-y-6 px-1">
                             <div className="space-y-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] text-zinc-500 font-bold uppercase ml-1">Ingrediente</label>
@@ -198,7 +215,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                         type="text"
                                         value={newItem.name}
                                         onChange={e => setNewItem({ ...newItem, name: e.target.value })}
-                                        className="w-full bg-black border border-zinc-800 p-4 rounded-2xl text-sm focus:border-primary outline-none"
+                                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border p-4 rounded-2xl text-sm focus:border-primary outline-none"
                                         placeholder="Ej: Leche desnatada"
                                     />
                                 </div>
@@ -210,7 +228,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                             type="number"
                                             value={newItem.quantity}
                                             onChange={e => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-                                            className="w-full bg-black border border-zinc-800 p-4 rounded-2xl text-sm focus:border-primary outline-none"
+                                            style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                            className="w-full border p-4 rounded-2xl text-sm focus:border-primary outline-none"
                                         />
                                     </div>
                                     <div className="space-y-1">
@@ -218,7 +237,8 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                         <select
                                             value={newItem.unit}
                                             onChange={e => setNewItem({ ...newItem, unit: e.target.value })}
-                                            className="w-full bg-black border border-zinc-800 p-4 rounded-2xl text-sm focus:border-primary outline-none"
+                                            style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                            className="w-full border p-4 rounded-2xl text-sm focus:border-primary outline-none"
                                         >
                                             <option value="unidades">uds (unidades)</option>
                                             <option value="kg">kg (kilogramo)</option>
@@ -235,9 +255,11 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                     <label className="text-[10px] text-zinc-500 font-bold uppercase ml-1">Caducidad (Opcional)</label>
                                     <input
                                         type="date"
+                                        min={new Date().toISOString().split('T')[0]}
                                         value={newItem.expiryDate}
                                         onChange={e => setNewItem({ ...newItem, expiryDate: e.target.value })}
-                                        className="w-full bg-black border border-zinc-800 p-4 rounded-2xl text-sm focus:border-primary outline-none"
+                                        style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+                                        className="w-full border p-4 rounded-2xl text-sm focus:border-primary outline-none"
                                     />
                                 </div>
                             </div>

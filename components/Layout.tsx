@@ -10,69 +10,65 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, activeNav, onNavClick }) => {
   return (
-    <div className="flex flex-col h-screen w-full max-w-[430px] mx-auto bg-pure-black relative overflow-hidden font-body shadow-2xl">
-      <main className="flex-1 w-full overflow-y-auto pb-32 custom-scrollbar">
+    <div className="flex flex-col h-screen w-full max-w-[430px] mx-auto bg-pure-black relative overflow-hidden font-body shadow-2xl"
+      style={{ backgroundColor: 'var(--bg-app)' }}>
+      <main className="flex-1 w-full overflow-y-auto pb-24 custom-scrollbar">
         {children}
       </main>
 
       {showNav && (
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-black/80 backdrop-blur-xl border-t border-white/5 pb-10 pt-4 px-2 z-40">
-          <div className="grid grid-cols-5 items-center h-16 relative">
-            <NavItem
-              icon="home"
-              label="Inicio"
-              active={activeNav === 'dashboard'}
-              onClick={() => onNavClick?.('dashboard')}
-            />
-            <NavItem
-              icon="favorite"
-              label="Favoritas"
-              active={activeNav === 'favorites'}
-              onClick={() => onNavClick?.('favorites')}
-            />
+        <nav
+          style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+          className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] border-t flex justify-around items-center h-20 px-6 z-40 transition-colors"
+        >
+          <NavItem
+            active={activeNav === 'dashboard' || activeNav === 'results'}
+            icon="home"
+            label="Inicio"
+            onClick={() => onNavClick?.('dashboard')}
+          />
+          <NavItem
+            active={activeNav === 'favorites'}
+            icon="favorite"
+            label="Favoritas"
+            onClick={() => onNavClick?.('favorites')}
+          />
 
-            {/* Placeholder for center space */}
-            <div className="flex justify-center items-center">
-              <div className="w-12 h-12"></div>
-            </div>
-
-            {/* Centered Floating Scanner Button */}
-            <div className="absolute left-1/2 -translate-x-1/2 -top-8 z-20">
-              <button
-                onClick={() => onNavClick?.('scanner')}
-                className="w-[62px] h-[62px] bg-primary rounded-full flex items-center justify-center text-black shadow-[0_10px_30px_rgba(57,255,20,0.4)] border-[5px] border-pure-black transform active:scale-90 transition-all duration-300"
-              >
-                <span className="material-symbols-outlined text-[28px] font-black notranslate">photo_camera</span>
-              </button>
-            </div>
-
-            <NavItem
-              icon="inventory_2"
-              label="Despensa"
-              active={activeNav === 'inventory'}
-              onClick={() => onNavClick?.('inventory')}
-            />
-            <NavItem
-              icon="groups"
-              label="Comunidad"
-              active={activeNav === 'community'}
-              onClick={() => onNavClick?.('community')}
-            />
+          <div className="w-16 h-16 -mt-12 bg-primary rounded-full flex items-center justify-center p-3 shadow-[0_0_25px_rgba(57,255,20,0.6)] border-[3px] border-[#000] active:scale-95 transition-all cursor-pointer z-50"
+            onClick={() => onNavClick?.('scanner')}>
+            <span className="material-symbols-outlined text-black text-3xl font-black">photo_camera</span>
           </div>
+
+          <NavItem
+            active={activeNav === 'inventory'}
+            icon="inventory_2"
+            label="Despensa"
+            onClick={() => onNavClick?.('inventory')}
+          />
+          <NavItem
+            active={activeNav === 'community' || activeNav === 'explore'}
+            icon="groups"
+            label="Comunidad"
+            onClick={() => onNavClick?.('community')}
+          />
         </nav>
       )}
     </div>
   );
 };
 
-const NavItem = ({ icon, label, active, onClick }: { icon: string; label: string; active?: boolean; onClick: () => void }) => (
+const NavItem = ({ icon, label, active, onClick }: { icon: string; label: string; active: boolean; onClick: () => void }) => (
   <button
     onClick={onClick}
-    className={`flex flex-col items-center gap-1.5 transition-all duration-300 ${active ? 'text-primary scale-110' : 'text-zinc-600'}`}
+    className="flex flex-col items-center gap-1 transition-all active:scale-95"
   >
-    <span className={`material-symbols-outlined text-2xl notranslate ${active ? 'fill-icon' : ''}`}>
+    <span className={`material-symbols-outlined text-2xl notranslate ${active ? 'text-primary fill-icon' : 'text-zinc-500'}`}
+      style={{ color: active ? '#39FF14' : 'var(--text-muted)' }}>
       {icon}
     </span>
-    <span className={`text-[9px] font-black uppercase tracking-widest ${active ? 'opacity-100' : 'opacity-60'}`}>{label}</span>
+    <span style={{ color: active ? '#39FF14' : 'var(--text-muted)' }}
+      className="text-[9px] font-bold uppercase tracking-widest mt-1">
+      {label}
+    </span>
   </button>
 );

@@ -39,13 +39,13 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   };
 
   return (
-    <div className="p-6 pb-32">
+    <div className="p-6 pb-6">
       <header className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={onBack} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10">
+          <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border">
             <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
           </button>
-          <h1 className="text-2xl font-bold uppercase tracking-tight font-outfit">Recetas <span className="text-primary italic">IA</span></h1>
+          <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-bold uppercase tracking-tight font-outfit">Recetas <span className="text-primary italic">IA</span></h1>
         </div>
         <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary">
           {recipes?.length || 0} Resultados
@@ -60,7 +60,8 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder="Filtrar por nombre o ingrediente..."
-          className="w-full bg-black border border-zinc-800 rounded-2xl py-4 pl-12 pr-4 text-sm text-zinc-400 placeholder-zinc-700 outline-none focus:border-primary/50 transition-all shadow-inner"
+          style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
+          className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 outline-none focus:border-primary/50 transition-all shadow-inner"
         />
       </div>
 
@@ -70,61 +71,67 @@ const ResultsView: React.FC<ResultsViewProps> = ({
             <button
               key={recipe.id}
               onClick={() => onRecipeClick(recipe)}
-              className="w-full glass-card rounded-2xl p-4 flex flex-col gap-4 border-primary/10 hover:border-primary/40 transition-all text-left relative overflow-hidden group"
+              style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+              className="w-full rounded-2xl p-4 flex flex-col gap-4 border hover:border-primary/40 transition-all text-left relative overflow-hidden group"
             >
               {/* Background Image Preview */}
               <div className="absolute top-0 right-0 w-32 h-full opacity-10 group-hover:opacity-20 transition-opacity pointer-events-none">
                 <img src={getRecipeImage(recipe, 400)} alt="" className="w-full h-full object-cover" />
               </div>
 
-              <div className="flex gap-4 relative z-10">
-                <div className="w-20 h-20 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
+              <div className="flex gap-4 relative z-10 items-center">
+                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-24 h-24 rounded-2xl overflow-hidden border flex-shrink-0 relative">
                   <img src={getRecipeImage(recipe, 300)} alt={recipe.title} className="w-full h-full object-cover" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-col h-full">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className="h-[1px] w-4 bg-primary/40" />
-                      <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">
-                        {recipe.matchPercentage || 100}% Coincidencia
-                      </span>
+                  {recipe.category && (
+                    <div className="absolute top-0 left-0 bg-primary text-black text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-br-lg shadow-sm z-20">
+                      {recipe.category}
                     </div>
-
-                    <h3 className="text-[16px] font-extrabold leading-[1.3] text-zinc-100 group-hover:text-white transition-colors pr-4">
-                      {recipe.title}
-                    </h3>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0 flex flex-col justify-center gap-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-[1px] w-4 bg-primary/40" />
+                    <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">
+                      {recipe.matchPercentage || 100}% Coincidencia
+                    </span>
+                  </div>
+                  <h3 style={{ color: 'var(--text-main)' }} className="text-[14px] font-black leading-tight transition-colors line-clamp-2 uppercase">
+                    {recipe.title}
+                  </h3>
+                  <div className="space-y-2">
+                    <p className="text-zinc-500 text-[10px] italic line-clamp-2 leading-relaxed">
+                      {recipe.description}
+                    </p>
+                    <div className="flex -space-x-1.5">
+                      {(recipe.ingredients || []).slice(0, 4).map((_, i) => (
+                        <div key={i} style={{ borderColor: 'var(--bg-app)', backgroundColor: 'var(--bg-surface-inner)' }} className="w-5 h-5 rounded-full border flex items-center justify-center text-[8px]">
+                          {['🥬', '🥑', '🍗', '🥚', '🍝'][i % 5]}
+                        </div>
+                      ))}
+                      {(recipe.ingredients || []).length > 4 && (
+                        <div key="more" style={{ borderColor: 'var(--bg-app)', backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)' }} className="w-5 h-5 rounded-full border flex items-center justify-center text-[7px] font-black">
+                          +{(recipe.ingredients || []).length - 4}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between mt-2 pt-4 border-t border-white/5 relative z-10">
-                <div className="flex -space-x-2">
-                  {(recipe.ingredients || []).slice(0, 3).map((_, i) => (
-                    <div key={i} className="w-6 h-6 rounded-full border-2 border-pure-black bg-zinc-800 flex items-center justify-center text-[10px]">
-                      {['🥬', '🥑', '🍗', '🥚', '🍝'][i % 5]}
-                    </div>
-                  ))}
-                  {(recipe.ingredients || []).length > 3 && (
-                    <div className="w-6 h-6 rounded-full border-2 border-pure-black bg-zinc-800 flex items-center justify-center text-[8px] font-bold">
-                      +{(recipe.ingredients || []).length - 3}
-                    </div>
-                  )}
-                </div>
-
-                {/* Reloj y Dificultad en el medio */}
-                <div className="flex items-center gap-1.5 text-zinc-500 text-[10px] font-bold uppercase tracking-widest">
-                  <span className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-primary">schedule</span>
+              <div style={{ borderColor: 'var(--card-border)' }} className="mt-1 pt-3 border-t relative z-10 flex items-center justify-between">
+                <div className="flex items-center gap-4 text-zinc-500 text-[9px] font-black uppercase tracking-widest">
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px] text-primary/60">schedule</span>
                     {recipe.prepTime}
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="material-symbols-outlined text-[14px] text-primary">analytics</span>
+                  <span className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px] text-primary/60">analytics</span>
                     {recipe.difficulty || 'Fácil'}
                   </span>
                 </div>
 
-                <div className="bg-primary text-black px-4 py-2 rounded-full text-xs font-black uppercase flex items-center gap-2 hover:brightness-110 shadow-[0_0_10px_rgba(57,255,20,0.3)]">
-                  <span className="material-symbols-outlined text-sm">play_arrow</span>
+                <div className="bg-primary text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 hover:brightness-110 shadow-glow active:scale-95 transition-all">
+                  <span className="material-symbols-outlined text-sm font-black">play_arrow</span>
                   Cocinar ahora
                 </div>
               </div>
@@ -157,27 +164,27 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
       {/* Premium Modal */}
       {showPremiumModal && (
-        <div className="absolute inset-0 z-[100] flex items-center justify-center p-6 bg-pure-black/90 backdrop-blur-md">
-          <div className="w-full max-w-sm glass-card rounded-[2.5rem] p-8 border-primary/30 space-y-6 text-center shadow-[0_0_50px_rgba(57,255,20,0.1)]">
+        <div className="absolute inset-0 z-[100] flex items-center justify-center p-6" style={{ backgroundColor: 'var(--bg-app)', opacity: 0.95, backdropFilter: 'blur(10px)' }}>
+          <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-sm rounded-[2.5rem] p-8 border space-y-6 text-center shadow-[0_0_50px_rgba(57,255,20,0.1)]">
             <div className="w-20 h-20 bg-primary/20 rounded-3xl flex items-center justify-center text-primary mx-auto neon-glow border border-primary/30">
               <span className="material-symbols-outlined text-4xl">workspace_premium</span>
             </div>
             <div className="space-y-3">
-              <h3 className="text-2xl font-tech font-bold uppercase tracking-tight">Acceso Premium</h3>
-              <p className="text-zinc-400 text-sm leading-relaxed">
+              <h3 style={{ color: 'var(--text-main)' }} className="text-2xl font-tech font-bold uppercase tracking-tight">Acceso Premium</h3>
+              <p style={{ color: 'var(--text-muted)' }} className="text-sm leading-relaxed">
                 Hazte Premium para ver hasta <span className="text-primary font-bold">15 versiones</span> de recetas (en lotes de 5), informe nutricional detallado y acceso ilimitado a tu Agente Chef IA.
               </p>
             </div>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-left space-y-2">
-              <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+            <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border rounded-2xl p-4 text-left space-y-2">
+              <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                 <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
                 Ver hasta 10 versiones más
               </div>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+              <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                 <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
                 Informe nutricional completo
               </div>
-              <div className="flex items-center gap-2 text-[10px] font-bold text-zinc-300 uppercase tracking-widest">
+              <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                 <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
                 Agente Chef IA Personal
               </div>
