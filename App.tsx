@@ -23,6 +23,7 @@ import AIChatbot from './components/AIChatbot';
 import PremiumModal from './components/PremiumModal';
 import InventoryView from './views/InventoryView';
 import ChallengesView from './views/ChallengesView';
+import ResetPasswordView from './views/ResetPasswordView';
 import { generateRecipes } from './services/geminiService';
 import { supabase } from './lib/supabase';
 import { InventoryItem } from './types';
@@ -65,10 +66,12 @@ const App: React.FC = () => {
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_IN' && session) {
+      if ((event === 'SIGNED_IN' || event === 'USER_UPDATED') && session) {
         fetchProfile(session.user.id, session.user.email || '');
       } else if (event === 'SIGNED_OUT') {
         setState(prev => ({ ...prev, user: null, currentView: 'landing' }));
+      } else if (event === 'PASSWORD_RECOVERY') {
+        navigateTo('reset-password');
       }
     });
 
@@ -695,6 +698,15 @@ const App: React.FC = () => {
             <LoginView
               onLogin={handleLogin}
               onBack={() => navigateTo('landing')}
+            />
+          </Layout>
+        );
+      case 'reset-password':
+        return (
+          <Layout showNav={false}>
+            <ResetPasswordView
+              onSuccess={() => navigateTo('dashboard')}
+              onBack={() => navigateTo('login')}
             />
           </Layout>
         );

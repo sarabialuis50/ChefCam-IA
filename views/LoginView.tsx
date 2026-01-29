@@ -30,7 +30,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
     }
     setLoading(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: 'http://chefscania.com',
+      redirectTo: window.location.origin,
     });
     setLoading(false);
     if (error) {
@@ -75,7 +75,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
     }
   };
 
-  const handeGoogleLogin = async () => {
+  const handleGoogleLogin = async () => {
     const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
     await supabase.auth.signInWithOAuth({
       provider: 'google',
@@ -103,13 +103,12 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
           </button>
         )}
         <div className="flex flex-col items-center text-center mb-10">
-          <div className="w-32 h-32 flex items-center justify-center mb-6 relative">
-            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse"></div>
-            <img src="/logo.png" alt="ChefScan Logo" className="w-full h-full object-contain relative z-10" />
+          <div className="w-20 h-20 bg-[#0a0a0a] rounded-2xl flex items-center justify-center mb-6 neon-glow border border-[#39FF14]/30 overflow-hidden">
+            <img src="/landing-logo.png" alt="ChefScan Logo" className="w-14 h-14 object-contain relative z-10" />
           </div>
-          <h1 className="text-3xl font-tech font-bold text-white tracking-widest mb-3">
-            Chef<span className="text-primary">Scan.IA</span>
-          </h1>
+          <h2 className="text-3xl font-bold tracking-tighter drop-shadow-lg mb-2">
+            <span className="text-white">Chef</span><span className="text-[#39FF14]">Scan.IA</span>
+          </h2>
           <p className="text-xs text-gray-400 font-medium px-4 leading-relaxed">
             Recetas saludables creadas con IA para tu bienestar diario
           </p>
@@ -188,7 +187,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
         </div>
 
         <button
-          onClick={handeGoogleLogin}
+          onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center px-4 py-4 border border-white/10 rounded-xl bg-white text-black hover:bg-gray-100 transition-all text-[11px] font-bold uppercase tracking-widest gap-3 cursor-pointer"
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24">

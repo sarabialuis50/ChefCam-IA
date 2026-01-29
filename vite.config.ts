@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
       react(),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['icon.png', 'pwa-192.png', 'pwa-512.png'],
+        includeAssets: ['favicon.ico', 'logo-192.png', 'logo-512.png'],
         manifest: {
           name: 'ChefScan.IA',
           short_name: 'ChefScan.IA',
@@ -24,17 +24,17 @@ export default defineConfig(({ mode }) => {
           display: 'standalone',
           icons: [
             {
-              src: 'pwa-192.png',
+              src: '/logo-192.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: 'pwa-512.png',
+              src: '/logo-512.png',
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: 'pwa-512.png',
+              src: '/logo-512.png',
               sizes: '512x512',
               type: 'image/png',
               purpose: 'any maskable'
