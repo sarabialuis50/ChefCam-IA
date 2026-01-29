@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="dark">
+<html lang="es">
 
 <head>
   <meta charset="utf-8" />
@@ -84,13 +84,36 @@
     };
   </script>
   <style>
+    :root {
+      --bg-app: #000000;
+      --bg-surface: #0a0a0a;
+      --bg-surface-inner: #000000;
+      --text-main: #ffffff;
+      --text-muted: #71717a;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --card-border: #141414;
+    }
+
+    .light {
+      --bg-app: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-inner: #f1f5f9;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --glass-bg: rgba(0, 0, 0, 0.02);
+      --glass-border: rgba(0, 0, 0, 0.08);
+      --card-border: #e2e8f0;
+    }
+
     body {
-      background-color: #000000;
-      color: white;
+      background-color: var(--bg-app);
+      color: var(--text-main);
       margin: 0;
       padding: 0;
       overflow-x: hidden;
       font-family: 'Inter', sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .neon-glow {
@@ -106,10 +129,10 @@
     }
 
     .glass-card {
-      background: rgba(255, 255, 255, 0.03);
+      background: var(--glass-bg);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--glass-border);
     }
 
     .scanner-line {

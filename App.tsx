@@ -63,12 +63,15 @@ const App: React.FC = () => {
   // Sync theme with Document
   useEffect(() => {
     localStorage.setItem('chefscan_theme', String(isDarkMode));
-    if (!isDarkMode) {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
+    const root = document.documentElement;
+    if (isDarkMode) {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      document.body.style.backgroundColor = '#000000';
     } else {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
+      root.classList.add('light');
+      root.classList.remove('dark');
+      document.body.style.backgroundColor = '#f8fafc';
     }
   }, [isDarkMode]);
 
