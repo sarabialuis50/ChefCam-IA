@@ -591,11 +591,11 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
         <div className="flex gap-4 overflow-x-auto pb-6 -mx-1 px-1 [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           {favoriteRecipes.length > 0 ? favoriteRecipes.slice(0, 4).map((recipe) => (
-            <button
+            <div
               key={recipe.id}
               onClick={() => onRecipeClick(recipe)}
               style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
-              className="flex-shrink-0 w-44 rounded-[2rem] border overflow-hidden group shadow-lg transition-transform active:scale-95 text-left"
+              className="flex-shrink-0 w-44 rounded-[2rem] border overflow-hidden group shadow-lg transition-transform active:scale-95 text-left cursor-pointer"
             >
               <div className="relative h-32 w-full overflow-hidden">
                 <img
@@ -633,7 +633,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
           )) : (
             <>
               <DiscoveryCard image="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=300" title="Añade tus favoritas" onClick={() => onNavClick?.('favorites')} />

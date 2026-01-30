@@ -29,8 +29,8 @@ export const subscribeUserToPush = async (userId: string) => {
 
         // 3. Get public VAPID key from env or use a default (User should provide this)
         const PUBLIC_VAPID_KEY = import.meta.env.VITE_PUBLIC_VAPID_KEY;
-        if (!PUBLIC_VAPID_KEY) {
-            console.error('VITE_PUBLIC_VAPID_KEY is missing');
+        if (!PUBLIC_VAPID_KEY || PUBLIC_VAPID_KEY.includes('placeholder')) {
+            console.warn('VITE_PUBLIC_VAPID_KEY is missing or is a placeholder. Push notifications disabled.');
             return;
         }
 
