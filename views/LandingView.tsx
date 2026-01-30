@@ -54,7 +54,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
       `}} />
 
       {/* Navigation (Desktop only) */}
-      <nav style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.8)', borderColor: 'var(--card-border)' }} className="fixed top-0 left-0 w-full z-50 px-6 py-4 sm:py-6 backdrop-blur-md border-b hidden lg:block">
+      <nav style={{ backgroundColor: 'transparent' }} className="fixed top-0 left-0 w-full z-50 px-6 py-4 sm:py-6 hidden lg:block">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3 group cursor-pointer transition-all duration-300">
             <div className="relative">

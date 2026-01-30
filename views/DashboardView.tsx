@@ -30,8 +30,7 @@ interface DashboardViewProps {
   inventory?: any[];
   acceptedChallengeId?: string | null;
   onBack?: () => void;
-  isDarkMode: boolean;
-  onThemeToggle: () => void;
+
   userTags?: string[];
   onCreateTag?: (tag: string) => void;
   onUpdateTag?: (oldName: string, newName: string) => void;
@@ -62,8 +61,6 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   inventory = [],
   acceptedChallengeId,
   onBack,
-  isDarkMode,
-  onThemeToggle,
   userTags = [],
   onCreateTag,
   onUpdateTag,
@@ -84,9 +81,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const toggleTheme = () => {
-    onThemeToggle();
-  };
+
 
   // Sincronizar imagen y entrada manual del escáner
   React.useEffect(() => {
@@ -221,19 +216,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={toggleTheme}
-            style={{
-              backgroundColor: isDarkMode ? 'rgba(57,255,20,0.1)' : 'var(--bg-surface-soft)',
-              borderColor: isDarkMode ? 'var(--primary)' : 'var(--card-border)'
-            }}
-            className="w-10 h-10 rounded-xl border flex items-center justify-center active:scale-90 transition-all duration-500 group"
-            title="Cambiar Tema"
-          >
-            <span className={`material-symbols-outlined notranslate text-xl transition-transform duration-500 ${isDarkMode ? 'text-primary rotate-[360deg]' : 'text-zinc-500 rotate-0'}`}>
-              {isDarkMode ? 'light_mode' : 'dark_mode'}
-            </span>
-          </button>
+
           <button
             onClick={onNotificationsClick}
             style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}

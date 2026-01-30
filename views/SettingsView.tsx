@@ -15,6 +15,8 @@ interface SettingsViewProps {
     };
     language: Language;
     onLanguageChange: (lang: Language) => void;
+    isDarkMode?: boolean;
+    onThemeToggle?: () => void;
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({
@@ -24,7 +26,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({
     onLogout,
     stats = { recipes: 0, favorites: 0, generated: 0 },
     language: currentLang,
-    onLanguageChange
+    onLanguageChange,
+    isDarkMode,
+    onThemeToggle
 }) => {
     const t = useTranslation(currentLang);
     const [notifications, setNotifications] = useState(true);
@@ -374,6 +378,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         active={notifications}
                         onToggle={() => setNotifications(!notifications)}
                     />
+
+                    {onThemeToggle && (
+                        <SettingToggle
+                            icon="dark_mode"
+                            title={t('dark_mode')}
+                            description="Cambia entre tema claro y oscuro."
+                            active={!!isDarkMode}
+                            onToggle={onThemeToggle}
+                        />
+                    )}
 
                     <button
                         onClick={handleShareApp}

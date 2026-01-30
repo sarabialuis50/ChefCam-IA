@@ -3,9 +3,10 @@ import React from 'react';
 interface ProfileViewProps {
   user: any;
   onLogout: () => void;
+  onEditProfile: () => void;
 }
 
-const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout }) => {
+const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout, onEditProfile }) => {
   return (
     <div className="flex flex-col pb-1">
       <nav style={{ borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-6 border-b">
@@ -14,7 +15,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout }) => {
           <h2 style={{ color: 'var(--text-main)' }} className="text-lg font-outfit font-bold uppercase tracking-tight">Mi Perfil</h2>
           <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">Resumen Chef</p>
         </div>
-        <button style={{ color: 'var(--text-main)' }} className="flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
+        <button
+          onClick={onEditProfile}
+          style={{ color: 'var(--text-main)' }}
+          className="flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+        >
           <span className="material-symbols-outlined">settings</span>
         </button>
       </nav>
@@ -23,7 +28,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout }) => {
         <div className="relative">
           <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--primary)' }} className="w-32 h-32 rounded-3xl border-2 p-1 group overflow-hidden">
             <img
-              src={`https://picsum.photos/seed/${user?.email}/200/200?grayscale`}
+              src={user?.avatarUrl || `https://ui-avatars.com/api/?name=${user?.name || 'User'}&background=random`}
               alt="Avatar"
               className="w-full h-full object-cover rounded-2xl group-hover:scale-110 transition-transform duration-700"
             />
@@ -83,7 +88,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout }) => {
         <div className="space-y-4">
           <h3 style={{ color: 'var(--text-muted)', borderBottomColor: 'var(--card-border)' }} className="text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b">Centro de Control</h3>
           <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="rounded-[2rem] border overflow-hidden shadow-sm">
-            <ProfileLink icon="account_circle" label="Editar Perfil" />
+            <ProfileLink icon="account_circle" label="Editar Perfil" onClick={onEditProfile} />
             <ProfileLink icon="notifications" label="Notificaciones" />
             <ProfileLink icon="help" label="Soporte y Ayuda" />
             <ProfileLink icon="policy" label="Términos y Privacidad" />
@@ -117,8 +122,12 @@ const StatCard = ({ value, label, active }: { value: string; label: string, acti
   </div>
 );
 
-const ProfileLink = ({ icon, label }: { icon: string; label: string }) => (
-  <div style={{ borderBottomColor: 'var(--card-border)' }} className="group flex items-center gap-4 px-6 min-h-[64px] justify-between border-b last:border-none hover:bg-primary/5 transition-all cursor-pointer">
+const ProfileLink = ({ icon, label, onClick }: { icon: string; label: string; onClick?: () => void }) => (
+  <div
+    onClick={onClick}
+    style={{ borderBottomColor: 'var(--card-border)' }}
+    className="group flex items-center gap-4 px-6 min-h-[64px] justify-between border-b last:border-none hover:bg-primary/5 transition-all cursor-pointer"
+  >
     <div className="flex items-center gap-4">
       <div style={{ backgroundColor: 'var(--bg-surface-inner)' }} className="text-zinc-500 flex items-center justify-center rounded-xl shrink-0 size-10 group-hover:bg-primary/10 group-hover:text-primary transition-all">
         <span className="material-symbols-outlined text-xl">{icon}</span>

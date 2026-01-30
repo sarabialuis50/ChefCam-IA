@@ -77,7 +77,11 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('chefscan_theme', String(isDarkMode));
     const root = document.documentElement;
-    if (isDarkMode) {
+    // Force Dark Mode on specific 'immersive' pages
+    const forcedDarkViews = ['landing', 'login', 'reset-password', 'dashboard'];
+    const actuallyDark = isDarkMode || forcedDarkViews.includes(state.currentView);
+
+    if (actuallyDark) {
       root.classList.add('dark');
       root.classList.remove('light');
       document.body.style.backgroundColor = '#000000';
@@ -86,7 +90,7 @@ const App: React.FC = () => {
       root.classList.remove('dark');
       document.body.style.backgroundColor = '#f8fafc';
     }
-  }, [isDarkMode]);
+  }, [isDarkMode, state.currentView]);
 
   // Listen for Auth changes
   useEffect(() => {
@@ -207,7 +211,9 @@ const App: React.FC = () => {
       isPremium: false,
       avatarUrl: null,
       allergies: [],
-      cookingGoal: 'explorar'
+      cookingGoal: 'explorar',
+      recipeGenerationsToday: 0,
+      chefCredits: 10
     };
 
     // Safe Profile Data (DB or Fallback)
@@ -862,8 +868,7 @@ const App: React.FC = () => {
               onShowPremiumModal={() => setPremiumModal({ isOpen: true, reason: 'recipes' })}
               acceptedChallengeId={state.acceptedChallengeId}
               onBack={() => navigateTo('landing')}
-              isDarkMode={isDarkMode}
-              onThemeToggle={() => setIsDarkMode(!isDarkMode)}
+
               userTags={state.userTags}
               onCreateTag={handleCreateTag}
               onUpdateTag={handleUpdateTag}
@@ -945,6 +950,8 @@ const App: React.FC = () => {
               }}
               language={state.language}
               onLanguageChange={(lang: 'es' | 'en') => setState(prev => ({ ...prev, language: lang }))}
+              isDarkMode={isDarkMode}
+              onThemeToggle={() => setIsDarkMode(!isDarkMode)}
             />
           </Layout>
         );
@@ -997,7 +1004,10 @@ const App: React.FC = () => {
           <Layout showNav={false}>
             <RecipeDetailView
               recipe={selectedRecipe}
-              isFavorite={state.favoriteRecipes.some(r => r.id === selectedRecipe?.id)}
+              isFavorite={state.favoriteRecipes.some(r =>
+                r.id === selectedRecipe?.id ||
+                (selectedRecipe && r.title === selectedRecipe.title && r.description === selectedRecipe.description)
+              )}
               onToggleFavorite={(category) => selectedRecipe && toggleFavorite(selectedRecipe, category)}
               onBack={() => {
                 if (state.previousView) {
@@ -1064,7 +1074,11 @@ const App: React.FC = () => {
       case 'profile':
         return (
           <Layout activeNav="profile" onNavClick={handleNavClick}>
-            <ProfileView user={state.user} onLogout={handleLogout} />
+            <ProfileView
+              user={state.user}
+              onLogout={handleLogout}
+              onEditProfile={() => navigateTo('settings')}
+            />
           </Layout>
         );
       default:

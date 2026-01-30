@@ -48,7 +48,7 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             // 4. Open ePayco Widget
             const handler = ePaycoHandler.checkout.configure({
                 key: epaycoData.publicKey,
-                test: true // Cambiar a false cuando pases a producción
+                test: import.meta.env.DEV // Auto-detect: true in local, false in production
             });
 
             const data = {

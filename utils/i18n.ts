@@ -37,6 +37,7 @@ export const translations = {
         language: "Idioma",
         local_storage: "Almacenamiento Local",
         logout: "Cerrar Sesión",
+        dark_mode: "Modo Oscuro",
 
         // Profile
         username: "Usuario",
@@ -245,6 +246,7 @@ export const translations = {
         language: "Language",
         local_storage: "Local Storage",
         logout: "Logout",
+        dark_mode: "Dark Mode",
 
         // Profile
         username: "Username",
