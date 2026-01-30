@@ -46,7 +46,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-app)' }} className="pb-12">
+    <div style={{ backgroundColor: 'var(--bg-app)' }} className="pb-8">
       <div className="relative h-96 w-full">
         <img
           src={getRecipeImage(recipe, 800)}
@@ -206,10 +206,10 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
         </section>
 
         {/* Global CTA - Start Cooking */}
-        <div className="mt-2">
+        <div className="mt-32 flex justify-center">
           <button
             onClick={onStartCooking}
-            className="w-full bg-primary text-black font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] uppercase text-sm active:scale-95 transition-all"
+            className="w-[75%] bg-primary text-black font-black py-3.5 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] uppercase text-sm active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined font-black">restaurant_menu</span>
             {t('start_cooking')}
