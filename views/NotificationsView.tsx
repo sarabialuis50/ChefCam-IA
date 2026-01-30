@@ -65,48 +65,54 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language,
 
     if (!inventory) return baseNotifications;
 
-    const pantryNotifications: Notification[] = inventory
-      .map(item => {
-        const status = getItemStatus(item.expiryDate);
-        if (!status) return null;
+    const expiredCount = inventory.filter(i => {
+      const s = getItemStatus(i.expiryDate);
+      return s?.statusKey === 'expired';
+    }).length;
 
-        // "cuando tingan productos con dos dias para vencer, cuando tengan uno y cuando esten vencidos"
-        const isUrgent = status.statusKey === 'expired' || status.statusKey === 'expires_today';
-        const isWarning = status.statusKey === 'expires_tomorrow';
-        const isNotice = status.statusKey === 'prox_expiry'; // 2+ days
+    const expiringTodayCount = inventory.filter(i => {
+      const s = getItemStatus(i.expiryDate);
+      return s?.statusKey === 'expires_today';
+    }).length;
 
-        if (!isUrgent && !isWarning && !isNotice) return null;
+    const expiringTomorrowCount = inventory.filter(i => {
+      const s = getItemStatus(i.expiryDate);
+      return s?.statusKey === 'expires_tomorrow';
+    }).length;
 
-        let title = '';
-        let description = '';
+    const proxExpiryCount = inventory.filter(i => {
+      const s = getItemStatus(i.expiryDate);
+      return s?.statusKey === 'prox_expiry';
+    }).length;
 
-        if (status.statusKey === 'expired') {
-          title = `¡Producto Vencido: ${item.name}!`;
-          description = `El ingrediente ${item.name} ha vencido. Por seguridad, te recomendamos retirarlo.`;
-        } else if (status.statusKey === 'expires_today') {
-          title = `¡Vence Hoy: ${item.name}!`;
-          description = `Utiliza ${item.name} hoy mismo para aprovechar su frescura máxima.`;
-        } else if (status.statusKey === 'expires_tomorrow') {
-          title = `Vence Mañana: ${item.name}`;
-          description = `Planifica una receta con ${item.name} antes de que pierda calidad.`;
-        } else if (status.statusKey === 'prox_expiry') {
-          title = `Próximo a Vencer: ${item.name}`;
-          description = `Te quedan pocos días para usar ${item.name}. ¡Busca recetas sugeridas!`;
-        }
+    if (expiredCount === 0 && expiringTodayCount === 0 && expiringTomorrowCount === 0 && proxExpiryCount === 0) {
+      return baseNotifications;
+    }
 
-        return {
-          id: `pantry_${item.id}`,
-          title,
-          description,
-          time: 'Alerta Despensa',
-          icon: 'inventory_2',
-          type: 'pantry',
-          unread: isUrgent // Only mark urgent as unread by default for impact
-        } as Notification;
-      })
-      .filter((n): n is Notification => n !== null);
+    let descriptionParts: string[] = [];
+    if (expiredCount > 0) descriptionParts.push(`${expiredCount} vencido(s)`);
+    if (expiringTodayCount > 0) descriptionParts.push(`${expiringTodayCount} vencen hoy`);
+    if (expiringTomorrowCount > 0) descriptionParts.push(`${expiringTomorrowCount} vencen mañana`);
 
-    return [...pantryNotifications, ...baseNotifications];
+    // Si no hay nada urgente pero si avisos próximos
+    if (descriptionParts.length === 0 && proxExpiryCount > 0) {
+      descriptionParts.push(`${proxExpiryCount} próximos a vencer`);
+    }
+
+    const description = `Tienes ${descriptionParts.join(', ')} en tu despensa.`;
+    const isUrgent = expiredCount > 0 || expiringTodayCount > 0;
+
+    const pantrySummaryNotification: Notification = {
+      id: 'pantry_summary',
+      title: 'Alertas Despensa',
+      description: description,
+      time: 'Resumen Diario',
+      icon: 'inventory_2',
+      type: 'pantry',
+      unread: isUrgent
+    };
+
+    return [pantrySummaryNotification, ...baseNotifications];
   });
 
   const markAllRead = () => {
