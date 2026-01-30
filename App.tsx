@@ -862,7 +862,7 @@ const App: React.FC = () => {
       case 'notifications':
         return (
           <Layout activeNav="dashboard" onNavClick={handleNavClick}>
-            <NotificationsView onBack={() => navigateTo('dashboard')} language={state.language} />
+            <NotificationsView onBack={() => navigateTo('dashboard')} language={state.language} inventory={state.inventory} />
           </Layout>
         );
       case 'challenges':

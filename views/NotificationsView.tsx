@@ -1,10 +1,13 @@
 
 import React, { useState } from 'react';
 import { useTranslation, Language } from '../utils/i18n';
+import { InventoryItem } from '../types';
+import { getItemStatus } from '../utils/itemStatus';
 
 interface NotificationsViewProps {
   onBack: () => void;
   language: Language;
+  inventory?: InventoryItem[];
 }
 
 interface Notification {
@@ -13,51 +16,98 @@ interface Notification {
   description: string;
   time: string;
   icon: string;
-  type: 'recipe' | 'system' | 'alert';
+  type: 'recipe' | 'system' | 'alert' | 'pantry';
   unread: boolean;
 }
 
-const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language }) => {
+const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language, inventory }) => {
   const t = useTranslation(language);
   const [activeFilter, setActiveFilter] = useState('Todas');
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      title: '¡Nueva Receta Gourmet!',
-      description: 'IA ha generado una variante premium de tu Salmón Parrillero.',
-      time: 'Hace 5 min',
-      icon: 'auto_awesome',
-      type: 'recipe',
-      unread: true
-    },
-    {
-      id: '2',
-      title: 'Escaneo Completado',
-      description: 'Se han identificado 4 nuevos ingredientes en tu refrigerador.',
-      time: 'Hace 2 horas',
-      icon: 'camera',
-      type: 'system',
-      unread: true
-    },
-    {
-      id: '3',
-      title: 'Actualización del Núcleo',
-      description: 'ChefScan Engine v2.5 ya está activo con mayor precisión visual.',
-      time: 'Ayer',
-      icon: 'developer_board',
-      type: 'system',
-      unread: false
-    },
-    {
-      id: '4',
-      title: 'Consejo Saludable',
-      description: 'Recuerda que los vegetales verdes hoy combinan con tu dieta keto.',
-      time: 'Ayer',
-      icon: 'tips_and_updates',
-      type: 'alert',
-      unread: false
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>(() => {
+    const baseNotifications: Notification[] = [
+      {
+        id: '1',
+        title: '¡Nueva Receta Gourmet!',
+        description: 'IA ha generado una variante premium de tu Salmón Parrillero.',
+        time: 'Hace 5 min',
+        icon: 'auto_awesome',
+        type: 'recipe',
+        unread: true
+      },
+      {
+        id: '2',
+        title: 'Escaneo Completado',
+        description: 'Se han identificado 4 nuevos ingredientes en tu refrigerador.',
+        time: 'Hace 2 horas',
+        icon: 'camera',
+        type: 'system',
+        unread: true
+      },
+      {
+        id: '3',
+        title: 'Actualización del Núcleo',
+        description: 'ChefScan Engine v2.5 ya está activo con mayor precisión visual.',
+        time: 'Ayer',
+        icon: 'developer_board',
+        type: 'system',
+        unread: false
+      },
+      {
+        id: '4',
+        title: 'Consejo Saludable',
+        description: 'Recuerda que los vegetales verdes hoy combinan con tu dieta keto.',
+        time: 'Ayer',
+        icon: 'tips_and_updates',
+        type: 'alert',
+        unread: false
+      }
+    ];
+
+    if (!inventory) return baseNotifications;
+
+    const pantryNotifications: Notification[] = inventory
+      .map(item => {
+        const status = getItemStatus(item.expiryDate);
+        if (!status) return null;
+
+        // "cuando tingan productos con dos dias para vencer, cuando tengan uno y cuando esten vencidos"
+        const isUrgent = status.statusKey === 'expired' || status.statusKey === 'expires_today';
+        const isWarning = status.statusKey === 'expires_tomorrow';
+        const isNotice = status.statusKey === 'prox_expiry'; // 2+ days
+
+        if (!isUrgent && !isWarning && !isNotice) return null;
+
+        let title = '';
+        let description = '';
+
+        if (status.statusKey === 'expired') {
+          title = `¡Producto Vencido: ${item.name}!`;
+          description = `El ingrediente ${item.name} ha vencido. Por seguridad, te recomendamos retirarlo.`;
+        } else if (status.statusKey === 'expires_today') {
+          title = `¡Vence Hoy: ${item.name}!`;
+          description = `Utiliza ${item.name} hoy mismo para aprovechar su frescura máxima.`;
+        } else if (status.statusKey === 'expires_tomorrow') {
+          title = `Vence Mañana: ${item.name}`;
+          description = `Planifica una receta con ${item.name} antes de que pierda calidad.`;
+        } else if (status.statusKey === 'prox_expiry') {
+          title = `Próximo a Vencer: ${item.name}`;
+          description = `Te quedan pocos días para usar ${item.name}. ¡Busca recetas sugeridas!`;
+        }
+
+        return {
+          id: `pantry_${item.id}`,
+          title,
+          description,
+          time: 'Alerta Despensa',
+          icon: 'inventory_2',
+          type: 'pantry',
+          unread: isUrgent // Only mark urgent as unread by default for impact
+        } as Notification;
+      })
+      .filter((n): n is Notification => n !== null);
+
+    return [...pantryNotifications, ...baseNotifications];
+  });
 
   const markAllRead = () => {
     setNotifications(prev => prev.map(n => ({ ...n, unread: false })));
@@ -68,11 +118,12 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language 
     if (activeFilter === 'Recetas') return n.type === 'recipe';
     if (activeFilter === 'Sistema') return n.type === 'system';
     if (activeFilter === 'Alertas') return n.type === 'alert';
+    if (activeFilter === 'Despensa') return n.type === 'pantry';
     return true;
   });
 
   return (
-    <div style={{ backgroundColor: 'var(--bg-app)' }} className="flex flex-col min-h-full p-6 space-y-6 pb-32">
+    <div style={{ backgroundColor: 'var(--bg-app)' }} className="flex flex-col min-h-full p-6 space-y-6 pb-0">
       {/* Header */}
       <header className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-4">
@@ -94,7 +145,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language 
 
       {/* Filter Chips */}
       <div className="flex gap-3 pt-2 overflow-x-auto no-scrollbar">
-        {['Todas', 'Recetas', 'Sistema', 'Alertas'].map(filter => (
+        {['Todas', 'Recetas', 'Despensa', 'Sistema', 'Alertas'].map(filter => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
@@ -167,8 +218,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language 
       </div>
 
       {/* Footer Info */}
-      <div className="text-center pt-10">
-        <p style={{ color: 'var(--text-muted)', opacity: 0.5 }} className="text-[8px] font-bold uppercase tracking-[0.5em]">Sistema de Alertas ChefScan IA • Online</p>
+      <div className="text-center mt-auto pb-4">
+        <p style={{ color: 'var(--text-muted)', opacity: 0.5 }} className="text-[8px] font-bold uppercase tracking-[0.5em]">Sistema de Alertas ChefScan.IA • Online</p>
       </div>
     </div>
   );
