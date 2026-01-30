@@ -24,11 +24,11 @@ const NutritionalDetailView: React.FC<NutritionalDetailViewProps> = ({ recipe, o
         <div style={{ backgroundColor: 'var(--bg-app)' }} className="min-h-screen pb-12">
             <header style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.8)', borderColor: 'var(--card-border)' }} className="px-6 py-4 flex items-center justify-between border-b backdrop-blur-md sticky top-0 z-50">
                 <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
-                    <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
+                    <span className="material-symbols-outlined text-primary">arrow_back</span>
                 </button>
                 <div className="text-center">
                     <h1 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Informe Nutricional</h1>
-                    <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-[0.2em] mt-0.5">Análisis Detallado por Porción</p>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest mt-0.5">Análisis Detallado</p>
                 </div>
                 <div className="w-10"></div> {/* Spacer */}
             </header>

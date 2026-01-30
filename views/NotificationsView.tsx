@@ -1,8 +1,10 @@
 
 import React, { useState } from 'react';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface NotificationsViewProps {
   onBack: () => void;
+  language: Language;
 }
 
 interface Notification {
@@ -15,7 +17,8 @@ interface Notification {
   unread: boolean;
 }
 
-const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
+const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack, language }) => {
+  const t = useTranslation(language);
   const [activeFilter, setActiveFilter] = useState('Todas');
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -74,9 +77,12 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ onBack }) => {
       <header className="flex items-center justify-between pt-2">
         <div className="flex items-center gap-4">
           <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border active:scale-90 transition-all">
-            <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
           </button>
-          <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Notificaciones<span className="text-primary">.IA</span></h1>
+          <div>
+            <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Notificaciones<span className="text-primary">.IA</span></h1>
+            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_notificaciones')}</p>
+          </div>
         </div>
         <button
           onClick={markAllRead}

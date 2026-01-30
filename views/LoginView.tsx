@@ -122,7 +122,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
             onClick={onBack}
             className="absolute top-8 left-8 text-zinc-600 hover:text-white transition-colors z-[50] flex items-center gap-2 group cursor-pointer bg-transparent border-none p-0"
           >
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
+            <span className="material-symbols-outlined text-sm text-primary">arrow_back</span>
             <span className="text-[9px] font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">Volver</span>
           </button>
         )}

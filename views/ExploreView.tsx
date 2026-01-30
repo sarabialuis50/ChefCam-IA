@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
 import { useTranslation, Language } from '../utils/i18n';
+import { formatPrepTime } from '../utils/recipeUtils';
 
 interface ExploreViewProps {
   onBack: () => void;
@@ -29,10 +30,13 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick, langua
       {/* Header */}
       <header className="flex justify-between items-center pt-2">
         <div className="flex items-center gap-4">
-          <button onClick={onBack} className="flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary text-4xl font-bold">chevron_left</span>
+          <button onClick={onBack} className="w-10 h-10 rounded-full border border-card-border bg-surface-soft flex items-center justify-center mr-2">
+            <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
           </button>
-          <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('explore_recipes_title')}</h1>
+          <div>
+            <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('explore_recipes_title')}</h1>
+            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_explorar')}</p>
+          </div>
         </div>
         <button style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
           <span className="material-symbols-outlined text-primary text-2xl">tune</span>
@@ -105,7 +109,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick, langua
               <div className="flex items-center gap-2">
                 <span className="material-symbols-outlined text-primary text-sm">schedule</span>
                 <span className="text-primary font-black text-[10px] uppercase tracking-tighter">
-                  {recipe.prepTime}
+                  {formatPrepTime(recipe.prepTime)}
                 </span>
               </div>
             </div>

@@ -9,8 +9,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onLogout }) => {
   return (
     <div className="flex flex-col pb-1">
       <nav style={{ borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-6 border-b">
-        <span className="material-symbols-outlined text-zinc-500">arrow_back_ios</span>
-        <h2 style={{ color: 'var(--text-main)' }} className="text-lg font-outfit font-bold uppercase tracking-tight">Mi Perfil</h2>
+        <span className="material-symbols-outlined text-primary">arrow_back</span>
+        <div>
+          <h2 style={{ color: 'var(--text-main)' }} className="text-lg font-outfit font-bold uppercase tracking-tight">Mi Perfil</h2>
+          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest text-center">Resumen Chef</p>
+        </div>
         <button style={{ color: 'var(--text-main)' }} className="flex items-center justify-center rounded-full hover:bg-white/10 transition-colors">
           <span className="material-symbols-outlined">settings</span>
         </button>

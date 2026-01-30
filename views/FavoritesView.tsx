@@ -2,6 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
 import { useTranslation, Language } from '../utils/i18n';
+import { formatPrepTime } from '../utils/recipeUtils';
 
 interface FavoritesViewProps {
   recipes: (Recipe & { category?: string })[];
@@ -90,7 +91,10 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
             >
               <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
             </button>
-            <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">{t('favorites_title')}<span className="text-primary">.IA</span></h1>
+            <div>
+              <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">{t('favorites_title')}<span className="text-primary">.IA</span></h1>
+              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_favorites')}</p>
+            </div>
           </div>
           <div className="px-3 py-1 bg-primary/20 rounded-full border border-primary/30 text-[10px] font-black text-primary uppercase">
             {filteredRecipes.length} {t('recipe_count')}
@@ -182,7 +186,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-xs text-primary/60">schedule</span>
-                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold uppercase tracking-tighter">{recipe.prepTime || '20 min'}</span>
+                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold uppercase tracking-tighter">{formatPrepTime(recipe.prepTime)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-xs text-primary/60">restaurant</span>

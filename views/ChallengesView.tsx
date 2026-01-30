@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { InventoryItem } from '../types';
 import { useTranslation, Language } from '../utils/i18n';
+import { getDaysDiff } from '../utils/dateUtils';
+import { getItemStatus } from '../utils/itemStatus';
 
 interface ChallengesViewProps {
     onBack: () => void;
@@ -35,7 +37,10 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                     <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full flex items-center justify-center border">
                         <span className="material-symbols-outlined text-primary">arrow_back</span>
                     </button>
-                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('challenges_title')}<span className="text-primary">.IA</span></h2>
+                    <div>
+                        <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('challenges_title')}<span className="text-primary">.IA</span></h2>
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_retos')}</p>
+                    </div>
                 </div>
                 <div className="px-4 py-1.5 bg-primary/20 rounded-full border border-primary/30">
                     <span className="text-[10px] font-black text-primary uppercase tracking-widest">{expiringItems.length} {t('challenges_count')}</span>
@@ -60,18 +65,24 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                 <div className="space-y-4">
                     {expiringItems.length > 0 ? (
                         expiringItems.map((item) => {
-                            const days = Math.ceil((new Date(item.expiryDate!).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-                            const urgencyColor = days <= 1 ? 'text-red-500' : days <= 3 ? 'text-orange-500' : 'text-primary';
+                            const days = item.expiryDate ? getDaysDiff(item.expiryDate) : 0;
+                            const itemStatus = getItemStatus(item.expiryDate);
+
+                            // Apply consistent styling
+                            const borderColor = itemStatus ? itemStatus.borderColorStyle : 'var(--card-border)';
+                            const effectClass = itemStatus ? itemStatus.effectClasses : '';
+                            const textColor = itemStatus ? itemStatus.textColorClass : 'text-primary';
+                            const shadowClass = itemStatus?.shadowClass || '';
 
                             return (
                                 <div
                                     key={item.id}
                                     style={{
                                         backgroundColor: 'var(--bg-surface)',
-                                        borderColor: days <= 1 ? 'rgba(239, 68, 68, 0.4)' : 'var(--card-border)',
+                                        borderColor: borderColor,
                                         boxShadow: 'none'
                                     }}
-                                    className="rounded-[2.5rem] p-6 border relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 duration-500"
+                                    className={`rounded-[2.5rem] p-6 border relative overflow-hidden group animate-in fade-in slide-in-from-bottom-4 duration-500 ${effectClass} ${shadowClass}`}
                                 >
                                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all"></div>
 
@@ -79,9 +90,9 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                                         <div className="flex justify-between items-start">
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    <span className={`material-symbols-outlined text-sm ${urgencyColor}`}>alarm</span>
-                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${urgencyColor}`}>
-                                                        {days === 0 ? t('expires_today') : days === 1 ? t('expires_tomorrow') : `${t('expires_in')} ${days} ${t('days')}`}
+                                                    <span className={`material-symbols-outlined text-sm ${textColor}`}>alarm</span>
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest ${textColor}`}>
+                                                        {itemStatus ? t(itemStatus.statusKey as any) : ''}
                                                     </span>
                                                 </div>
                                                 <h3 style={{ color: 'var(--text-main)' }} className="text-xl font-black uppercase italic tracking-tight">

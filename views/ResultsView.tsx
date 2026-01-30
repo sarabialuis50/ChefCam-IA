@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
 import { useTranslation, Language } from '../utils/i18n';
+import { formatPrepTime } from '../utils/recipeUtils';
 
 interface ResultsViewProps {
   recipes: Recipe[];
@@ -44,9 +45,12 @@ const ResultsView: React.FC<ResultsViewProps> = ({
       <header className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border">
-            <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
           </button>
-          <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-bold uppercase tracking-tight font-outfit">{t('results_title')} <span className="text-primary italic">IA</span></h1>
+          <div>
+            <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-bold uppercase tracking-tight font-outfit">{t('results_title')}<span className="text-primary italic">.IA</span></h1>
+            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_recientes')}</p>
+          </div>
         </div>
         <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary">
           {recipes?.length || 0} {t('results_title')}
@@ -123,7 +127,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                 <div className="flex items-center gap-4 text-zinc-500 text-[9px] font-black uppercase tracking-widest">
                   <span className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px] text-primary/60">schedule</span>
-                    {recipe.prepTime}
+                    {formatPrepTime(recipe.prepTime)}
                   </span>
                   <span className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px] text-primary/60">analytics</span>

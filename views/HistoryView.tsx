@@ -72,7 +72,10 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
             >
               <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
             </button>
-            <h2 style={{ color: 'var(--text-main)' }} className="text-xl font-bold tracking-tight font-outfit uppercase">{t('history_title')}</h2>
+            <div>
+              <h2 style={{ color: 'var(--text-main)' }} className="text-xl font-bold tracking-tight font-outfit uppercase">{t('history_title')}</h2>
+              <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_historial')}</p>
+            </div>
           </div>
           <div className="px-3 py-1 bg-primary/10 rounded-full border border-primary/20 text-[10px] font-bold text-primary">
             {filteredHistory.length} items

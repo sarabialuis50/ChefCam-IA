@@ -188,7 +188,10 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border active:scale-90 transition-all">
                     <span className="material-symbols-outlined text-primary">arrow_back</span>
                 </button>
-                <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('settings_title')}<span className="text-primary">.IA</span></h1>
+                <div>
+                    <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('settings_title')}<span className="text-primary">.IA</span></h1>
+                    <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_ajustes')}</p>
+                </div>
             </header>
 
             <section className="flex flex-col items-center gap-6 py-4">
@@ -235,18 +238,29 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                     </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-8 pt-2">
-                    <div className="text-center">
-                        <p className="text-primary font-black text-lg">{stats.recipes}</p>
-                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Despensa</p>
+                <div className="flex items-center justify-between w-full gap-3 pt-2">
+                    <div
+                        style={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderColor: '#22c55e' }}
+                        className="flex-1 flex flex-col items-center justify-center py-4 px-2 rounded-2xl border transition-all hover:border-primary/40"
+                    >
+                        <p className="text-primary font-black text-2xl font-outfit leading-none mb-1">{stats.recipes}</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[9px] font-black uppercase tracking-[0.15em] opacity-80">Despensa</p>
                     </div>
-                    <div className="text-center border-x border-white/5 px-8">
-                        <p className="text-primary font-black text-lg">{stats.favorites}</p>
-                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Favoritas</p>
+
+                    <div
+                        style={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderColor: '#22c55e' }}
+                        className="flex-1 flex flex-col items-center justify-center py-4 px-2 rounded-2xl border transition-all hover:border-primary/40"
+                    >
+                        <p className="text-primary font-black text-2xl font-outfit leading-none mb-1">{stats.favorites}</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[9px] font-black uppercase tracking-[0.15em] opacity-80">Favoritas</p>
                     </div>
-                    <div className="text-center">
-                        <p className="text-primary font-black text-lg">{stats.generated}</p>
-                        <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Generadas</p>
+
+                    <div
+                        style={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderColor: '#22c55e' }}
+                        className="flex-1 flex flex-col items-center justify-center py-4 px-2 rounded-2xl border transition-all hover:border-primary/40"
+                    >
+                        <p className="text-primary font-black text-2xl font-outfit leading-none mb-1">{stats.generated}</p>
+                        <p style={{ color: 'var(--text-muted)' }} className="text-[9px] font-black uppercase tracking-[0.15em] opacity-80">Generadas</p>
                     </div>
                 </div>
 

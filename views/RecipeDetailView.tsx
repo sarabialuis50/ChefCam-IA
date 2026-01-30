@@ -57,7 +57,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
 
         <header className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-20">
           <button onClick={onBack} className="w-10 h-10 rounded-full bg-black/40 border border-white/10 flex items-center justify-center">
-            <span className="material-symbols-outlined">close</span>
+            <span className="material-symbols-outlined text-primary">arrow_back</span>
           </button>
 
           <div className="flex gap-2">
@@ -97,6 +97,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
               </div>
             )}
           </div>
+          <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest px-1">Detalle Gourmet</p>
           <h1 style={{ color: 'var(--text-main)' }} className="text-3xl font-black font-tech uppercase leading-none drop-shadow-2xl">{recipe.title}</h1>
           <div className="flex items-center gap-4 mt-1">
             <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">{t('portions_detail')}: {recipe.portions || 2}</p>

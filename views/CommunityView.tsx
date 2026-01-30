@@ -414,9 +414,12 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                 style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.8)', borderColor: 'var(--card-border)' }}>
                 <div className="flex items-center gap-3">
                     <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full flex items-center justify-center border">
-                        <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
+                        <span className="material-symbols-outlined text-primary">arrow_back</span>
                     </button>
-                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('community_title')}<span className="text-primary">.IA</span></h2>
+                    <div>
+                        <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('community_title')}<span className="text-primary">.IA</span></h2>
+                        <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest">{t('sub_comunidad')}</p>
+                    </div>
                 </div>
                 <div className="flex items-center gap-2">
                     <button

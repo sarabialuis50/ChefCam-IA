@@ -24,7 +24,7 @@ const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack, lan
                     onClick={onBack}
                     className="absolute top-6 left-6 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center border border-white/10 z-10"
                 >
-                    <span className="material-symbols-outlined text-white">arrow_back</span>
+                    <span className="material-symbols-outlined text-primary">arrow_back</span>
                 </button>
             </div>
 

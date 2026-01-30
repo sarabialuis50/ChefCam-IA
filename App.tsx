@@ -56,7 +56,10 @@ const App: React.FC = () => {
   const [lastUsedPortions, setLastUsedPortions] = useState<number>(2);
   const [loadingMore, setLoadingMore] = useState(false);
   const [isAIFinished, setIsAIFinished] = useState(false);
-  const [premiumModal, setPremiumModal] = useState<{ isOpen: boolean, reason: 'recipes' | 'nutrition' | 'chefbot' | 'more-recipes' }>({
+  const [premiumModal, setPremiumModal] = useState<{
+    isOpen: boolean,
+    reason: 'recipes' | 'nutrition' | 'chefbot' | 'more-recipes' | 'community-post' | 'community-save' | 'community-comment' | 'upgrade' | 'pantry-limit' | 'favorites-limit'
+  }>({
     isOpen: false,
     reason: 'recipes'
   });
@@ -721,7 +724,7 @@ const App: React.FC = () => {
     } else {
       // Permitimos hasta 5 favoritos para usuarios FREE
       if (!state.user?.isPremium && state.favoriteRecipes.length >= 5) {
-        setPremiumModal({ isOpen: true, reason: 'recipes' });
+        setPremiumModal({ isOpen: true, reason: 'favorites-limit' });
         return;
       }
 
@@ -859,7 +862,7 @@ const App: React.FC = () => {
       case 'notifications':
         return (
           <Layout activeNav="dashboard" onNavClick={handleNavClick}>
-            <NotificationsView onBack={() => navigateTo('dashboard')} />
+            <NotificationsView onBack={() => navigateTo('dashboard')} language={state.language} />
           </Layout>
         );
       case 'challenges':
@@ -897,6 +900,11 @@ const App: React.FC = () => {
               user={state.user}
               onUpdateUser={handleUpdateUser}
               onLogout={handleLogout}
+              stats={{
+                recipes: state.inventory.length,
+                favorites: state.favoriteRecipes.length,
+                generated: state.history.length
+              }}
               language={state.language}
               onLanguageChange={(lang: 'es' | 'en') => setState(prev => ({ ...prev, language: lang }))}
             />

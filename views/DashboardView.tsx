@@ -7,6 +7,8 @@ import { supabase } from '../lib/supabase';
 import { getDaysDiff } from '../utils/dateUtils';
 import SaveFavoriteModal from '../components/SaveFavoriteModal';
 import { useTranslation } from '../utils/i18n';
+import { formatPrepTime } from '../utils/recipeUtils';
+import { getItemStatus } from '../utils/itemStatus';
 
 interface DashboardViewProps {
   user: any;
@@ -188,9 +190,9 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       {onBack && (
         <button
           onClick={onBack}
-          className="absolute top-2 left-5 text-zinc-600 hover:text-white transition-colors z-[50]"
+          className="absolute top-2 left-5 text-primary hover:text-white transition-colors z-[50]"
         >
-          <span className="material-symbols-outlined text-sm">arrow_back</span>
+          <span className="material-symbols-outlined text-sm text-primary">arrow_back</span>
         </button>
       )}
       {/* Hidden File Input */}
@@ -440,25 +442,29 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             >
               {expiringItems.map((item) => {
                 const days = getDaysDiff(item.expiryDate!);
-                const urgencyColor = days <= 1 ? 'border-red-500/30' : 'border-primary/20';
-                const textColor = days <= 1 ? 'text-red-500' : 'text-primary';
+                const itemStatus = getItemStatus(item.expiryDate);
                 const isSingle = expiringItems.length === 1;
+
+                const borderColor = itemStatus ? itemStatus.borderColorStyle : 'var(--card-border)';
+                const effectClass = itemStatus ? itemStatus.effectClasses : '';
+                const textColor = itemStatus ? itemStatus.textColorClass : 'text-primary';
+                const shadowClass = itemStatus?.shadowClass || '';
 
                 return (
                   <div
                     key={item.id}
                     style={{
                       backgroundColor: 'var(--bg-surface)',
-                      borderColor: days <= 1 ? 'rgba(239, 68, 68, 0.4)' : 'var(--card-border)',
+                      borderColor: borderColor,
                       boxShadow: 'none'
                     }}
-                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} rounded-[1.5rem] p-5 border relative overflow-hidden group animate-in fade-in duration-500`}
+                    className={`flex-shrink-0 ${isSingle ? 'w-full' : 'w-[240px]'} rounded-[1.5rem] p-5 border relative overflow-hidden group animate-in fade-in duration-500 ${effectClass} ${shadowClass}`}
                   >
                     <div className="flex flex-col h-full justify-between gap-4 relative z-10">
                       <div className="flex justify-between items-start">
                         <div className="space-y-0.5">
                           <span className={`text-[8px] font-black uppercase tracking-widest ${textColor}`}>
-                            {days < 0 ? t('expired') : days === 0 ? t('expires_today') : days === 1 ? t('expires_tomorrow') : t('expires_in_days', { count: days })}
+                            {itemStatus ? t(itemStatus.statusKey as any) : ''}
                           </span>
                           <h4 style={{ color: 'var(--text-main)' }} className="font-black text-sm uppercase italic leading-tight">
                             RESUCITA TU <span className="text-primary">{item.name}</span>
@@ -559,7 +565,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[14px] text-zinc-400">schedule</span>
-                      <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">{recipe.prepTime || '25 min'}</span>
+                      <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">{formatPrepTime(recipe.prepTime)}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <span className="material-symbols-outlined text-[14px] text-orange-500">analytics</span>
@@ -619,7 +625,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px] text-zinc-400">schedule</span>
-                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">{recipe.prepTime || '25 min'}</span>
+                    <span style={{ color: 'var(--text-muted)' }} className="text-[9px] font-bold">{formatPrepTime(recipe.prepTime)}</span>
                   </div>
                   <div className="flex items-center gap-1">
                     <span className="material-symbols-outlined text-[14px] text-orange-500">local_fire_department</span>

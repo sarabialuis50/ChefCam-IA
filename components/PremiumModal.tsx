@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 interface PremiumModalProps {
     isOpen: boolean;
     onClose: () => void;
-    reason: 'recipes' | 'nutrition' | 'chefbot' | 'more-recipes' | 'community-post' | 'community-save' | 'community-comment' | 'upgrade' | 'pantry-limit';
+    reason: 'recipes' | 'nutrition' | 'chefbot' | 'more-recipes' | 'community-post' | 'community-save' | 'community-comment' | 'upgrade' | 'pantry-limit' | 'favorites-limit';
 }
 
 const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) => {
@@ -104,7 +104,9 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             case 'community-post':
                 return 'Publicar tus creaciones en la comunidad es una función exclusiva para usuarios Premium.';
             case 'community-save':
-                return 'Guardar recetas de otros chefs en tus favoritos es una función exclusiva para usuarios Premium.';
+                return 'Guardar recetas de la comunidad es una función exclusiva para usuarios Premium. ¡Únete para coleccionar las mejores creaciones!';
+            case 'favorites-limit':
+                return 'Has alcanzado el límite de 5 recetas favoritas permitidas para el plan Free. ¡Hazte Premium para guardar recetas ilimitadas!';
             case 'community-comment':
                 return 'Has alcanzado el límite de comentarios mensuales para usuarios gratuitos.';
             case 'pantry-limit':
@@ -140,11 +142,11 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                 <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border rounded-2xl p-4 text-left space-y-2">
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        Hasta 15 recetas por consulta (vs 3 Free)
+                        Hasta 6 consultas diarias (vs 2 free)
                     </div>
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        6 Consultas Diarias (vs 2 Free)
+                        Hasta 15 recetas por consulta (vs 3 free)
                     </div>
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
@@ -152,11 +154,11 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
                     </div>
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        ChefBot Ilimitado (vs 10 créditos)
+                        Chefbot.IA ilimitado (vs 10 créditos)
                     </div>
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>
-                        Favoritos Ilimitados (vs 5 Free)
+                        Recetas Favoritas ilimitadas (vs 5 free)
                     </div>
                     <div style={{ color: 'var(--text-muted)' }} className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest">
                         <span className="material-symbols-outlined text-primary text-xs">check_circle</span>

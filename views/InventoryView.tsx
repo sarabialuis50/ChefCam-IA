@@ -3,6 +3,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { InventoryItem } from '../types';
 import { getDaysDiff, formatLocalDate } from '../utils/dateUtils';
 import { useTranslation, Language } from '../utils/i18n';
+import { getItemStatus } from '../utils/itemStatus';
 
 interface InventoryViewProps {
     inventory: InventoryItem[];
@@ -66,11 +67,14 @@ const InventoryView: React.FC<InventoryViewProps> = ({
         });
     }, [inventory, searchTerm]);
 
+    // Helper for non-status items or logic that still needs a checked color
     const getStatusColor = (expiryDate?: string) => {
         if (!expiryDate) return 'text-zinc-500';
         const daysLeft = getDaysDiff(expiryDate);
-        if (daysLeft < 0) return 'text-red-500';
-        if (daysLeft <= 3) return 'text-orange-500';
+        if (daysLeft < 0) return 'text-purple-600'; // Vencido
+        if (daysLeft === 0) return 'text-red-500'; // Hoy
+        if (daysLeft === 1) return 'text-orange-500'; // Mañana
+        if (daysLeft <= 3) return 'text-green-500'; // Prox
         return 'text-primary';
     };
 
@@ -90,7 +94,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
-                            <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
+                            <span className="material-symbols-outlined text-primary">arrow_back</span>
                         </button>
                         <div>
                             <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">{t('inventory_title')}<span className="text-primary">.IA</span></h2>
@@ -156,28 +160,43 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                         const daysLeft = item.expiryDate
                             ? getDaysDiff(item.expiryDate)
                             : null;
+
+                        // Use the new utility for consistency
+                        const itemStatus = getItemStatus(item.expiryDate);
+
+                        // We only apply the intense styling if it's expired, expires today/tomorrow, or is very close (<= 3 days)
+                        // The 'Green' status for dates >= 2 applies here if daysLeft <= 3
+
                         const isExpired = daysLeft !== null && daysLeft < 0;
-                        const isNearExpiry = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
+                        const isToday = daysLeft === 0;
+                        const isTomorrow = daysLeft === 1;
+                        const isNearExpiry = daysLeft !== null && daysLeft >= 2 && daysLeft <= 3;
+
+                        // Determine active styles based on our logic
+                        const activeStatus = (isExpired || isToday || isTomorrow || isNearExpiry) ? itemStatus : null;
+
+                        const borderColor = activeStatus ? activeStatus.borderColorStyle : 'var(--card-border)';
+                        const shadowClass = activeStatus?.shadowClass || (activeStatus ? '' : 'shadow-sm');
+                        const animateClass = activeStatus?.effectClasses || '';
 
                         return (
                             <div key={item.id}
-                                style={{ backgroundColor: 'var(--bg-surface)', borderColor: isExpired ? '#dc2626' : 'var(--card-border)' }}
-                                className={`group relative flex items-center gap-4 p-4 rounded-3xl transition-all duration-500 border shadow-sm ${isExpired
-                                    ? 'shadow-[0_0_20px_rgba(220,38,38,0.5),inset_0_0_10px_rgba(220,38,38,0.2)] animate-pulse'
-                                    : 'hover:border-primary/20'
-                                    }`}>
+                                style={{ backgroundColor: 'var(--bg-surface)', borderColor: borderColor }}
+                                className={`group relative flex items-center gap-4 p-4 rounded-3xl transition-all duration-500 border ${shadowClass} ${animateClass} ${!activeStatus ? 'hover:border-primary/20' : ''}`}>
                                 <div className="flex-1 min-w-0 flex flex-col justify-center gap-1">
                                     <div className="flex items-start justify-between">
                                         <div className="flex flex-col">
                                             <h4 style={{ color: 'var(--text-main)' }} className="text-sm font-bold truncate uppercase tracking-tight">{item.name}</h4>
-                                            {isExpired ? (
-                                                <span className="text-red-500 text-[8px] font-black uppercase tracking-widest animate-pulse mt-0.5">● {t('expired')}</span>
-                                            ) : daysLeft === 0 ? (
-                                                <span className="text-orange-500 text-[8px] font-black uppercase tracking-widest animate-pulse mt-0.5">● {t('expires_today')}</span>
-                                            ) : daysLeft === 1 ? (
-                                                <span className="text-orange-400 text-[8px] font-black uppercase tracking-widest mt-0.5">● {t('expires_tomorrow')}</span>
-                                            ) : isNearExpiry ? (
-                                                <span className="text-primary text-[8px] font-black uppercase tracking-widest mt-0.5">● {t('prox_expiry')}</span>
+
+                                            {/* Status Text Logic */}
+                                            {isExpired && itemStatus ? (
+                                                <span className={`${itemStatus.textColorClass} text-[8px] font-black uppercase tracking-widest mt-0.5`}>● {t(itemStatus.statusKey as any)}</span>
+                                            ) : isToday && itemStatus ? (
+                                                <span className={`${itemStatus.textColorClass} text-[8px] font-black uppercase tracking-widest mt-0.5`}>● {t(itemStatus.statusKey as any)}</span>
+                                            ) : isTomorrow && itemStatus ? (
+                                                <span className={`${itemStatus.textColorClass} text-[8px] font-black uppercase tracking-widest mt-0.5`}>● {t(itemStatus.statusKey as any)}</span>
+                                            ) : isNearExpiry && itemStatus ? (
+                                                <span className={`${itemStatus.textColorClass} text-[8px] font-black uppercase tracking-widest mt-0.5`}>● {t(itemStatus.statusKey as any)}</span>
                                             ) : (isNearExpiry && item.id === acceptedChallengeId) ? (
                                                 <button
                                                     onClick={() => onStartGeneration([item.name], 2, item.id)}

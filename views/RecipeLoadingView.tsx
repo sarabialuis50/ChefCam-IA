@@ -48,7 +48,7 @@ const RecipeLoadingView: React.FC<RecipeLoadingViewProps> = ({ onCancel, isFinis
         onClick={onCancel}
         className="absolute top-12 left-8 text-zinc-500 hover:text-primary transition-colors"
       >
-        <span className="material-symbols-outlined text-3xl">arrow_back</span>
+        <span className="material-symbols-outlined text-3xl text-primary">arrow_back</span>
       </button>
 
       {/* Center Graphic */}
