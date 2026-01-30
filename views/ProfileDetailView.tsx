@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface ProfileDetailViewProps {
     chef: {
@@ -11,9 +11,11 @@ interface ProfileDetailViewProps {
         specialty: string;
     };
     onBack: () => void;
+    language: Language;
 }
 
-const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack }) => {
+const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack, language }) => {
+    const t = useTranslation(language);
     return (
         <div className="min-h-screen bg-pure-black">
             {/* Header with Background */}
@@ -49,7 +51,7 @@ const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack }) =
                         </div>
 
                         <div className="flex gap-4 w-full pt-4">
-                            <button className="flex-1 bg-primary text-black py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-glow active:scale-95 transition-all">Seguir Chef</button>
+                            <button className="flex-1 bg-primary text-black py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-glow active:scale-95 transition-all">{t('follow_chef')}</button>
                             <button className="w-14 bg-zinc-900 text-white rounded-2xl flex items-center justify-center border border-white/5 uppercase font-black text-[10px]">
                                 <span className="material-symbols-outlined">mail</span>
                             </button>
@@ -60,21 +62,21 @@ const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack }) =
                     <div className="grid grid-cols-3 gap-2 py-4 border-y border-white/5">
                         <div className="text-center">
                             <p className="text-xl font-black text-white">{chef.recipesCount}</p>
-                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Recetas</p>
+                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">{t('recipe_count')}</p>
                         </div>
                         <div className="text-center">
                             <p className="text-xl font-black text-white">{chef.likesCount}</p>
-                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Fuegos</p>
+                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">{t('fires')}</p>
                         </div>
                         <div className="text-center">
                             <p className="text-xl font-black text-white">1.2k</p>
-                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">Seguidores</p>
+                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">{t('followers')}</p>
                         </div>
                     </div>
 
                     {/* Achievements / Specialty Icons */}
                     <div className="space-y-3 pt-2">
-                        <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">Logros Destacados</h4>
+                        <h4 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.2em]">{t('achievements_title')}</h4>
                         <div className="flex gap-3">
                             <div className="w-10 h-10 rounded-xl bg-orange-500/10 border border-orange-500/20 flex items-center justify-center" title="Zero Waste Master">
                                 <span className="material-symbols-outlined text-orange-500">eco</span>
@@ -91,7 +93,7 @@ const ProfileDetailView: React.FC<ProfileDetailViewProps> = ({ chef, onBack }) =
 
                 {/* Recent Creations Grid */}
                 <div className="mt-8 space-y-4 pb-12">
-                    <h3 className="text-white font-black uppercase text-sm italic tracking-widest">Creaciones Recientes</h3>
+                    <h3 className="text-white font-black uppercase text-sm italic tracking-widest">{t('recent_creations')}</h3>
                     <div className="grid grid-cols-2 gap-4">
                         {[1, 2, 3, 4].map(i => (
                             <div key={i} className="aspect-square bg-zinc-900 rounded-[2rem] border border-white/5 overflow-hidden relative group">

@@ -8,9 +8,10 @@ interface ScannerViewProps {
   onCancel: () => void;
   onComplete: (ingredients: Ingredient[], image64: string) => void;
   onReadyToGenerate: () => void;
+  language: 'es' | 'en';
 }
 
-const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReadyToGenerate }) => {
+const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReadyToGenerate, language }) => {
   const [detected, setDetected] = useState<Ingredient[]>([]);
   const [scanning, setScanning] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -153,7 +154,7 @@ const ScannerView: React.FC<ScannerViewProps> = ({ onCancel, onComplete, onReady
 
       try {
         const optimizedBase64 = await resizeAndCompressImage(base64, 1024, 1024, 0.8);
-        const ingredients = await analyzeIngredientImage(optimizedBase64);
+        const ingredients = await analyzeIngredientImage(optimizedBase64, language);
 
         clearInterval(interval);
         setProgress(100);

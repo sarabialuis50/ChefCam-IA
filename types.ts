@@ -90,4 +90,5 @@ export interface AppState {
   history: any[];
   userTags: string[];
   acceptedChallengeId: string | null;
+  language: 'es' | 'en';
 }

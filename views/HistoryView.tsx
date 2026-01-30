@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { getRecipeImage } from '../utils/imageUtils';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface HistoryItem {
   id?: string;
@@ -16,6 +17,7 @@ interface HistoryViewProps {
   history: HistoryItem[];
   onBack: () => void;
   onRecipeClick: (recipe: any) => void;
+  language: Language;
 }
 
 const ImageWithPlaceholder: React.FC<{ imageUrl?: string, id: string, alt: string }> = ({ imageUrl, id, alt }) => {
@@ -39,11 +41,12 @@ const ImageWithPlaceholder: React.FC<{ imageUrl?: string, id: string, alt: strin
   );
 };
 
-const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClick }) => {
+const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClick, language }) => {
+  const t = useTranslation(language);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('Todo');
+  const [activeCategory, setActiveCategory] = useState<string>(t('all'));
 
-  const categories = ['Todo', 'Desayuno', 'Almuerzo', 'Cena', 'Saludable', 'Otra'];
+  const categories = [t('all'), t('breakfast'), t('lunch'), t('dinner'), t('healthy'), t('other')];
 
   const filteredHistory = useMemo(() => {
     return history.filter(item => {
@@ -51,7 +54,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
         item.recipe.toLowerCase().includes(searchTerm.toLowerCase()) ||
         item.ingredient.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesCategory = activeCategory === 'Todo' || item.category === activeCategory;
+      const matchesCategory = activeCategory === t('all') || item.category === activeCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -69,7 +72,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
             >
               <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
             </button>
-            <h2 style={{ color: 'var(--text-main)' }} className="text-xl font-bold tracking-tight font-outfit uppercase">Recetas Recientes</h2>
+            <h2 style={{ color: 'var(--text-main)' }} className="text-xl font-bold tracking-tight font-outfit uppercase">{t('history_title')}</h2>
           </div>
           <div className="px-3 py-1 bg-primary/10 rounded-full border border-primary/20 text-[10px] font-bold text-primary">
             {filteredHistory.length} items
@@ -81,7 +84,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
           <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary">search</span>
           <input
             type="text"
-            placeholder="Buscar en el historial..."
+            placeholder={t('search_history_placeholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
@@ -117,8 +120,8 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
             <span className="material-symbols-outlined text-4xl opacity-20">history_toggle_off</span>
           </div>
           <div>
-            <p className="text-[10px] uppercase font-bold tracking-[0.2em] mb-1">Sin resultados</p>
-            <p className="text-xs">No se encontraron recetas en esta categoría.</p>
+            <p className="text-[10px] uppercase font-bold tracking-[0.2em] mb-1">{t('no_results')}</p>
+            <p className="text-xs">{t('no_fav_desc')}</p>
           </div>
         </div>
       ) : (
@@ -132,10 +135,10 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
                   id: item.id || `hist-${idx}`,
                   title: item.recipe,
                   imageUrl: item.imageUrl,
-                  description: `Receta preparada el ${item.date}`,
+                  description: `${t('added_on')} ${item.date}`,
                   content: {
                     ingredients: [item.ingredient],
-                    instructions: ["Detalle de pasos no disponible para esta receta histórica."],
+                    instructions: [t('nothing_found')],
                     category: item.category || 'General'
                   }
                 };
@@ -159,7 +162,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({ history, onBack, onRecipeClic
               <div className="flex-1 min-w-0 z-10">
                 <h4 style={{ color: 'var(--text-main)' }} className="text-base font-bold truncate uppercase tracking-tight mb-0.5">{item.recipe}</h4>
                 <div className="flex items-center gap-2 mb-2">
-                  <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-[0.1em]">Base:</span>
+                  <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-[0.1em]">{t('base_label')}:</span>
                   <p className="text-primary/70 text-[10px] font-black truncate uppercase">{item.ingredient}</p>
                 </div>
                 <div className="flex items-center gap-3">

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface ExploreViewProps {
   onBack: () => void;
   onRecipeClick: (recipe: Recipe) => void;
+  language: Language;
 }
 
-const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
-  const [activeFilter, setActiveFilter] = useState('TODOS');
+const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick, language }) => {
+  const t = useTranslation(language);
+  const [activeFilter, setActiveFilter] = useState(t('all').toUpperCase());
 
   const mockRecipes: Partial<Recipe>[] = [
     { id: '1', title: 'FUSILLI PESTO NEÓN', prepTime: '12 MINS', matchPercentage: 98, imageUrl: 'https://images.unsplash.com/photo-1473093226795-af9932fe5856?auto=format&fit=crop&q=80&w=400' },
@@ -19,7 +22,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
     { id: '6', title: 'ENSALADA MATRIX DE AGUACATE', prepTime: '08 MINS', imageUrl: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=400' },
   ];
 
-  const filters = ['TODOS', 'Vegano', 'Rápido', 'Keto'];
+  const filters = [t('all').toUpperCase(), t('vegan'), t('rapid'), t('keto')];
 
   return (
     <div style={{ backgroundColor: 'var(--bg-app)' }} className="flex flex-col min-h-full p-5 space-y-6 pb-6">
@@ -29,7 +32,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
           <button onClick={onBack} className="flex items-center justify-center">
             <span className="material-symbols-outlined text-primary text-4xl font-bold">chevron_left</span>
           </button>
-          <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Explorar Recetas</h1>
+          <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('explore_recipes_title')}</h1>
         </div>
         <button style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full border flex items-center justify-center">
           <span className="material-symbols-outlined text-primary text-2xl">tune</span>
@@ -41,7 +44,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
         <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-zinc-500">search</span>
         <input
           type="text"
-          placeholder="Buscar por ingrediente o plato..."
+          placeholder={t('search_explore_placeholder')}
           style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
           className="w-full border rounded-xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 outline-none focus:border-primary/50 transition-all"
         />
@@ -85,7 +88,7 @@ const ExploreView: React.FC<ExploreViewProps> = ({ onBack, onRecipeClick }) => {
               />
               {recipe.matchPercentage && (
                 <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-md border border-primary/40 px-2 py-1 rounded-md">
-                  <span className="text-primary text-[8px] font-black uppercase tracking-tighter">{recipe.matchPercentage}% MATCH</span>
+                  <span className="text-primary text-[8px] font-black uppercase tracking-tighter">{recipe.matchPercentage}% {t('match_label')}</span>
                 </div>
               )}
               {recipe.category && (

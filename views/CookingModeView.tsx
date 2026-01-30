@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Recipe } from '../types';
+import { useTranslation, Language } from '../utils/i18n';
 
 // Speech Recognition Types
 declare global {
@@ -12,9 +13,11 @@ declare global {
 interface CookingModeViewProps {
     recipe: Recipe | null;
     onClose: () => void;
+    language: Language;
 }
 
-const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) => {
+const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose, language }) => {
+    const t = useTranslation(language);
     const [currentStep, setCurrentStep] = useState(0);
     const [isListening, setIsListening] = useState(false);
     const [isSpeaking, setIsSpeaking] = useState(false);
@@ -32,28 +35,34 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
             recognitionRef.current = new SpeechRecognition();
             recognitionRef.current.continuous = true;
             recognitionRef.current.interimResults = false;
-            recognitionRef.current.lang = 'es-ES';
+            recognitionRef.current.lang = language === 'es' ? 'es-ES' : 'en-US';
 
             recognitionRef.current.onresult = (event: any) => {
                 const command = event.results[event.results.length - 1][0].transcript.toLowerCase();
 
-                if (command.includes('siguiente') || command.includes('próximo')) {
+                const nextCmds = language === 'es' ? ['siguiente', 'próximo'] : ['next', 'next step'];
+                const backCmds = language === 'es' ? ['atrás', 'anterior'] : ['back', 'previous'];
+                const repeatCmds = language === 'es' ? ['repetir', 'lee'] : ['repeat', 'read', 'listen'];
+                const exitCmds = language === 'es' ? ['salir', 'cerrar', 'parar'] : ['exit', 'close', 'stop'];
+                const helpCmds = language === 'es' ? ['ayuda', 'qué puedo decir'] : ['help', 'what can i say'];
+
+                if (nextCmds.some(c => command.includes(c))) {
                     handleNext();
-                } else if (command.includes('atrás') || command.includes('anterior')) {
+                } else if (backCmds.some(c => command.includes(c))) {
                     handleBack();
-                } else if (command.includes('repetir') || command.includes('lee')) {
+                } else if (repeatCmds.some(c => command.includes(c))) {
                     readStep(currentStep);
-                } else if (command.includes('salir') || command.includes('cerrar') || command.includes('parar')) {
+                } else if (exitCmds.some(c => command.includes(c))) {
                     onClose();
-                } else if (command.includes('ayuda') || command.includes('qué puedo decir')) {
+                } else if (helpCmds.some(c => command.includes(c))) {
                     readHelp();
                 }
             };
 
             const readHelp = () => {
-                const helpText = "Puedes decir: siguiente para avanzar, atrás para retroceder, repetir para volver a escuchar el paso, o salir para cerrar el asistente.";
+                const helpText = t('voice_commands_desc');
                 const utterance = new SpeechSynthesisUtterance(helpText);
-                utterance.lang = 'es-ES';
+                utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
                 window.speechSynthesis.speak(utterance);
             };
 
@@ -94,7 +103,7 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
         if (!text) return;
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-ES';
+        utterance.lang = language === 'es' ? 'es-ES' : 'en-US';
         utterance.onstart = () => setIsSpeaking(true);
         utterance.onend = () => setIsSpeaking(false);
         window.speechSynthesis.speak(utterance);
@@ -124,11 +133,11 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
             <header style={{ backgroundColor: 'rgba(var(--bg-app-rgb), 0.4)', borderColor: 'var(--card-border)' }} className="p-6 space-y-4 backdrop-blur-md border-b">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-primary">Modo Cocina Elite</h2>
+                        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-primary">{t('cooking_mode_title')}</h2>
                         {isListening && (
                             <div className="flex gap-1 items-center">
                                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
-                                <span className="text-[8px] font-black text-primary uppercase tracking-tighter">Escuchando...</span>
+                                <span className="text-[8px] font-black text-primary uppercase tracking-tighter">{t('listening')}</span>
                             </div>
                         )}
                     </div>
@@ -147,7 +156,7 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
                 </div>
                 <div className="space-y-2">
                     <div className="flex justify-between items-end">
-                        <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-widest">Paso {currentStep + 1} de {steps.length}</span>
+                        <span style={{ color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase tracking-widest">{t('step_label')} {currentStep + 1} {t('step_of')} {steps.length}</span>
                         <span className="text-[10px] text-primary font-black">{Math.round(progress)}%</span>
                     </div>
                     <div className="h-1.5 w-full rounded-full overflow-hidden border" style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}>
@@ -177,27 +186,27 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
                         </p>
                         {isListening && (
                             <div className="pt-4 flex justify-center gap-4">
-                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"Siguiente"</span>
-                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"Anterior"</span>
-                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"Repetir"</span>
-                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"Ayuda"</span>
-                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"Salir"</span>
+                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"{t('voice_help_next')}"</span>
+                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"{t('voice_help_back')}"</span>
+                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"{t('voice_help_repeat')}"</span>
+                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"{t('voice_help_help')}"</span>
+                                <span style={{ borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }} className="text-[10px] font-bold uppercase border px-3 py-1 rounded-lg">"{t('voice_help_exit')}"</span>
                             </div>
                         )}
                     </div>
 
                     {/* Quick Ingredients Reference (Premium Touch) */}
                     <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'rgba(57, 255, 20, 0.3)' }} className="border rounded-3xl p-6 space-y-3 shadow-sm">
-                        <h4 style={{ color: 'var(--text-muted)' }} className="text-[10px] font-black uppercase tracking-[0.2em] text-center">Tips del Chef</h4>
+                        <h4 style={{ color: 'var(--text-muted)' }} className="text-[10px] font-black uppercase tracking-[0.2em] text-center">{t('chef_tips')}</h4>
                         <p style={{ color: 'var(--text-muted)' }} className="text-xs text-center italic">
                             "{recipe.tips && recipe.tips[currentStep]
                                 ? recipe.tips[currentStep]
                                 : [
-                                    "Sigue el paso cuidadosamente para un resultado perfecto.",
-                                    "Recuerda mantener el área de trabajo limpia para cocinar mejor.",
-                                    "El secreto está en el cariño que le pongas a la preparación.",
-                                    "Prueba la sazón en cada paso para ajustar si es necesario.",
-                                    "Mantén los ingredientes a la mano para no perder el ritmo."
+                                    t('follow_step_carefully'),
+                                    t('keep_area_clean'),
+                                    t('secret_is_love'),
+                                    t('taste_frequently'),
+                                    t('keep_ingredients_handy')
                                 ][currentStep % 5]
                             }"
                         </p>
@@ -213,14 +222,14 @@ const CookingModeView: React.FC<CookingModeViewProps> = ({ recipe, onClose }) =>
                     style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'rgba(57, 255, 20, 0.4)', color: 'var(--text-muted)' }}
                     className="py-5 rounded-2xl font-black uppercase text-xs tracking-widest border disabled:opacity-20 transition-all active:scale-95"
                 >
-                    Anterior
+                    {t('back')}
                 </button>
                 <button
                     onClick={handleNext}
                     className="py-5 bg-primary text-black rounded-2xl font-black uppercase text-xs tracking-widest shadow-strong border border-primary/50 transition-all active:scale-95"
                     style={{ backgroundColor: 'var(--primary)' }}
                 >
-                    {currentStep === steps.length - 1 ? 'Finalizar' : 'Siguiente Paso'}
+                    {currentStep === steps.length - 1 ? t('finish') : t('next_step')}
                 </button>
             </footer>
         </div>

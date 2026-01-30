@@ -10,15 +10,16 @@ const ai = new GoogleGenAI({
   apiKey: API_KEY
 });
 
-export const analyzeIngredientImage = async (base64Image: string): Promise<Ingredient[]> => {
+export const analyzeIngredientImage = async (base64Image: string, language: 'es' | 'en' = 'es'): Promise<Ingredient[]> => {
   try {
+    const langLabel = language === 'es' ? 'ESPAÑOL' : 'ENGLISH';
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
       contents: [
         {
           role: 'user',
           parts: [
-            { text: "Analiza esta imagen y identifica los ingredientes comestibles principales. Devuelve un arreglo JSON de objetos con: name, confidence, properties, nutrients. TODO EN ESPAÑOL." },
+            { text: `Analiza esta imagen y identifica los ingredientes comestibles principales. Devuelve un arreglo JSON de objetos con: name, confidence, properties, nutrients. TODO EN ${langLabel}.` },
             {
               inlineData: {
                 mimeType: "image/jpeg",
@@ -45,17 +46,19 @@ export const generateRecipes = async (
   isPremium: boolean = false,
   allergies: string[] = [],
   cookingGoal: string = 'explorar',
-  count: number = 5
+  count: number = 5,
+  language: 'es' | 'en' = 'es'
 ): Promise<Recipe[]> => {
   try {
+    const langLabel = language === 'es' ? 'ESPAÑOL' : 'ENGLISH';
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
       contents: [{
         role: 'user',
         parts: [{
           text: `Actúa como Chef Ejecutivo. Crea ${count} recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
-        IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones.
-        Formato: arreglo JSON de objetos Recipe con estos campos exactos:
+        IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones. TODO EN ${langLabel}.
+        Asegúrate de que "photoQuery" sean 2-3 palabras clave en INGLÉS siempre. Todo lo demás en ${langLabel}.
         {
           "id": "string",
           "title": "string",

@@ -6,6 +6,7 @@ import { resizeAndCompressImage, getRecipeImage } from '../utils/imageUtils';
 import { supabase } from '../lib/supabase';
 import { getDaysDiff } from '../utils/dateUtils';
 import SaveFavoriteModal from '../components/SaveFavoriteModal';
+import { useTranslation } from '../utils/i18n';
 
 interface DashboardViewProps {
   user: any;
@@ -33,6 +34,9 @@ interface DashboardViewProps {
   onCreateTag?: (tag: string) => void;
   onUpdateTag?: (oldName: string, newName: string) => void;
   onDeleteTag?: (tag: string) => void;
+  recipeGenerationsToday?: number;
+  onShowPremiumModal?: () => void;
+  language: 'es' | 'en';
 }
 
 const DashboardView: React.FC<DashboardViewProps> = ({
@@ -61,8 +65,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   userTags = [],
   onCreateTag,
   onUpdateTag,
-  onDeleteTag
+  onDeleteTag,
+  recipeGenerationsToday = 0,
+  onShowPremiumModal,
+  language
 }) => {
+  const t = useTranslation(language);
   const [manualInput, setManualInput] = useState('');
   const [portions, setPortions] = useState(2);
   const [loading, setLoading] = useState(false);
@@ -120,12 +128,24 @@ const DashboardView: React.FC<DashboardViewProps> = ({
   };
 
   const handleUploadClick = () => {
+    const dailyLimit = user?.isPremium ? 6 : 2;
+    if (recipeGenerationsToday >= dailyLimit) {
+      if (onShowPremiumModal) onShowPremiumModal();
+      return;
+    }
     fileInputRef.current?.click();
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    // Double check limit before processing (extra safety)
+    const dailyLimit = user?.isPremium ? 6 : 2;
+    if (recipeGenerationsToday >= dailyLimit) {
+      if (onShowPremiumModal) onShowPremiumModal();
+      return;
+    }
 
     setAnalyzing(true);
     setPreviewImage(URL.createObjectURL(file)); // Set preview immediately
@@ -134,7 +154,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
       reader.onloadend = async () => {
         const originalBase64 = reader.result as string;
         const optimizedBase64 = await resizeAndCompressImage(originalBase64, 1024, 1024, 0.8);
-        const identifiedIngredients = await analyzeIngredientImage(optimizedBase64);
+        const identifiedIngredients = await analyzeIngredientImage(optimizedBase64, language);
         // ... rest of logic
         if (identifiedIngredients && identifiedIngredients.length > 0) {
           // Persistencia en Supabase si el usuario está logueado
@@ -264,7 +284,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 ) : (
                   <div className="flex flex-col items-center gap-4 w-full">
                     <span style={{ background: 'var(--bg-surface-inner)', color: 'var(--text-main)' }} className="text-[10px] font-black uppercase tracking-widest drop-shadow-lg animate-in fade-in duration-500 px-3 py-1 rounded-full backdrop-blur-sm border border-white/10">
-                      Captura Exitosa
+                      {t('scan_success')}
                     </span>
 
                     {/* Chips de ingredientes detectados ORIGINAL */}
@@ -302,8 +322,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                   <div style={{ backgroundColor: 'rgba(var(--primary-rgb), 0.1)', color: 'var(--primary)' }} className="w-16 h-16 rounded-full flex items-center justify-center mb-2">
                     <span className="material-symbols-outlined text-3xl notranslate">photo_camera</span>
                   </div>
-                  <h4 style={{ color: 'var(--text-main)' }} className="font-bold text-base">Vista previa de la foto</h4>
-                  <p style={{ color: 'var(--text-muted)' }} className="text-[11px] font-medium max-w-[200px]">Toma una foto o selecciona de tu galería</p>
+                  <h4 style={{ color: 'var(--text-main)' }} className="font-bold text-base">{t('take_photo')}</h4>
+                  <p style={{ color: 'var(--text-muted)' }} className="text-[11px] font-medium max-w-[200px]">{t('gallery')}</p>
                 </>
               )}
             </div>
@@ -318,7 +338,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm"
           >
             <span className="material-symbols-outlined text-lg notranslate">photo_camera</span>
-            Tomar foto
+            {t('take_photo')}
           </button>
           <button
             onClick={handleUploadClick}
@@ -326,27 +346,27 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm"
           >
             <span className="material-symbols-outlined text-lg notranslate">image</span>
-            Galería
+            {t('gallery')}
           </button>
         </div>
 
         {/* Manual Input - PILL DESIGN WITH PERMANENT SUBTLE BORDER */}
         <div className="space-y-2">
-          <label style={{ color: 'var(--text-main)' }} className="text-[12px] font-bold block ml-1 uppercase tracking-tight opacity-80">Entrada manual</label>
+          <label style={{ color: 'var(--text-main)' }} className="text-[12px] font-bold block ml-1 uppercase tracking-tight opacity-80">{t("manual_input")}</label>
           <input
             type="text"
-            placeholder="Ej: Pollo, Arroz, Aguacate..."
+            placeholder={t("manual_placeholder")}
             value={manualInput}
             onChange={(e) => setManualInput(e.target.value)}
             style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)' }}
             className="w-full border border-primary/40 rounded-full py-2.5 px-6 text-sm placeholder-zinc-500 focus:border-primary outline-none transition-all"
           />
-          <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-medium ml-1">Escribe el nombre del ingrediente o usa la cámara</p>
+          <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-medium ml-1">{t('manual_input_help')}</p>
         </div>
 
         {/* Portions Selector */}
         <div className="space-y-3">
-          <label style={{ color: 'var(--text-main)' }} className="text-xs font-bold block ml-1">Número de porciones</label>
+          <label style={{ color: 'var(--text-main)' }} className="text-xs font-bold block ml-1">{t('portions')}</label>
           <div className="flex items-center gap-6">
             <button
               onClick={() => setPortions(Math.max(1, portions - 1))}
@@ -377,7 +397,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 : 'bg-transparent border-2 border-primary/50 text-primary font-bold shadow-none'}`}
           >
             <span className="material-symbols-outlined notranslate">{loading ? 'sync' : 'auto_awesome'}</span>
-            {loading ? "Generando..." : "Generar recetas"}
+            {loading ? t('generating') : t('generate_recipes')}
           </button>
 
           <button
@@ -385,7 +405,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             className="w-full bg-transparent border border-primary/40 text-primary font-bold py-4 rounded-2xl flex items-center justify-center gap-2 uppercase text-[11px] active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-sm notranslate">refresh</span>
-            Reiniciar Sistema
+            {t('reset_system')}
           </button>
         </div>
       </section>
@@ -405,12 +425,12 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         return (
           <section className="space-y-4">
             <div className="flex justify-between items-center px-1">
-              <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.15em] text-[11px] opacity-80">Retos por Vencer</h3>
+              <h3 style={{ color: 'var(--text-main)' }} className="font-bold uppercase tracking-[0.15em] text-[11px] opacity-80">{t('expiring_challenges')}</h3>
               <button
                 onClick={() => onNavClick?.('challenges')}
                 className="text-primary text-[10px] font-black uppercase tracking-tighter transition-opacity hover:opacity-70"
               >
-                Ver más
+                {t('view_more')}
               </button>
             </div>
 
@@ -438,7 +458,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                       <div className="flex justify-between items-start">
                         <div className="space-y-0.5">
                           <span className={`text-[8px] font-black uppercase tracking-widest ${textColor}`}>
-                            {days < 0 ? '¡VENCIDO!' : days === 0 ? 'Vence Hoy' : days === 1 ? 'Vence Mañana' : `En ${days} días`}
+                            {days < 0 ? t('expired') : days === 0 ? t('expires_today') : days === 1 ? t('expires_tomorrow') : t('expires_in_days', { count: days })}
                           </span>
                           <h4 style={{ color: 'var(--text-main)' }} className="font-black text-sm uppercase italic leading-tight">
                             RESUCITA TU <span className="text-primary">{item.name}</span>
@@ -454,7 +474,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                           onClick={() => onStartGeneration?.([item.name], 2, item.id)}
                           className="flex-[1.5] bg-primary text-black py-2 rounded-lg text-[8px] font-bold uppercase tracking-widest shadow-strong active:scale-95 transition-all whitespace-nowrap"
                         >
-                          ACEPTAR DESAFÍO
+                          {t('accept_challenge')}
                         </button>
                         <button
                           onClick={() => onNavClick?.('inventory')}

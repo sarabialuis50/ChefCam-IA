@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface ResultsViewProps {
   recipes: Recipe[];
@@ -9,6 +10,7 @@ interface ResultsViewProps {
   isPremium?: boolean;
   onGenerateMore?: () => void;
   loadingMore?: boolean;
+  language: Language;
 }
 
 const ResultsView: React.FC<ResultsViewProps> = ({
@@ -17,8 +19,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({
   onBack,
   isPremium,
   onGenerateMore,
-  loadingMore
+  loadingMore,
+  language
 }) => {
+  const t = useTranslation(language);
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredRecipes = useMemo(() => {
@@ -42,10 +46,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border">
             <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
           </button>
-          <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-bold uppercase tracking-tight font-outfit">Recetas <span className="text-primary italic">IA</span></h1>
+          <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-bold uppercase tracking-tight font-outfit">{t('results_title')} <span className="text-primary italic">IA</span></h1>
         </div>
         <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[10px] font-bold text-primary">
-          {recipes?.length || 0} Resultados
+          {recipes?.length || 0} {t('results_title')}
         </div>
       </header>
 
@@ -56,7 +60,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Filtrar por nombre o ingrediente..."
+          placeholder={t('search_results_placeholder')}
           style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
           className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 outline-none focus:border-primary/50 transition-all shadow-inner"
         />
@@ -89,7 +93,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                   <div className="flex items-center gap-2">
                     <div className="h-[1px] w-4 bg-primary/40" />
                     <span className="text-[8px] font-black text-primary uppercase tracking-[0.2em]">
-                      {recipe.matchPercentage || 100}% Coincidencia
+                      {recipe.matchPercentage || 100}% {t('match_label')}
                     </span>
                   </div>
                   <h3 style={{ color: 'var(--text-main)' }} className="text-[14px] font-black leading-tight transition-colors line-clamp-2 uppercase">
@@ -129,7 +133,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
 
                 <div className="bg-primary text-black px-4 py-1.5 rounded-full text-[10px] font-black uppercase flex items-center gap-1.5 hover:brightness-110 shadow-glow active:scale-95 transition-all">
                   <span className="material-symbols-outlined text-sm font-black">play_arrow</span>
-                  Cocinar ahora
+                  {t('cook_now')}
                 </div>
               </div>
             </button>
@@ -137,7 +141,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
         ) : (
           <div className="text-center py-20 text-zinc-600">
             <span className="material-symbols-outlined text-5xl opacity-20 mb-2">search_off</span>
-            <p className="text-sm font-bold uppercase tracking-widest">No se encontraron resultados</p>
+            <p className="text-sm font-bold uppercase tracking-widest">{t('no_results')}</p>
           </div>
         )}
 
@@ -150,10 +154,10 @@ const ResultsView: React.FC<ResultsViewProps> = ({
               className="w-full bg-primary text-black font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] uppercase text-sm active:scale-95 transition-all disabled:opacity-50"
             >
               <span className="material-symbols-outlined font-bold">{loadingMore ? 'sync' : 'rocket_launch'}</span>
-              {loadingMore ? "Generando más..." : "Generar más recetas"}
+              {loadingMore ? t('generating_more') : t('generate_more_recipes')}
             </button>
             <p className="text-zinc-600 text-[9px] font-bold uppercase tracking-[0.15em] text-center mt-3">
-              {recipes.length}/15 versiones de recetas generadas
+              {t('versions_generated', { count: recipes.length })}
             </p>
           </div>
         )}

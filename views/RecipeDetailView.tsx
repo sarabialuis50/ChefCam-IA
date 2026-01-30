@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
 import SaveFavoriteModal from '../components/SaveFavoriteModal';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface RecipeDetailViewProps {
   recipe: Recipe | null;
@@ -17,9 +18,11 @@ interface RecipeDetailViewProps {
   onCreateTag?: (tag: string) => void;
   onUpdateTag?: (oldName: string, newName: string) => void;
   onDeleteTag?: (tag: string) => void;
+  language: Language;
 }
 
-const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite, onToggleFavorite, onBack, onNutritionClick, onStartCooking, onShare, isPremium, onShowPremium, userTags = [], onCreateTag, onUpdateTag, onDeleteTag }) => {
+const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite, onToggleFavorite, onBack, onNutritionClick, onStartCooking, onShare, isPremium, onShowPremium, userTags = [], onCreateTag, onUpdateTag, onDeleteTag, language }) => {
+  const t = useTranslation(language);
   const [showTagModal, setShowTagModal] = useState(false);
 
   if (!recipe) return null;
@@ -86,17 +89,17 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
               NutriScore {recipe.nutriScore || 'A'}
             </div>
             <div className="inline-flex px-2.5 py-1 rounded-full bg-primary border border-primary/40 text-black text-[10px] font-black uppercase tracking-tight shadow-glow-subtle">
-              {recipe.matchPercentage || 100}% Match
+              {recipe.matchPercentage || 100}% {t('match_label')}
             </div>
             {(recipe.category || isFavorite) && (
               <div className="inline-flex px-2.5 py-1 rounded-full bg-blue-500 border border-blue-600 text-white text-[10px] font-black uppercase tracking-tight shadow-sm">
-                {recipe.category || 'Favorita'}
+                {recipe.category || t('favorites_title')}
               </div>
             )}
           </div>
           <h1 style={{ color: 'var(--text-main)' }} className="text-3xl font-black font-tech uppercase leading-none drop-shadow-2xl">{recipe.title}</h1>
           <div className="flex items-center gap-4 mt-1">
-            <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">Porciones: {recipe.portions || 2}</p>
+            <p className="text-primary font-bold text-xs uppercase tracking-[0.2em]">{t('portions_detail')}: {recipe.portions || 2}</p>
             {isFavorite && (
               <span className="px-2 py-0.5 bg-red-500 text-white rounded text-[8px] font-black uppercase tracking-widest shadow-lg">
                 FAVORITA
@@ -123,7 +126,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
           </div>
           <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="p-4 rounded-3xl border text-center shadow-inner hover:border-primary/20 transition-all">
             <p className="text-primary text-sm font-black tracking-tight">{recipe.fat || 'N/A'}</p>
-            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">Grasa</p>
+            <p className="text-[8px] text-zinc-600 uppercase font-black mt-1 tracking-widest">{t('fat')}</p>
           </div>
         </div>
 
@@ -137,8 +140,8 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
               <span className="material-symbols-outlined text-xl">analytics</span>
             </div>
             <div className="text-left">
-              <p style={{ color: 'var(--text-main)' }} className="text-xs font-black uppercase tracking-widest">Informe Nutricional</p>
-              <p className="text-[10px] text-zinc-500 font-medium">{isPremium ? 'Ver análisis detallado' : 'Hazte Premium para ver detalles completos'}</p>
+              <p style={{ color: 'var(--text-main)' }} className="text-xs font-black uppercase tracking-widest">{t('nutrition_report')}</p>
+              <p className="text-[10px] text-zinc-500 font-medium">{isPremium ? t('view_detailed_analysis') : t('get_premium_for_details')}</p>
             </div>
           </div>
           <span className="material-symbols-outlined text-primary group-hover:translate-x-1 transition-transform">chevron_right</span>
@@ -147,7 +150,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
         {/* Ingredients */}
         <section className="space-y-6">
           <div className="flex items-center justify-between px-2">
-            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">Ingredientes Base</h2>
+            <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">{t('base_ingredients')}</h2>
             <span className="text-[9px] font-bold text-zinc-600 uppercase">{(recipe.ingredients || []).length} items</span>
           </div>
           <ul className="space-y-4">
@@ -168,11 +171,11 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-black uppercase tracking-widest text-primary flex items-center gap-2">
                 <span className="material-symbols-outlined text-sm animate-pulse">auto_awesome</span>
-                Toque Gourmet
+                {t('gourmet_touch')}
               </h2>
-              <span className="text-[8px] font-black bg-primary text-black px-2 py-0.5 rounded uppercase tracking-tighter shadow-glow">Premium Suggestion</span>
+              <span className="text-[8px] font-black bg-primary text-black px-2 py-0.5 rounded uppercase tracking-tighter shadow-glow">{t('premium_suggestion')}</span>
             </div>
-            <p className="text-[10px] text-zinc-400 font-medium">Añade estos ingredientes para elevar tu plato:</p>
+            <p className="text-[10px] text-zinc-400 font-medium">{t('add_these_to_elevate')}</p>
             <ul className="grid grid-cols-2 gap-2">
               {recipe.suggestedExtras.map((extra, idx) => (
                 <li key={idx} className="flex items-center gap-2 bg-black/40 p-2 rounded-xl border border-white/5">
@@ -186,7 +189,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
 
         {/* Preparation */}
         <section className="space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-widest text-primary">Preparación</h2>
+          <h2 className="text-sm font-bold uppercase tracking-widest text-primary">{t('preparation')}</h2>
           <div className="space-y-6">
             {(recipe.instructions || []).length > 0 ? recipe.instructions.map((step, idx) => (
               <div key={idx} className="flex gap-4">
@@ -208,7 +211,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
             className="w-full bg-primary text-black font-black py-5 rounded-2xl flex items-center justify-center gap-3 shadow-[0_0_20px_rgba(57,255,20,0.4)] uppercase text-sm active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined font-black">restaurant_menu</span>
-            Empezar a Cocinar
+            {t('start_cooking')}
           </button>
         </div>
       </div>

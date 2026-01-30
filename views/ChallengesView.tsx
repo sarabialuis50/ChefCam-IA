@@ -1,15 +1,17 @@
-
 import React, { useState } from 'react';
 import { InventoryItem } from '../types';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface ChallengesViewProps {
     onBack: () => void;
     onAcceptChallenge: (item: InventoryItem) => void;
     onViewInventory?: () => void;
     inventory: InventoryItem[];
+    language: Language;
 }
 
-const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallenge, onViewInventory, inventory }) => {
+const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallenge, onViewInventory, inventory, language }) => {
+    const t = useTranslation(language);
     const [searchQuery, setSearchQuery] = useState('');
 
     const expiringItems = inventory
@@ -33,10 +35,10 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                     <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full flex items-center justify-center border">
                         <span className="material-symbols-outlined text-primary">arrow_back</span>
                     </button>
-                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">RETOS<span className="text-primary">.IA</span></h2>
+                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('challenges_title')}<span className="text-primary">.IA</span></h2>
                 </div>
                 <div className="px-4 py-1.5 bg-primary/20 rounded-full border border-primary/30">
-                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">{expiringItems.length} RETOS</span>
+                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">{expiringItems.length} {t('challenges_count')}</span>
                 </div>
             </header>
 
@@ -46,7 +48,7 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary opacity-60">search</span>
                     <input
                         type="text"
-                        placeholder="Buscar entre tus retos..."
+                        placeholder={t('search_challenges')}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
@@ -79,11 +81,11 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                                                 <div className="flex items-center gap-2">
                                                     <span className={`material-symbols-outlined text-sm ${urgencyColor}`}>alarm</span>
                                                     <span className={`text-[10px] font-black uppercase tracking-widest ${urgencyColor}`}>
-                                                        {days === 0 ? 'Vence Hoy' : days === 1 ? 'Vence Mañana' : `Vence en ${days} días`}
+                                                        {days === 0 ? t('expires_today') : days === 1 ? t('expires_tomorrow') : `${t('expires_in')} ${days} ${t('days')}`}
                                                     </span>
                                                 </div>
                                                 <h3 style={{ color: 'var(--text-main)' }} className="text-xl font-black uppercase italic tracking-tight">
-                                                    RESUCITA TU <span className="text-primary">{item.name}</span>
+                                                    {t('resurrect_your')} <span className="text-primary">{item.name}</span>
                                                 </h3>
                                             </div>
                                             <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-12 h-12 rounded-2xl border flex items-center justify-center">
@@ -92,7 +94,7 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                                         </div>
 
                                         <p style={{ color: 'var(--text-muted)' }} className="text-[11px] font-medium leading-relaxed max-w-[90%]">
-                                            Evita el desperdicio. Crea una receta increíble con este ingrediente antes de que caduque.
+                                            {t('avoid_waste')}
                                         </p>
 
                                         <div className="flex gap-3">
@@ -101,14 +103,14 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                                                 className="flex-[1.5] bg-primary text-black py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(57,255,20,0.3)] active:scale-95 transition-all whitespace-nowrap"
                                                 style={{ backgroundColor: '#39FF14' }}
                                             >
-                                                ACEPTAR DESAFÍO
+                                                {t('accept_challenge')}
                                             </button>
                                             <button
                                                 onClick={onViewInventory}
                                                 style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)', color: 'var(--text-muted)' }}
                                                 className="flex-1 py-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest border active:scale-95 transition-all whitespace-nowrap"
                                             >
-                                                DEJAR PARA LUEGO
+                                                {t('leave_for_later')}
                                             </button>
                                         </div>
                                     </div>
@@ -118,7 +120,7 @@ const ChallengesView: React.FC<ChallengesViewProps> = ({ onBack, onAcceptChallen
                     ) : (
                         <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-40">
                             <span className="material-symbols-outlined text-6xl">inventory</span>
-                            <p className="text-xs font-bold uppercase tracking-widest">No tienes retos pendientes por ahora</p>
+                            <p className="text-xs font-bold uppercase tracking-widest">{t('no_challenges')}</p>
                         </div>
                     )}
                 </div>

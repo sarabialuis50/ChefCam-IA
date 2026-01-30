@@ -42,7 +42,8 @@ const App: React.FC = () => {
     inventory: [],
     history: [],
     userTags: [],
-    acceptedChallengeId: null
+    acceptedChallengeId: null,
+    language: (localStorage.getItem('chefscan_lang') as 'es' | 'en') || 'es'
   });
 
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
@@ -136,8 +137,10 @@ const App: React.FC = () => {
         currentView: state.currentView,
         previousView: state.previousView,
         selectedRecipe: selectedRecipe,
-        lastTabViews: lastTabViews
+        lastTabViews: lastTabViews,
+        language: state.language
       }));
+      localStorage.setItem('chefscan_lang', state.language);
     }
   }, [state.user, state.favoriteRecipes, state.recentRecipes, state.inventory, state.history, state.currentView, selectedRecipe, lastTabViews]);
 
@@ -298,7 +301,21 @@ const App: React.FC = () => {
     });
   };
 
+  const checkDailyLimit = () => {
+    const dailyLimit = state.user?.isPremium ? 6 : 2;
+    if (state.recipeGenerationsToday >= dailyLimit) {
+      setPremiumModal({ isOpen: true, reason: 'recipes' });
+      return true;
+    }
+    return false;
+  };
+
   const handleNavClick = (view: AppView) => {
+    // Check limit if trying to access scanner via bottom nav
+    if (view === 'scanner') {
+      if (checkDailyLimit()) return;
+    }
+
     // If clicking a root tab view, resolve to its last active sub-view
     const rootViews: AppView[] = ['dashboard', 'favorites', 'inventory', 'community'];
     if (rootViews.includes(view)) {
@@ -487,7 +504,8 @@ const App: React.FC = () => {
     setState(prev => ({
       ...prev,
       scannedIngredients: ingredients,
-      scannedImage: image64
+      scannedImage: image64,
+      recipeGenerationsToday: prev.recipeGenerationsToday + 1
     }));
 
     // Persistencia en Supabase si el usuario está logueado
@@ -550,7 +568,8 @@ const App: React.FC = () => {
         !!state.user?.isPremium,
         state.user?.allergies,
         state.user?.cookingGoal,
-        recipeCount
+        recipeCount,
+        state.language
       );
       setIsAIFinished(true);
 
@@ -784,7 +803,9 @@ const App: React.FC = () => {
               scannedIngredients={state.scannedIngredients}
               scannedImage={state.scannedImage}
               onClearScanned={() => setState(prev => ({ ...prev, scannedIngredients: [], scannedImage: undefined }))}
-              onScanClick={() => navigateTo('scanner')}
+              onScanClick={() => {
+                if (!checkDailyLimit()) navigateTo('scanner');
+              }}
               onRecipeClick={handleSelectRecipe}
               onGenerate={() => { }}
               onToggleFavorite={toggleFavorite}
@@ -796,6 +817,8 @@ const App: React.FC = () => {
               onComplete={handleScanComplete}
               onAddItem={handleInventoryAdd}
               inventory={state.inventory}
+              recipeGenerationsToday={state.recipeGenerationsToday}
+              onShowPremiumModal={() => setPremiumModal({ isOpen: true, reason: 'recipes' })}
               acceptedChallengeId={state.acceptedChallengeId}
               onBack={() => navigateTo('landing')}
               isDarkMode={isDarkMode}
@@ -804,6 +827,7 @@ const App: React.FC = () => {
               onCreateTag={handleCreateTag}
               onUpdateTag={handleUpdateTag}
               onDeleteTag={handleDeleteTag}
+              language={state.language}
             />
           </Layout>
         );
@@ -818,6 +842,7 @@ const App: React.FC = () => {
                 setSelectedChef(chef);
                 navigateTo('profile-detail');
               }}
+              language={state.language}
             />
           </Layout>
         );
@@ -827,6 +852,7 @@ const App: React.FC = () => {
             <ProfileDetailView
               chef={selectedChef || { name: 'Chef Invitado', level: 1, recipesCount: 0, likesCount: 0, specialty: 'Cocinero Casual' }}
               onBack={() => navigateTo('community')}
+              language={state.language}
             />
           </Layout>
         );
@@ -844,6 +870,7 @@ const App: React.FC = () => {
               onBack={() => navigateTo('dashboard')}
               onAcceptChallenge={(item) => handleStartGeneration([item.name], 2, item.id)}
               onViewInventory={() => navigateTo('inventory')}
+              language={state.language}
             />
           </Layout>
         );
@@ -858,6 +885,7 @@ const App: React.FC = () => {
               onStartGeneration={handleStartGeneration}
               acceptedChallengeId={state.acceptedChallengeId}
               onBack={() => navigateTo('dashboard')}
+              language={state.language}
             />
           </Layout>
         );
@@ -869,6 +897,8 @@ const App: React.FC = () => {
               user={state.user}
               onUpdateUser={handleUpdateUser}
               onLogout={handleLogout}
+              language={state.language}
+              onLanguageChange={(lang: 'es' | 'en') => setState(prev => ({ ...prev, language: lang }))}
             />
           </Layout>
         );
@@ -887,6 +917,7 @@ const App: React.FC = () => {
             <ExploreView
               onBack={() => navigateTo('dashboard')}
               onRecipeClick={handleSelectRecipe}
+              language={state.language}
             />
           </Layout>
         );
@@ -897,6 +928,7 @@ const App: React.FC = () => {
               onCancel={() => navigateTo('dashboard')}
               onComplete={handleScanComplete}
               onReadyToGenerate={() => navigateTo('dashboard')}
+              language={state.language}
             />
           </Layout>
         );
@@ -910,6 +942,7 @@ const App: React.FC = () => {
               isPremium={state.user?.isPremium}
               onGenerateMore={handleGenerateMore}
               loadingMore={loadingMore}
+              language={state.language}
             />
           </Layout>
         );
@@ -936,6 +969,7 @@ const App: React.FC = () => {
               onCreateTag={handleCreateTag}
               onUpdateTag={handleUpdateTag}
               onDeleteTag={handleDeleteTag}
+              language={state.language}
             />
           </Layout>
         );
@@ -954,6 +988,7 @@ const App: React.FC = () => {
             <CookingModeView
               recipe={selectedRecipe}
               onClose={() => navigateTo('recipe-detail')}
+              language={state.language}
             />
           </Layout>
         );
@@ -965,6 +1000,7 @@ const App: React.FC = () => {
               userTags={state.userTags}
               onRecipeClick={handleSelectRecipe}
               onBack={() => navigateTo('dashboard')}
+              language={state.language}
             />
           </Layout>
         );
@@ -975,6 +1011,7 @@ const App: React.FC = () => {
               history={state.history}
               onBack={() => navigateTo('dashboard')}
               onRecipeClick={handleSelectRecipe}
+              language={state.language}
             />
           </Layout>
         );

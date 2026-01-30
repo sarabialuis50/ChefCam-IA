@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import PremiumModal from '../components/PremiumModal';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface SettingsViewProps {
     onBack: () => void;
@@ -12,6 +13,8 @@ interface SettingsViewProps {
         favorites: number;
         generated: number;
     };
+    language: Language;
+    onLanguageChange: (lang: Language) => void;
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({
@@ -19,16 +22,19 @@ const SettingsView: React.FC<SettingsViewProps> = ({
     user,
     onUpdateUser,
     onLogout,
-    stats = { recipes: 0, favorites: 0, generated: 0 }
+    stats = { recipes: 0, favorites: 0, generated: 0 },
+    language: currentLang,
+    onLanguageChange
 }) => {
+    const t = useTranslation(currentLang);
     const [notifications, setNotifications] = useState(true);
-    const [autoSave, setAutoSave] = useState(false);
-    const [language, setLanguage] = useState('Español');
     const [showGoalInfo, setShowGoalInfo] = useState(false);
     const [showPremiumModal, setShowPremiumModal] = useState(false);
     const [showNotificationsModal, setShowNotificationsModal] = useState(false);
     const [showPrivacyModal, setShowPrivacyModal] = useState(false);
     const [showSupportModal, setShowSupportModal] = useState(false);
+    const [storageSize, setStorageSize] = useState('0.0 MB');
+    const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 
     // Detailed Notifications State
     const [notifSettings, setNotifSettings] = useState({
@@ -67,6 +73,28 @@ const SettingsView: React.FC<SettingsViewProps> = ({
     const [tempAllergies, setTempAllergies] = useState(user?.allergies?.join(', ') || '');
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        calculateStorageSize();
+    }, []);
+
+    const calculateStorageSize = () => {
+        let _lsTotal = 0, _xLen, _x;
+        for (_x in localStorage) {
+            if (!localStorage.hasOwnProperty(_x)) continue;
+            _xLen = ((localStorage[_x].length + _x.length) * 2);
+            _lsTotal += _xLen;
+        }
+        setStorageSize((_lsTotal / (1024 * 1024)).toFixed(1) + " MB");
+    };
+
+    const handleClearStorage = () => {
+        if (window.confirm(currentLang === 'es' ? '¿Estás seguro de que deseas limpiar todo el almacenamiento local? Se cerrará la sesión.' : 'Are you sure you want to clear all local storage? You will be logged out.')) {
+            localStorage.clear();
+            calculateStorageSize();
+            onLogout();
+        }
+    };
 
     useEffect(() => {
         if (isEditingProfile) {
@@ -160,7 +188,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 flex items-center justify-center rounded-full border active:scale-90 transition-all">
                     <span className="material-symbols-outlined text-primary">arrow_back</span>
                 </button>
-                <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">Configuración<span className="text-primary">.IA</span></h1>
+                <h1 style={{ color: 'var(--text-main)' }} className="font-bold text-xl uppercase tracking-wider font-outfit">{t('settings_title')}<span className="text-primary">.IA</span></h1>
             </header>
 
             <section className="flex flex-col items-center gap-6 py-4">
@@ -221,11 +249,37 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         <p style={{ color: 'var(--text-muted)' }} className="text-[8px] font-black uppercase tracking-widest">Generadas</p>
                     </div>
                 </div>
+
+                {!user?.isPremium && (
+                    <div
+                        style={{ backgroundColor: 'rgba(34, 197, 94, 0.05)', borderColor: '#22c55e' }}
+                        className="w-full p-4 rounded-3xl border flex flex-col items-center gap-2 text-center relative overflow-hidden"
+                    >
+                        {/* Decorative Gradient Background */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 blur-[60px] rounded-full invisible sm:visible"></div>
+
+                        <div className="flex flex-col items-center gap-1 relative z-10">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-lg font-bold">workspace_premium</span>
+                                <h3 style={{ color: 'var(--text-main)' }} className="text-base font-black uppercase tracking-tight italic">¡Hazte Premium!</h3>
+                            </div>
+                            <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-medium uppercase tracking-widest opacity-80">Accede a todas las funciones</p>
+                        </div>
+
+                        <button
+                            onClick={() => setShowPremiumModal(true)}
+                            className="bg-primary text-black px-6 py-2 rounded-xl flex items-center gap-2 font-black uppercase text-[9px] tracking-widest shadow-glow active:scale-95 transition-all hover:brightness-110"
+                        >
+                            <span className="material-symbols-outlined text-sm">crown</span>
+                            Ver planes
+                        </button>
+                    </div>
+                )}
             </section>
 
             <section className="space-y-6">
                 <div className="space-y-4">
-                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">Cuenta</h3>
+                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">{t('account_section')}</h3>
 
                     <button
                         onClick={() => setIsEditingProfile(true)}
@@ -237,8 +291,8 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">person</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Editar Perfil</p>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Nombre, Bio y Datos</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('edit_profile')}</p>
+                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">{t('full_name')}, {t('bio')}...</p>
                             </div>
                         </div>
                         <span className="material-symbols-outlined text-zinc-600">chevron_right</span>
@@ -254,7 +308,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">notifications</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Notificaciones</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('notifications')}</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Configura tus alertas</p>
                             </div>
                         </div>
@@ -271,7 +325,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">shield</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Privacidad</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('privacy')}</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Controla tus datos</p>
                             </div>
                         </div>
@@ -280,7 +334,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                 </div>
 
                 <div className="space-y-4">
-                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">Preferencias IA</h3>
+                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">{t('ia_preferences')}</h3>
 
                     <button
                         onClick={() => setShowCulinaryModal(true)}
@@ -292,7 +346,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">restaurant_menu</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Personalización Culinaria</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('culinary_personalization')}</p>
                                 <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Dieta, Metas y Alergias</p>
                             </div>
                         </div>
@@ -301,23 +355,33 @@ const SettingsView: React.FC<SettingsViewProps> = ({
 
                     <SettingToggle
                         icon="notifications_active"
-                        title="Sugerencias Inteligentes"
+                        title={t('smart_suggestions')}
                         description="Recibe alertas de ingredientes que combinan."
                         active={notifications}
                         onToggle={() => setNotifications(!notifications)}
                     />
 
-                    <SettingToggle
-                        icon="save"
-                        title="Auto-guardar Recetas"
-                        description="Guarda automáticamente platos de favoritos."
-                        active={autoSave}
-                        onToggle={() => setAutoSave(!autoSave)}
-                    />
+                    <button
+                        onClick={handleShareApp}
+                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
+                    >
+                        <div className="flex items-center gap-4 text-left">
+                            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
+                                <span className="material-symbols-outlined">share</span>
+                            </div>
+                            <div>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('share_app')}</p>
+                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Invita a tus amigos</p>
+                            </div>
+                        </div>
+                        <span className="material-symbols-outlined text-zinc-600">chevron_right</span>
+                    </button>
+
                 </div>
 
                 <div className="space-y-4">
-                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">Sistema</h3>
+                    <h3 className="text-primary text-[10px] font-black uppercase tracking-[0.3em] pb-1 border-b border-primary/10">{t('system_section')}</h3>
 
                     <button
                         onClick={() => !user?.isPremium && setShowPremiumModal(true)}
@@ -350,42 +414,61 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">support_agent</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Soporte</p>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">¿Necesitas ayuda?</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('support')}</p>
+                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">{t('support_desc')}</p>
                             </div>
                         </div>
                         <span className="material-symbols-outlined text-zinc-600">chevron_right</span>
                     </button>
 
-                    {/* Compartir App Button */}
-                    <button
-                        onClick={handleShareApp}
-                        style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
-                        className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
-                    >
-                        <div className="flex items-center gap-4 text-left">
-                            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
-                                <span className="material-symbols-outlined">share</span>
-                            </div>
-                            <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Compartir App</p>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Invita a tus amigos</p>
-                            </div>
-                        </div>
-                        <span className="material-symbols-outlined text-zinc-600">chevron_right</span>
-                    </button>
 
-                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-4 rounded-3xl border">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-primary/20 text-primary flex items-center justify-center shadow-glow">
-                                <span className="material-symbols-outlined">language</span>
+                    {/* Idioma Selector Rediseñado */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                            style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
+                            className="w-full p-4 rounded-3xl border transition-all flex items-center justify-between active:scale-[0.98]"
+                        >
+                            <div className="flex items-center gap-4 text-left">
+                                <div className="w-10 h-10 rounded-xl bg-[#1a2e1a] text-primary flex items-center justify-center border border-primary/5">
+                                    <span className="material-symbols-outlined text-xl">language</span>
+                                </div>
+                                <div>
+                                    <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('language')}</p>
+                                    <p className="text-zinc-600 text-[10px] font-black uppercase tracking-widest mt-0.5">
+                                        {currentLang === 'es' ? 'Español' : 'English'}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Idioma</p>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">{language}</p>
+                            <span className={`material-symbols-outlined text-zinc-700 transition-transform duration-300 ${showLanguageDropdown ? 'rotate-180' : ''}`}>expand_more</span>
+                        </button>
+
+                        {showLanguageDropdown && (
+                            <div
+                                style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }}
+                                className="absolute top-[105%] left-0 right-0 z-50 rounded-2xl border overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200"
+                            >
+                                <button
+                                    onClick={() => {
+                                        onLanguageChange('es');
+                                        setShowLanguageDropdown(false);
+                                    }}
+                                    className={`w-full px-5 py-4 text-left text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-primary/5 ${currentLang === 'es' ? 'text-primary bg-primary/5' : 'text-zinc-500'}`}
+                                >
+                                    Español
+                                </button>
+                                <div className="h-[1px] w-full bg-white/5 mx-auto" />
+                                <button
+                                    onClick={() => {
+                                        onLanguageChange('en');
+                                        setShowLanguageDropdown(false);
+                                    }}
+                                    className={`w-full px-5 py-4 text-left text-[10px] font-black uppercase tracking-widest transition-colors hover:bg-primary/5 ${currentLang === 'en' ? 'text-primary bg-primary/5' : 'text-zinc-500'}`}
+                                >
+                                    English
+                                </button>
                             </div>
-                        </div>
-                        <span className="material-symbols-outlined text-zinc-600">expand_more</span>
+                        )}
                     </div>
 
                     <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="flex items-center justify-between p-4 rounded-3xl border">
@@ -394,11 +477,16 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                                 <span className="material-symbols-outlined">storage</span>
                             </div>
                             <div>
-                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">Almacenamiento Local</p>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">12.4 MB utilizados</p>
+                                <p style={{ color: 'var(--text-main)' }} className="text-sm font-bold uppercase tracking-tight">{t('local_storage')}</p>
+                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">{currentLang === 'es' ? `${storageSize} utilizados` : `${storageSize} used`}</p>
                             </div>
                         </div>
-                        <button className="text-red-500 text-[9px] font-black uppercase tracking-widest bg-red-500/10 px-3 py-1.5 rounded-lg active:scale-95 transition-all">Limpiar</button>
+                        <button
+                            onClick={handleClearStorage}
+                            className="text-red-500 text-[9px] font-black uppercase tracking-widest bg-red-500/10 px-3 py-1.5 rounded-lg active:scale-95 transition-all"
+                        >
+                            Limpiar
+                        </button>
                     </div>
                 </div>
 
@@ -408,14 +496,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                         className="w-full py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] hover:bg-red-500/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-outlined text-sm">logout</span>
-                        Cerrar Sesión del Terminal
+                        {t('logout')}
                     </button>
                 </div>
             </section>
 
             <div className="pt-4 flex flex-col items-center gap-1">
-                <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-black uppercase tracking-[0.3em]">ChefScan IA Engine v2.5.4</p>
-                <p style={{ color: 'var(--text-muted)', opacity: 0.6 }} className="text-[8px] font-bold uppercase tracking-[0.2em]">© 2024 DeepMind Inspired Agent</p>
+                <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-black uppercase tracking-[0.3em]">ChefScan.IA Engine v2.5.4</p>
+                <p style={{ color: 'var(--text-muted)', opacity: 0.6 }} className="text-[8px] font-bold uppercase tracking-[0.2em]">© 2026 DeepMind Inspired Agent</p>
             </div>
 
             {/* Goal Info Modal */}

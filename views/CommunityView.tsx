@@ -3,12 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Post as PostType } from '../types';
 import { supabase } from '../lib/supabase';
 import PremiumModal from '../components/PremiumModal';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface CommunityViewProps {
     onBack: () => void;
     onRecipeClick: (recipe: any) => void;
     onChefClick: (chef: any) => void;
     user: any;
+    language: any;
 }
 
 // La definición de Post ahora viene de types.ts extendida en CommunityView
@@ -29,7 +31,8 @@ interface Comment {
     createdAt: string;
 }
 
-const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, onChefClick, user }) => {
+const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, onChefClick, user, language }) => {
+    const t = useTranslation(language);
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -121,7 +124,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                 return {
                     id: p.id,
                     userId: p.user_id,
-                    userName: p.profiles?.name || 'Chef Anónimo',
+                    userName: p.profiles?.name || t('anonymous_chef'),
                     userAvatar: p.profiles?.avatar_url,
                     recipeId: p.recipe_id,
                     title: p.title,
@@ -130,7 +133,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                     likes: p.likes || 0,
                     createdAt: p.created_at,
                     lastComment: commentData ? {
-                        userName: (commentData.profiles as any)?.name || 'Chef Anónimo',
+                        userName: (commentData.profiles as any)?.name || t('anonymous_chef'),
                         content: commentData.content
                     } : undefined
                 };
@@ -413,7 +416,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                     <button onClick={onBack} style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="w-10 h-10 rounded-full flex items-center justify-center border">
                         <span className="material-symbols-outlined text-zinc-400">arrow_back</span>
                     </button>
-                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">COMUNIDAD<span className="text-primary">.IA</span></h2>
+                    <h2 style={{ color: 'var(--text-main)' }} className="text-2xl font-black uppercase tracking-tighter">{t('community_title')}<span className="text-primary">.IA</span></h2>
                 </div>
                 <div className="flex items-center gap-2">
                     <button
@@ -449,14 +452,14 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                             <span className="material-symbols-outlined text-4xl text-zinc-700">bookmark</span>
                         </div>
                         <div className="space-y-2">
-                            <h3 className="text-lg font-black uppercase tracking-tighter">SIN GUARDADOS</h3>
-                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest max-w-[200px]">Las recetas que guardes de la comunidad aparecerán aquí.</p>
+                            <h3 className="text-lg font-black uppercase tracking-tighter">{t('no_saved_title')}</h3>
+                            <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest max-w-[200px]">{t('no_saved_desc')}</p>
                         </div>
                         <button
                             onClick={() => setViewMode('all')}
                             className="px-6 py-3 bg-white/5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/10 hover:bg-white/10 transition-all"
                         >
-                            Explorar Comunidad
+                            {t('explore_community')}
                         </button>
                     </div>
                 )}
@@ -524,14 +527,14 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                                     className="w-full px-4 py-3 text-left text-xs font-bold hover:bg-white/5 flex items-center gap-2"
                                                 >
                                                     <span className="material-symbols-outlined text-sm">edit</span>
-                                                    Editar
+                                                    {t('edit')}
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeletePost(post.id)}
                                                     className="w-full px-4 py-3 text-left text-xs font-bold text-red-500 hover:bg-red-500/10 flex items-center gap-2"
                                                 >
                                                     <span className="material-symbols-outlined text-sm">delete</span>
-                                                    Eliminar
+                                                    {t('delete')}
                                                 </button>
                                             </div>
                                         )}
@@ -562,7 +565,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                     className="absolute inset-0 w-full h-full object-cover"
                                 />
                                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center">
-                                    <div className="px-6 py-3 bg-primary text-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-glow">Ver Detalles</div>
+                                    <div className="px-6 py-3 bg-primary text-black rounded-full font-black text-[10px] uppercase tracking-widest shadow-glow">{t('view_details')}</div>
                                 </div>
                             </div>
 
@@ -610,7 +613,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                                     onClick={() => openComments(post)}
                                                     className="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-primary transition-colors"
                                                 >
-                                                    Ver todos los comentarios
+                                                    {t('view_all_comments')}
                                                 </button>
                                             </div>
                                         ) : (
@@ -618,7 +621,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                                 onClick={() => openComments(post)}
                                                 className="text-[9px] font-black text-zinc-600 uppercase tracking-widest hover:text-primary transition-colors"
                                             >
-                                                Sé el primero en comentar
+                                                {t('be_first_comment')}
                                             </button>
                                         )}
                                     </div>
@@ -635,7 +638,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                     <div style={{ backgroundColor: 'var(--bg-surface)', borderColor: 'var(--card-border)' }} className="w-full max-w-md rounded-[2.5rem] flex flex-col max-h-[85vh] border shadow-2xl overflow-hidden animate-in zoom-in duration-300">
                         <div style={{ borderColor: 'var(--card-border)', backgroundColor: 'var(--bg-surface-soft)' }} className="p-6 border-b flex justify-between items-center">
                             <div>
-                                <h4 className="text-xs font-black text-primary uppercase tracking-widest">Comentarios</h4>
+                                <h4 className="text-xs font-black text-primary uppercase tracking-widest">{t('comments')}</h4>
                                 <p style={{ color: 'var(--text-main)' }} className="text-[10px] font-bold truncate max-w-[200px]">{commentModalPost.title}</p>
                             </div>
                             <button onClick={() => setCommentModalPost(null)} style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-8 h-8 flex items-center justify-center rounded-full text-zinc-500 border">
@@ -680,7 +683,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                     maxLength={100}
                                     value={newComment}
                                     onChange={e => setNewComment(e.target.value)}
-                                    placeholder="Escribe un comentario..."
+                                    placeholder={t('write_comment')}
                                     style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
                                     className="w-full border p-4 pr-12 rounded-2xl text-[10px] focus:border-primary/40 outline-none"
                                 />
@@ -708,7 +711,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                         {/* Header Modal - Sticky */}
                         <div style={{ borderColor: 'var(--card-border)', backgroundColor: 'rgba(var(--bg-app-rgb), 0.4)' }} className="p-6 sm:p-8 flex justify-between items-center border-b">
                             <h3 style={{ color: 'var(--text-main)' }} className="text-xl font-black uppercase italic tracking-tighter">
-                                {isEditing ? 'EDITAR' : 'NUEVA'} RECETA<span className="text-primary">.POST</span>
+                                {isEditing ? t('edit_post') : t('new_post')}<span className="text-primary">.POST</span>
                             </h3>
                             <button onClick={() => setIsModalOpen(false)} style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-8 h-8 flex items-center justify-center rounded-full text-zinc-500 hover:text-white transition-colors border">
                                 <span className="material-symbols-outlined text-xl">close</span>
@@ -733,7 +736,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                     <>
                                         <span className="material-symbols-outlined text-4xl text-zinc-700">add_a_photo</span>
                                         <p className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest text-center px-4">
-                                            {uploading ? 'Procesando...' : 'Pulsa para añadir foto de tu plato'}
+                                            {uploading ? t('loading') : t('add_dish_photo')}
                                         </p>
                                     </>
                                 )}
@@ -748,7 +751,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
 
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center ml-2">
-                                    <label className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">Título del Plato</label>
+                                    <label className="text-[9px] text-zinc-500 font-bold uppercase tracking-widest">{t('dish_title')}</label>
                                     <span className={`text-[8px] font-mono ${formData.title.length >= 45 ? 'text-orange-500' : 'text-zinc-600'}`}>
                                         {formData.title.length}/50
                                     </span>
@@ -761,7 +764,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                     onChange={e => setFormData({ ...formData, title: e.target.value })}
                                     style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
                                     className="w-full border p-4 rounded-2xl text-xs focus:border-primary/40 outline-none placeholder-zinc-700 transition-all font-bold"
-                                    placeholder="Ej: Salmón Glaseado"
+                                    placeholder={t('dish_placeholder')}
                                 />
                             </div>
 
@@ -788,7 +791,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                                     disabled={loading || !formData.imageUrl || !formData.title}
                                     className="w-full py-5 bg-primary text-black rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-glow active:scale-95 transition-all disabled:opacity-50 disabled:grayscale"
                                 >
-                                    {loading ? 'PROCESANDO...' : isEditing ? 'ACTUALIZAR POST' : 'LANZAR A LA COMUNIDAD'}
+                                    {loading ? t('loading') : isEditing ? t('edit_post') : t('publish_btn')}
                                 </button>
                             </div>
                         </div>

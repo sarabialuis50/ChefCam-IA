@@ -1,12 +1,14 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Recipe } from '../types';
 import { getRecipeImage } from '../utils/imageUtils';
+import { useTranslation, Language } from '../utils/i18n';
 
 interface FavoritesViewProps {
   recipes: (Recipe & { category?: string })[];
   userTags?: string[];
   onRecipeClick: (recipe: Recipe) => void;
   onBack: () => void;
+  language: Language;
 }
 
 const ImageWithPlaceholder: React.FC<{ recipe: Recipe, alt: string }> = ({ recipe, alt }) => {
@@ -30,9 +32,10 @@ const ImageWithPlaceholder: React.FC<{ recipe: Recipe, alt: string }> = ({ recip
   );
 };
 
-const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, onBack, userTags = [] }) => {
+const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, onBack, userTags = [], language }) => {
+  const t = useTranslation(language);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeCategory, setActiveCategory] = useState<string>('Todo');
+  const [activeCategory, setActiveCategory] = useState<string>(t('all'));
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
@@ -61,7 +64,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
     scrollRef.current.scrollLeft = scrollLeft - walk;
   };
 
-  const defaultCategories = ['Todo', 'Desayuno', 'Almuerzo', 'Cena', 'Saludable', 'Vegana'];
+  const defaultCategories = [t('all'), t('breakfast'), t('lunch'), t('dinner'), t('healthy'), t('vegan')];
   const allCategories = [...new Set([...defaultCategories, ...userTags])];
 
   const filteredRecipes = useMemo(() => {
@@ -69,7 +72,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
       const matchesSearch =
         item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
-      const matchesCategory = activeCategory === 'Todo' || item.category === activeCategory;
+      const matchesCategory = activeCategory === t('all') || item.category === activeCategory;
 
       return matchesSearch && matchesCategory;
     });
@@ -87,10 +90,10 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
             >
               <span className="material-symbols-outlined text-primary text-xl">arrow_back</span>
             </button>
-            <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">FAVORITAS<span className="text-primary">.IA</span></h1>
+            <h1 style={{ color: 'var(--text-main)' }} className="text-2xl font-black tracking-tighter uppercase">{t('favorites_title')}<span className="text-primary">.IA</span></h1>
           </div>
           <div className="px-3 py-1 bg-primary/20 rounded-full border border-primary/30 text-[10px] font-black text-primary uppercase">
-            {filteredRecipes.length} Recetas
+            {filteredRecipes.length} {t('recipe_count')}
           </div>
         </div>
 
@@ -99,7 +102,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
           <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-outlined text-primary">search</span>
           <input
             type="text"
-            placeholder="Buscar entre tus favoritas..."
+            placeholder={t('search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
@@ -144,8 +147,8 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
             <span className="material-symbols-outlined text-4xl opacity-20">favorite_border</span>
           </div>
           <div>
-            <p className="text-[10px] uppercase font-bold tracking-[0.2em] mb-1">Sin favoritas</p>
-            <p className="text-xs">No se encontraron recetas en esta categoría.</p>
+            <p className="text-[10px] uppercase font-bold tracking-[0.2em] mb-1">{t('no_fav_title')}</p>
+            <p className="text-xs">{t('no_fav_desc')}</p>
           </div>
         </div>
       ) : (
