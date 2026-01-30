@@ -25,8 +25,12 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
   if (!recipe) return null;
 
   const handleNutritionClick = () => {
-    if (onNutritionClick) {
-      onNutritionClick();
+    if (isPremium) {
+      if (onNutritionClick) {
+        onNutritionClick();
+      }
+    } else {
+      setShowPremiumModal(true);
     }
   };
 
