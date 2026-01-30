@@ -19,72 +19,65 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             const { data: { user } } = await supabase.auth.getUser();
             if (!user?.email) throw new Error("No se pudo identificar al usuario.");
 
-            // 2. Ensure Wompi is available
-            let WompiConstructor = (window as any).WidgetCheckout || (window as any).Widget;
+            // 2. Ensure ePayco is available
+            let ePaycoHandler = (window as any).ePayco;
 
-            if (!WompiConstructor) {
-                console.log("Wompi not found in window, attempting to load script...");
+            if (!ePaycoHandler) {
+                console.log("ePayco not found in window, attempting to load script...");
                 await new Promise((resolve) => {
                     const script = document.createElement('script');
-                    script.src = 'https://checkout.wompi.co/widget.js';
+                    script.src = 'https://checkout.epayco.co/checkout.js';
                     script.async = true;
                     script.onload = () => resolve(true);
                     script.onerror = () => resolve(false);
                     document.body.appendChild(script);
                 });
-                WompiConstructor = (window as any).WidgetCheckout || (window as any).Widget;
+                ePaycoHandler = (window as any).ePayco;
             }
 
-            if (!WompiConstructor) {
-                throw new Error("La pasarela de pagos (Wompi) no está disponible. Por favor refresca la página.");
+            if (!ePaycoHandler) {
+                throw new Error("La pasarela de pagos (ePayco) no está disponible. Por favor refresca la página.");
             }
 
-            // 3. Get Signature from Edge Function
-            const { data: wompiData, error } = await supabase.functions.invoke('create-wompi-signature', {
-                body: { returnUrl: window.location.origin }
-            });
+            // 3. Get Checkout Config from Edge Function
+            const { data: epaycoData, error } = await supabase.functions.invoke('create-epayco-checkout');
 
             if (error) throw error;
-            if (wompiData?.error) throw new Error(wompiData.error);
+            if (epaycoData?.error) throw new Error(epaycoData.error);
 
-            // 4. Open Wompi Widget
-            const checkoutConfig = {
-                currency: 'COP',
-                amountInCents: wompiData.amountInCents,
-                reference: wompiData.reference,
-                publicKey: wompiData.publicKey,
-                signature: { integrity: wompiData.integritySignature },
-                redirectUrl: window.location.origin,
-                customerData: {
-                    email: user.email,
-                    fullName: user.user_metadata?.name || 'ChefScan User'
-                }
+            // 4. Open ePayco Widget
+            const handler = ePaycoHandler.checkout.configure({
+                key: epaycoData.publicKey,
+                test: true // Cambiar a false cuando pases a producción
+            });
+
+            const data = {
+                // Generales
+                name: "Suscripción ChefScan Premium",
+                description: "Acceso total ilimitado por 1 mes",
+                invoice: epaycoData.reference,
+                currency: "cop",
+                amount: epaycoData.amount.toString(),
+                tax_base: "0",
+                tax: "0",
+                country: "co",
+                lang: "es",
+
+                // Atributos cliente
+                external: "false",
+                extra1: epaycoData.reference, // Usamos esto para el Webhook también
+                email_billing: epaycoData.email,
+                name_billing: epaycoData.name,
+
+                // Redirección y Confirmación
+                confirm: `https://vhodqxomxpjzfdvwmaok.supabase.co/functions/v1/epayco-webhook`,
+                response: `${window.location.origin}`,
             };
 
-            console.log('Iniciando Checkout Wompi con:', {
-                reference: checkoutConfig.reference,
-                amount: checkoutConfig.amountInCents,
-                publicKey: checkoutConfig.publicKey,
-                integrity: checkoutConfig.signature.integrity
-            });
-
-            const checkout = new WompiConstructor(checkoutConfig);
-
-            checkout.open((result: any) => {
-                const transaction = result.transaction;
-                if (transaction.status === 'APPROVED') {
-                    alert('¡Pago Exitoso! Tu cuenta Premium se activará en instantes.');
-                    onClose();
-                    window.location.reload();
-                } else if (transaction.status === 'DECLINED') {
-                    alert('El pago fue rechazado por la entidad financiera.');
-                } else if (transaction.status === 'VOIDED' || transaction.status === 'ERROR') {
-                    alert('Hubo un problema con la transacción. Inténtalo de nuevo.');
-                }
-            });
+            handler.open(data);
 
         } catch (err: any) {
-            console.error('Wompi Error:', err);
+            console.error('ePayco Error:', err);
             alert('Error al procesar el pago: ' + (err.message || 'Inténtalo más tarde'));
         } finally {
             setLoading(false);
