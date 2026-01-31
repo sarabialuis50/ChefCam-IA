@@ -105,9 +105,9 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             case 'pantry-limit':
                 return 'Has alcanzado el límite de 5 ítems en tu despensa. ¡Hazte Premium para gestionar hasta 30 ingredientes y evitar el desperdicio!';
             case 'upgrade':
-                return '¡Da el siguiente paso en tu experiencia culinaria profesional con ChefScan Premium!';
+                return '¡Da el siguiente paso en tu experiencia culinaria profesional con ChefScan.IA Premium!';
             default:
-                return 'Desbloquea todo el potencial culinario con ChefScan Premium.';
+                return 'Desbloquea todo el potencial culinario con ChefScan.IA Premium.';
         }
     };
 
