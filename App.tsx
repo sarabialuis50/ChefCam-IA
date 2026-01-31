@@ -33,28 +33,43 @@ import { subscribeUserToPush, requestNotificationPermission } from './utils/push
 
 
 const App: React.FC = () => {
-  const [state, setState] = useState<AppState>({
-    user: null,
-    currentView: 'landing',
-    previousView: null,
-    scannedIngredients: [],
-    recentRecipes: [],
-    favoriteRecipes: [],
-    recipeGenerationsToday: 0,
-    chefCredits: 10,
-    inventory: [],
-    history: [],
-    userTags: [],
-    acceptedChallengeId: null,
-    language: (localStorage.getItem('chefscan_lang') as 'es' | 'en') || 'es'
+  const [state, setState] = useState<AppState>(() => {
+    let initialLang: 'es' | 'en' = 'es';
+    try {
+      initialLang = (localStorage.getItem('chefscan_lang') as 'es' | 'en') || 'es';
+    } catch (e) {
+      console.warn("localStorage not available for language", e);
+    }
+
+    return {
+      user: null,
+      currentView: 'landing',
+      previousView: null,
+      scannedIngredients: [],
+      recentRecipes: [],
+      favoriteRecipes: [],
+      recipeGenerationsToday: 0,
+      chefCredits: 10,
+      inventory: [],
+      history: [],
+      userTags: [],
+      acceptedChallengeId: null,
+      language: initialLang
+    };
   });
+
 
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [selectedChef, setSelectedChef] = useState<any>(null);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
-    const saved = localStorage.getItem('chefscan_theme');
-    return saved !== null ? saved === 'true' : true;
+    try {
+      const saved = localStorage.getItem('chefscan_theme');
+      return saved !== null ? saved === 'true' : true;
+    } catch (e) {
+      return true;
+    }
   });
+
   const [lastUsedIngredients, setLastUsedIngredients] = useState<string[]>([]);
   const [lastUsedPortions, setLastUsedPortions] = useState<number>(2);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -82,7 +97,10 @@ const App: React.FC = () => {
 
   // Sync theme with Document
   useEffect(() => {
-    localStorage.setItem('chefscan_theme', String(isDarkMode));
+    try {
+      localStorage.setItem('chefscan_theme', String(isDarkMode));
+    } catch (e) { }
+
     const root = document.documentElement;
     // Force Dark Mode on specific 'immersive' pages
     const forcedDarkViews = ['landing', 'login', 'reset-password', 'dashboard'];
@@ -98,6 +116,8 @@ const App: React.FC = () => {
       document.body.style.backgroundColor = '#f8fafc';
     }
   }, [isDarkMode, state.currentView]);
+
+
 
   // Listen for Auth changes
   useEffect(() => {
@@ -132,7 +152,8 @@ const App: React.FC = () => {
   // Service Worker Registration & Update Detection (Manual for Maximum Compatibility)
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
+      // Use relative path for sw.js to support subdirectories
+      navigator.serviceWorker.register('sw.js').then(registration => {
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
           if (newWorker) {
@@ -141,9 +162,14 @@ const App: React.FC = () => {
                 // New update available
                 setNeedRefresh(true);
                 updateServiceWorkerRef.current = async (reload = true) => {
-                  newWorker.postMessage({ type: 'SKIP_WAITING' });
-                  if (reload) {
-                    registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+                  try {
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                    if (reload) {
+                      registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
+                      window.location.reload();
+                    }
+                  } catch (err) {
+                    console.warn("Update failed, reloading anyway", err);
                     window.location.reload();
                   }
                 };
@@ -158,6 +184,7 @@ const App: React.FC = () => {
   }, []);
 
 
+
   const handleUpdatePWA = () => {
     if (updateServiceWorkerRef.current) {
       updateServiceWorkerRef.current(true);
@@ -170,41 +197,46 @@ const App: React.FC = () => {
 
   // Persistence: Load from LocalStorage
   useEffect(() => {
-    const savedState = localStorage.getItem('chefscan_state');
-    if (savedState) {
-      try {
+    try {
+      const savedState = localStorage.getItem('chefscan_state');
+      if (savedState) {
         const parsed = JSON.parse(savedState);
         setState(prev => ({
           ...prev,
           ...parsed,
-          // If currentView was landing/login, maybe keep them or restore
           currentView: parsed.currentView || 'dashboard',
           previousView: parsed.previousView || null
         }));
         if (parsed.selectedRecipe) setSelectedRecipe(parsed.selectedRecipe);
         if (parsed.lastTabViews) setLastTabViews(parsed.lastTabViews);
-      } catch (e) { }
+      }
+    } catch (e) {
+      console.warn("Failed to load state from localStorage", e);
     }
   }, []);
+
 
   // Persistence: Save to LocalStorage
   useEffect(() => {
     if (state.user) {
-      localStorage.setItem('chefscan_state', JSON.stringify({
-        user: state.user,
-        favoriteRecipes: state.favoriteRecipes,
-        recentRecipes: state.recentRecipes,
-        inventory: state.inventory,
-        history: state.history,
-        currentView: state.currentView,
-        previousView: state.previousView,
-        selectedRecipe: selectedRecipe,
-        lastTabViews: lastTabViews,
-        language: state.language
-      }));
-      localStorage.setItem('chefscan_lang', state.language);
+      try {
+        localStorage.setItem('chefscan_state', JSON.stringify({
+          user: state.user,
+          favoriteRecipes: state.favoriteRecipes,
+          recentRecipes: state.recentRecipes,
+          inventory: state.inventory,
+          history: state.history,
+          currentView: state.currentView,
+          previousView: state.previousView,
+          selectedRecipe: selectedRecipe,
+          lastTabViews: lastTabViews,
+          language: state.language
+        }));
+        localStorage.setItem('chefscan_lang', state.language);
+      } catch (e) { }
     }
   }, [state.user, state.favoriteRecipes, state.recentRecipes, state.inventory, state.history, state.currentView, selectedRecipe, lastTabViews]);
+
 
   // Deep Linking for Shared Recipes
   useEffect(() => {
