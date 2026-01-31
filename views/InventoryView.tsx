@@ -278,13 +278,31 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                                 <div className="grid grid-cols-2 gap-3">
                                     <div className="space-y-1">
                                         <label className="text-[10px] text-zinc-500 font-bold uppercase ml-1">{t('qty')}</label>
-                                        <input
-                                            type="number"
-                                            value={newItem.quantity}
-                                            onChange={e => setNewItem({ ...newItem, quantity: Number(e.target.value) })}
-                                            style={{ backgroundColor: 'var(--bg-surface-inner)', color: '#ffffff', borderColor: 'var(--card-border)' }}
-                                            className="w-full border p-4 rounded-2xl text-sm focus:border-primary outline-none quantity-input-dark"
-                                        />
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewItem({ ...newItem, quantity: Math.max(1, newItem.quantity - 1) })}
+                                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                                className="w-12 h-full aspect-square flex items-center justify-center rounded-xl border text-zinc-400 hover:text-white active:scale-95 transition-all"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">remove</span>
+                                            </button>
+                                            <input
+                                                type="number"
+                                                value={newItem.quantity}
+                                                onChange={e => setNewItem({ ...newItem, quantity: Math.max(1, Number(e.target.value)) })}
+                                                style={{ backgroundColor: 'var(--bg-surface-inner)', color: '#ffffff', borderColor: 'var(--card-border)' }}
+                                                className="w-full border p-4 rounded-2xl text-sm text-center focus:border-primary outline-none quantity-input-dark"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setNewItem({ ...newItem, quantity: newItem.quantity + 1 })}
+                                                style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }}
+                                                className="w-12 h-full aspect-square flex items-center justify-center rounded-xl border text-zinc-400 hover:text-primary active:scale-95 transition-all"
+                                            >
+                                                <span className="material-symbols-outlined text-sm">add</span>
+                                            </button>
+                                        </div>
                                     </div>
                                     <div className="space-y-1">
                                         <label className="text-[10px] text-zinc-500 font-bold uppercase ml-1">{t('unit')}</label>
