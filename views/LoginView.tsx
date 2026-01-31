@@ -143,15 +143,14 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
             <>
               <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-primary uppercase tracking-widest ml-1">Nombre de Usuario (Máx 10)</label>
-                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-500 group-focus-within:text-primary transition-colors">
+                <div style={{ backgroundColor: '#ffffff', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-zinc-500 group-focus-within:text-primary transition-colors">
                     <span className="material-symbols-outlined text-xl">person</span>
                   </span>
                   <input
                     type="text"
                     maxLength={10}
-                    className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-gray-700 font-medium"
-                    style={{ color: 'var(--text-main)' }}
+                    className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-zinc-400 text-zinc-900 font-medium"
                     placeholder="Ej: Luis S."
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -162,14 +161,13 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
 
               <div className="space-y-2">
                 <label className="block text-[10px] font-bold text-primary uppercase tracking-widest ml-1">Nombre Completo</label>
-                <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
-                  <span className="absolute inset-y-0 left-4 flex items-center text-gray-500 group-focus-within:text-primary transition-colors">
+                <div style={{ backgroundColor: '#ffffff', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
+                  <span className="absolute inset-y-0 left-4 flex items-center text-zinc-500 group-focus-within:text-primary transition-colors">
                     <span className="material-symbols-outlined text-xl">badge</span>
                   </span>
                   <input
                     type="text"
-                    className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-gray-700 font-medium"
-                    style={{ color: 'var(--text-main)' }}
+                    className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-zinc-400 text-zinc-900 font-medium"
                     placeholder="Tu nombre completo"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
@@ -182,15 +180,14 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
 
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-primary uppercase tracking-widest ml-1">Email de Acceso</label>
-            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30 transition-all overflow-hidden">
-              <span className="absolute inset-y-0 left-4 flex items-center text-gray-500 group-focus-within:text-primary transition-colors">
+            <div style={{ backgroundColor: '#ffffff', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary focus-within:ring-1 focus-within:ring-primary/30 transition-all overflow-hidden">
+              <span className="absolute inset-y-0 left-4 flex items-center text-zinc-500 group-focus-within:text-primary transition-colors">
                 <span className="material-symbols-outlined text-xl">alternate_email</span>
               </span>
               <input
                 type="email"
                 required
-                className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-gray-700"
-                style={{ color: 'var(--text-main)' }}
+                className="block w-full pl-12 pr-4 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-zinc-400 text-zinc-900"
                 placeholder="usuario@chefscan.ai"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -200,23 +197,22 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
 
           <div className="space-y-2">
             <label className="block text-[10px] font-bold text-primary uppercase tracking-widest ml-1">Contraseña</label>
-            <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
-              <span className="absolute inset-y-0 left-4 flex items-center text-gray-500 group-focus-within:text-primary transition-colors">
+            <div style={{ backgroundColor: '#ffffff', borderColor: 'var(--card-border)' }} className="relative group rounded-xl border focus-within:border-primary transition-all overflow-hidden">
+              <span className="absolute inset-y-0 left-4 flex items-center text-zinc-500 group-focus-within:text-primary transition-colors">
                 <span className="material-symbols-outlined text-xl">lock</span>
               </span>
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full pl-12 pr-12 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-gray-700"
-                style={{ color: 'var(--text-main)' }}
+                className="block w-full pl-12 pr-12 py-4 bg-transparent border-none focus:ring-0 text-sm placeholder-zinc-400 text-zinc-900"
                 placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-white cursor-pointer bg-transparent border-none z-10"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-zinc-800 cursor-pointer bg-transparent border-none z-10"
               >
                 <span className="material-symbols-outlined text-lg">
                   {showPassword ? 'visibility_off' : 'visibility'}
@@ -239,7 +235,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-4 bg-white text-black rounded-xl font-black uppercase tracking-[0.25em] text-[11px] shadow-lg hover:bg-gray-100 active:scale-[0.98] transition-all disabled:opacity-50 border-none cursor-pointer"
+            className="w-full py-4 bg-primary text-black rounded-xl font-black uppercase tracking-[0.25em] text-[11px] shadow-neon-glow hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 border-none cursor-pointer"
           >
             {loading ? 'Procesando...' : (isSignUp ? 'Crear Cuenta' : 'Iniciar Sesión')}
           </button>
