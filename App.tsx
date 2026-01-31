@@ -103,10 +103,18 @@ const App: React.FC = () => {
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      // Check if we are in a password recovery flow via URL hash
+      const hash = window.location.hash;
+      if (hash && (hash.includes('type=recovery') || hash.includes('access_token'))) {
+        navigateTo('reset-password');
+        return;
+      }
+
       if (session) {
         fetchProfile(session.user.id, session.user.email || '', true);
       }
     });
+
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' && session) {

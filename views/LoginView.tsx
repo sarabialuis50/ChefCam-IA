@@ -104,9 +104,14 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: siteUrl
+        redirectTo: siteUrl,
+        queryParams: {
+          prompt: 'select_account',
+          access_type: 'offline'
+        }
       }
     });
+
   };
 
   return (
