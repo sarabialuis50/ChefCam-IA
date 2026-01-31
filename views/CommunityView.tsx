@@ -196,7 +196,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
         setLoadingComments(true);
         const { data, error } = await supabase
             .from('comments')
-            .select('*, profiles(name, avatar_url)')
+            .select('*, profiles!user_id(name, avatar_url)')
             .eq('post_id', postId)
             .order('created_at', { ascending: true });
 
@@ -253,6 +253,34 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
         setNewComment('');
 
         try {
+            // Check if it's a mock post (ID is '1' or doesn't look like a UUID)
+            const isMockPost = !commentModalPost.id.includes('-'); // Simple UUID check
+
+            if (isMockPost) {
+                // Simulate locally for mock posts
+                const mockCommentObj = {
+                    id: Date.now().toString(),
+                    postId: commentModalPost.id,
+                    userId: user.id,
+                    userName: user.name || user.email,
+                    userAvatar: user.avatarUrl,
+                    content: content,
+                    createdAt: new Date().toISOString()
+                };
+                setComments(prev => [...prev, mockCommentObj]);
+
+                setPosts(prev => prev.map(p => p.id === commentModalPost.id ? {
+                    ...p,
+                    lastComment: {
+                        userName: mockCommentObj.userName,
+                        content: mockCommentObj.content
+                    }
+                } : p));
+
+                setNewComment('');
+                return;
+            }
+
             const { data, error } = await supabase
                 .from('comments')
                 .insert([{
@@ -260,7 +288,7 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
                     user_id: user.id,
                     content: content
                 }])
-                .select('*, profiles(name, avatar_url)')
+                .select('*, profiles!user_id(name, avatar_url)')
                 .single();
 
             if (error) throw error;
@@ -290,9 +318,9 @@ const CommunityView: React.FC<CommunityViewProps> = ({ onBack, onRecipeClick, on
 
                 setCommentModalPost(null);
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error adding comment:", err);
-            alert("No se pudo añadir el comentario");
+            alert("No se pudo añadir el comentario: " + (err.message || "Error desconocido"));
         }
     };
 
