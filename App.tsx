@@ -225,6 +225,41 @@ const App: React.FC = () => {
       }
     }
 
+    // --- CLIENT-SIDE RESET GUARD ---
+    // If the DB reset logic fails, we force a reset the first time the user opens the app on a new day.
+    if (profileData) {
+      const today = new Date().toISOString().split('T')[0];
+      const localResetKey = `chefscan_reset_${userId}`;
+      const lastLocalReset = localStorage.getItem(localResetKey);
+
+      if (lastLocalReset !== today) {
+        // It's a new day or first time loading. Check if we actually need to reset.
+        // We only reset if the generations > 0 or credits < default.
+        const defaultCredits = profileData.is_premium ? 999 : 10;
+
+        if (profileData.recipe_generations_today > 0 || profileData.chef_credits !== defaultCredits) {
+          console.log("New day detected (Client-side). Resetting credits and generations...");
+          const { error: resetError } = await supabase
+            .from('profiles')
+            .update({
+              recipe_generations_today: 0,
+              chef_credits: defaultCredits
+            })
+            .eq('id', userId);
+
+          if (!resetError) {
+            localStorage.setItem(localResetKey, today);
+            profileData.recipe_generations_today = 0;
+            profileData.chef_credits = defaultCredits;
+          }
+        } else {
+          // Already reset or new account, just mark as reset today
+          localStorage.setItem(localResetKey, today);
+        }
+      }
+    }
+    // ---------------------------------
+
     // Prepare default/fallback data if profile still missing
     const fallbackUser = {
       id: userId,
