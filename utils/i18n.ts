@@ -199,7 +199,8 @@ export const translations = {
         view_more: "Ver más",
         cook_now: "Cocinar ahora",
         generating_more: "Generando más...",
-        generate_more_recipes: "Generar más recetas",
+        generate_more_recipes: "Generar más versiones",
+
         versions_generated: "{{count}}/15 versiones de recetas generadas",
         units_unidades: "unidades",
         units_kilos: "Kilos",
@@ -400,7 +401,8 @@ export const translations = {
         view_more: "View more",
         cook_now: "Cook now",
         generating_more: "Generating more...",
-        generate_more_recipes: "Generate more recipes",
+        generate_more_recipes: "Generate more versions",
+
         versions_generated: "{{count}}/15 recipe versions generated",
         units_unidades: "units",
         units_kilos: "Kilos",

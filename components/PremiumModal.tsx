@@ -93,7 +93,8 @@ const PremiumModal: React.FC<PremiumModalProps> = ({ isOpen, onClose, reason }) 
             case 'chefbot':
                 return 'Has agotado tus 10 créditos diarios con el Agente Chef IA. ¡Los usuarios Premium tienen consultas ilimitadas!';
             case 'more-recipes':
-                return 'Los usuarios Free solo pueden ver 3 recetas. ¡Con Premium obtienes 5 inicialmente y puedes extenderlas hasta 15 por cada búsqueda!';
+                return 'Los usuarios Free solo pueden ver 3 versiones de recetas. ¡Con Premium obtienes 5 versiones inicialmente y puedes extenderlas hasta 15 versiones por cada búsqueda!';
+
             case 'community-post':
                 return 'Publicar tus creaciones en la comunidad es una función exclusiva para usuarios Premium.';
             case 'community-save':
