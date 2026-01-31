@@ -190,7 +190,7 @@ export const processAudioInstruction = async (base64Audio: string, mimeType: str
       contents: [
         {
           role: 'user', parts: [
-            { text: "Escucha este audio del usuario y responde brevemente en español." },
+            { text: "Escucha el audio. Si el usuario pide una receta o consejo, DÁSELO INMEDIATAMENTE. NO HAGAS PREGUNTAS DE ACLARACIÓN bajo ninguna circunstancia. Asume los detalles necesarios (ej: estilo más común) para responder COMPLETAMENTE en este mismo turno. Sé directo y útil." },
             { inlineData: { mimeType, data: base64Audio } }
           ]
         }
@@ -202,12 +202,39 @@ export const processAudioInstruction = async (base64Audio: string, mimeType: str
 
 export const generateSpeech = async (text: string) => {
   try {
+    // Specifically request AUDIO output from the model
     const response = await ai.models.generateContent({
       model: 'gemini-2.0-flash',
-      contents: [{ role: 'user', parts: [{ text: `Di esto: ${text}` }] }],
-      // @ts-ignore
-      config: { responseModalities: [Modality.AUDIO] }
+      contents: [{
+        role: 'user',
+        parts: [{ text: `Lee el siguiente texto en voz alta en español: "${text}"` }]
+      }],
+      config: {
+        // @ts-ignore - The SDK types might be outdated, but this is the correct field for multimodal output
+        responseModalities: ["AUDIO"],
+        // Optional: specific generation config if needed
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: {
+              voiceName: "Aoede" // Example voice, Gemini has specific voice names
+            }
+          }
+        }
+      }
     });
+
+    // Check for inline data (audio) in the response
+    const candidate = response.candidates?.[0];
+    const part = candidate?.content?.parts?.[0];
+
+    if (part?.inlineData?.mimeType?.startsWith('audio/')) {
+      return part.inlineData.data;
+    }
+
+    // Fallback: Check if it's in a different location or just text
     return (response as any).candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-  } catch { return undefined; }
+  } catch (error) {
+    console.error("Generate Speech Error:", error);
+    return undefined;
+  }
 };

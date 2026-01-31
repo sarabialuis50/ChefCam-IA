@@ -18,23 +18,44 @@ function decodeBase64(base64: string) {
   return bytes;
 }
 
-async function decodeAudioData(
-  data: Uint8Array,
-  ctx: AudioContext,
-  sampleRate: number,
-  numChannels: number,
-): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
-  const frameCount = dataInt16.length / numChannels;
-  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
+// Helper: Wrap raw PCM data in a WAV container (Simple RIFF header)
+// Used as fallback if the direct audio data isn't recognized as a valid container
+function pcmToWav(pcmData: Uint8Array, sampleRate: number = 24000, numChannels: number = 1): Uint8Array {
+  const header = new ArrayBuffer(44);
+  const view = new DataView(header);
+  const dataSize = pcmData.length;
 
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
-    }
+  // RIFF chunk descriptor
+  writeString(view, 0, 'RIFF');
+  view.setUint32(4, 36 + dataSize, true);
+  writeString(view, 8, 'WAVE');
+
+  // fmt sub-chunk
+  writeString(view, 12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, numChannels, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * numChannels * 2, true);
+  view.setUint16(32, numChannels * 2, true);
+  view.setUint16(34, 16, true);
+
+  // data sub-chunk
+  writeString(view, 36, 'data');
+  view.setUint32(40, dataSize, true);
+
+  // Concatenate header and data
+  const wavFile = new Uint8Array(header.byteLength + dataSize);
+  wavFile.set(new Uint8Array(header), 0);
+  wavFile.set(pcmData, 44);
+
+  return wavFile;
+}
+
+function writeString(view: DataView, offset: number, string: string) {
+  for (let i = 0; i < string.length; i++) {
+    view.setUint8(offset + i, string.charCodeAt(i));
   }
-  return buffer;
 }
 
 interface AIChatbotProps {
@@ -57,16 +78,30 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', text: '¡Hola! Soy tu asistente ChefScan.IA. ¿En qué puedo ayudarte hoy? Puedo sugerirte recetas, sustitutos de ingredientes o darte consejos de cocina.' }
+    { role: 'model', text: '¡Hola! Soy tu asistente ChefScan.IA. ¿En qué puedo ayudarte hoy?' }
   ]);
+
+  // Personalize welcome message when user loads
+  useEffect(() => {
+    if (user?.name) {
+      const firstName = user.name.split(' ')[0];
+      setMessages(prev => {
+        // Only update if it's the default initial message
+        if (prev.length === 1 && prev[0].role === 'model') {
+          return [{ role: 'model', text: `¡Hola ${firstName}! Soy tu asistente ChefScan.IA. ¿Qué vamos a cocinar hoy?` }];
+        }
+        return prev;
+      });
+    }
+  }, [user?.name]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState<number | null>(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isWatchingAd, setIsWatchingAd] = useState(false);
 
+  const [currentAudio, setCurrentAudio] = useState<HTMLAudioElement | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
 
@@ -86,13 +121,10 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
   }, [isOpen]);
 
   const stopAudio = () => {
-    if (audioSourceRef.current) {
-      try {
-        audioSourceRef.current.stop();
-      } catch (e) {
-        // Source might have already stopped
-      }
-      audioSourceRef.current = null;
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
+      setCurrentAudio(null);
     }
     setIsSpeaking(null);
   };
@@ -198,34 +230,43 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
     try {
       const base64Audio = await generateSpeech(text);
       if (base64Audio) {
-        if (!audioContextRef.current) {
-          // Initialize AudioContext
-          const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-          audioContextRef.current = new AudioContextClass();
-        }
-
-        // Resume context if suspended (browser autoplay policy)
-        if (audioContextRef.current.state === 'suspended') {
-          await audioContextRef.current.resume();
-        }
-
-        // Convert Base64 to ArrayBuffer
+        // Convert base64 to byte array
         const audioBytes = decodeBase64(base64Audio);
 
-        // Decode audio data using native browser API (handles WAV, MP3, etc.)
-        const audioBuffer = await audioContextRef.current.decodeAudioData(audioBytes.buffer);
+        // Try creating a Blob from the bytes directly (assuming it's a WAV/MP3 container)
+        // If Gemini sends raw PCM (which lacks a header), this blob won't play.
+        // So we speculatively try to "fix" it if it's raw PCM by adding a WAV header.
 
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContextRef.current.destination);
-        source.onended = () => {
-          if (audioSourceRef.current === source) {
-            setIsSpeaking(null);
-            audioSourceRef.current = null;
-          }
+        let blob: Blob;
+
+        // Heuristic: Check for "RIFF" header at start to see if it's already WAV
+        const isWav = String.fromCharCode(audioBytes[0], audioBytes[1], audioBytes[2], audioBytes[3]) === 'RIFF';
+
+        if (isWav) {
+          blob = new Blob([audioBytes], { type: 'audio/wav' });
+        } else {
+          // Assume Raw PCM if no RIFF header, wrap it
+          const wavBytes = pcmToWav(audioBytes, 24000, 1);
+          blob = new Blob([wavBytes as any], { type: 'audio/wav' });
+        }
+
+        const audioUrl = URL.createObjectURL(blob);
+        const audio = new Audio(audioUrl);
+
+        audio.onended = () => {
+          setIsSpeaking(null);
+          setCurrentAudio(null);
+          URL.revokeObjectURL(audioUrl); // Clean up
         };
-        audioSourceRef.current = source;
-        source.start();
+
+        audio.onerror = (e) => {
+          console.error("Audio playback failed", e);
+          setIsSpeaking(null);
+          setCurrentAudio(null);
+        };
+
+        setCurrentAudio(audio);
+        await audio.play();
       } else {
         console.warn("No audio data received from Gemini.");
         setIsSpeaking(null);
@@ -233,6 +274,7 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
     } catch (error) {
       console.error("Audio playback error:", error);
       setIsSpeaking(null);
+      setCurrentAudio(null);
     }
   };
 
@@ -341,7 +383,30 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
                     }}
                     className={`p-4 rounded-2xl text-sm leading-relaxed relative border ${msg.role === 'user' ? 'font-medium rounded-tr-none border-transparent' : 'rounded-tl-none'}`}
                   >
-                    {msg.text}
+                    {/* Render text with highlighting */}
+                    {(() => {
+                      const text = msg.text;
+                      const firstName = user?.name ? user.name.split(' ')[0] : '';
+
+                      // Split by firstName (case insensitive) and Scan.IA
+                      const parts = text.split(new RegExp(`(${firstName}|Scan\\.IA)`, 'gi'));
+
+                      return (
+                        <span>
+                          {parts.map((part, index) => {
+                            const lowerPart = part.toLowerCase();
+                            const isName = firstName && lowerPart === firstName.toLowerCase();
+                            const isBrand = lowerPart === 'scan.ia';
+
+                            if (isName || isBrand) {
+                              return <span key={index} className={msg.role === 'user' ? 'font-black' : 'text-primary font-black'}>{part}</span>
+                            }
+                            return <span key={index}>{part}</span>;
+                          })}
+                        </span>
+                      );
+                    })()}
+
                     {msg.role === 'model' && (
                       <button
                         onClick={() => handlePlayAudio(msg.text, i)}
