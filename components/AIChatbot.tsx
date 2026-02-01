@@ -113,7 +113,13 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
     if (isOpen) scrollToBottom();
   }, [messages, isOpen]);
 
+  // Stop audio on unmount
+  useEffect(() => {
+    return () => stopAudio();
+  }, []);
+
   // Stop audio when modal is closed
+
   useEffect(() => {
     if (!isOpen) {
       stopAudio();
@@ -121,13 +127,21 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
   }, [isOpen]);
 
   const stopAudio = () => {
+    // Stop HTML Audio Element
     if (currentAudio) {
       currentAudio.pause();
       currentAudio.currentTime = 0;
       setCurrentAudio(null);
     }
+
+    // Stop Web Speech API (Browser Text-to-Speech)
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+
     setIsSpeaking(null);
   };
+
 
   const handleSend = async () => {
     if (chefCredits <= 0 && !isPremium) {
