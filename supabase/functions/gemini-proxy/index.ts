@@ -28,16 +28,24 @@ serve(async (req) => {
 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
 
+        // Prepare the body for Google AI REST API
+        const googlePayload: any = {
+            contents: payload.contents,
+            generationConfig: payload.generationConfig,
+        };
+
+        if (payload.systemInstruction) {
+            googlePayload.system_instruction = {
+                parts: [{ text: payload.systemInstruction }]
+            };
+        }
+
         const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(payload.config || {
-                contents: payload.contents,
-                systemInstruction: payload.systemInstruction,
-                generationConfig: payload.generationConfig,
-            }),
+            body: JSON.stringify(payload.config || googlePayload),
         });
 
         const data = await response.json();
