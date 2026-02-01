@@ -81,6 +81,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
       : await supabase.auth.signInWithPassword({ email, password });
 
     if (authError) {
+      console.error('❌ Auth Error:', authError.message, authError);
       setError(translateError(authError.message));
       setLoading(false);
     } else {

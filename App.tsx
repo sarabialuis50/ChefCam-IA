@@ -121,72 +121,21 @@ const App: React.FC = () => {
 
   // Unified Startup Logic: Auth + Persistence
   useEffect(() => {
-    const initializeApp = async () => {
-      try {
-        // 1. Get current session
-        const { data: { session } } = await supabase.auth.getSession();
-
-        // 2. Check for recovery flow via URL hash
-        const hash = window.location.hash;
-        const isRecovery = hash && (hash.includes('type=recovery') || hash.includes('access_token'));
-
-        if (isRecovery) {
-          console.log('🔄 Recovery flow detected');
-          // Important: We navigate later to ensure React status is ready
-        }
-
-        // 3. Handle Persistence with Security
-        const savedState = localStorage.getItem('chefscan_state');
-        let preppedView: AppView | undefined;
-
-        if (savedState) {
-          const parsed = JSON.parse(savedState);
-          // If user changed, or logged out, clear
-          if ((session && parsed.user?.id && parsed.user.id !== session.user.id) || (!session && parsed.user?.id)) {
-            localStorage.removeItem('chefscan_state');
-          } else {
-            // Apply cached state
-            preppedView = isRecovery ? 'reset-password' : (parsed.currentView || 'dashboard');
-            setState(prev => ({
-              ...prev,
-              ...parsed,
-              currentView: preppedView!,
-            }));
-            if (parsed.selectedRecipe) setSelectedRecipe(parsed.selectedRecipe);
-            if (parsed.lastTabViews) setLastTabViews(parsed.lastTabViews);
-          }
-        }
-
-        // 4. Force recovery view if no cached state was applied
-        if (isRecovery && !preppedView) {
-          navigateTo('reset-password');
-          preppedView = 'reset-password';
-        }
-
-        // 5. Clean URL hash if we've handled it
-        if (isRecovery) {
-          setTimeout(() => {
-            window.history.replaceState(null, '', window.location.pathname);
-          }, 100);
-        }
-
-        // 6. Fetch / Validate Profile
-        if (session) {
-          const shouldRedirect = !isRecovery && (preppedView === 'login' || preppedView === 'landing' || !preppedView);
-          fetchProfile(session.user.id, session.user.email || '', shouldRedirect);
-        }
-      } catch (err) {
-        console.warn('Initialization error:', err);
-      }
-    };
-
-    initializeApp();
-
+    // IMPORTANT: Register the auth listener FIRST, before any async calls
+    // This ensures we catch the SIGNED_IN event from OAuth redirects
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session && (event === 'SIGNED_IN' || event === 'INITIAL_SESSION')) {
+      console.log('🔔 Auth Event:', event, session?.user?.email);
+
+      if (event === 'SIGNED_IN' && session) {
+        // User just signed in (manual or OAuth)
+        console.log('✅ User signed in, fetching profile...');
         fetchProfile(session.user.id, session.user.email || '', true);
+      } else if (event === 'INITIAL_SESSION' && session) {
+        // App loaded with existing session
+        console.log('🔄 Initial session detected');
+        // Don't redirect here - let initializeApp handle cached state
       } else if (event === 'SIGNED_OUT') {
-        // Complete Cleanup
+        console.log('👋 User signed out');
         localStorage.removeItem('chefscan_state');
         setState(prev => ({
           ...prev,
@@ -199,9 +148,80 @@ const App: React.FC = () => {
         }));
         setSelectedRecipe(null);
       } else if (event === 'PASSWORD_RECOVERY') {
+        console.log('🔑 Password recovery event');
         navigateTo('reset-password');
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        // Token was refreshed, user is still logged in
+        console.log('🔄 Token refreshed');
       }
     });
+
+    // Now handle initial app state
+    const initializeApp = async () => {
+      try {
+        // 1. Get current session
+        const { data: { session } } = await supabase.auth.getSession();
+
+        // 2. Check for recovery flow ONLY (not OAuth - that's handled by onAuthStateChange)
+        const hash = window.location.hash;
+        const isRecovery = hash && hash.includes('type=recovery');
+
+        if (isRecovery) {
+          console.log('🔄 Password recovery flow detected');
+          navigateTo('reset-password');
+          // Clean URL hash after a short delay
+          setTimeout(() => {
+            window.history.replaceState(null, '', window.location.pathname);
+          }, 500);
+          return; // Don't process further for recovery
+        }
+
+        // 3. If there's a hash with access_token but NOT recovery, it's OAuth redirect
+        // The onAuthStateChange listener will handle this, just clean the URL
+        if (hash && hash.includes('access_token')) {
+          console.log('🔑 OAuth redirect detected, waiting for auth event...');
+          setTimeout(() => {
+            window.history.replaceState(null, '', window.location.pathname);
+          }, 1000);
+          return; // Let onAuthStateChange handle it
+        }
+
+        // 4. Handle Persistence with Security (only if no special flow)
+        const savedState = localStorage.getItem('chefscan_state');
+
+        if (savedState && session) {
+          const parsed = JSON.parse(savedState);
+          // If user changed, clear cache
+          if (parsed.user?.id && parsed.user.id !== session.user.id) {
+            localStorage.removeItem('chefscan_state');
+          } else {
+            // Apply cached state
+            setState(prev => ({
+              ...prev,
+              ...parsed,
+              currentView: parsed.currentView || 'dashboard',
+            }));
+            if (parsed.selectedRecipe) setSelectedRecipe(parsed.selectedRecipe);
+            if (parsed.lastTabViews) setLastTabViews(parsed.lastTabViews);
+          }
+        } else if (!session) {
+          // No session, no cached user? Clear any stale state
+          localStorage.removeItem('chefscan_state');
+        }
+
+        // 5. If we have a session but no cached state, fetch profile
+        if (session && !savedState) {
+          fetchProfile(session.user.id, session.user.email || '', true);
+        } else if (session && savedState) {
+          // Refresh profile data but don't force redirect
+          fetchProfile(session.user.id, session.user.email || '', false);
+        }
+      } catch (err) {
+        console.warn('Initialization error:', err);
+      }
+    };
+
+    initializeApp();
 
     return () => subscription.unsubscribe();
   }, []);
@@ -462,8 +482,8 @@ const App: React.FC = () => {
         } : null
       })) || []),
       userTags: finalTags,
-      // CRÍTICO: Solo redirigimos al dashboard si es la carga inicial o si explícitamente venimos de login
-      currentView: isInitialLoad && (prev.currentView === 'landing' || prev.currentView === 'login') ? 'dashboard' : prev.currentView,
+      // CRÍTICO: Siempre ir al dashboard si es carga inicial (OAuth o login manual)
+      currentView: isInitialLoad ? 'dashboard' : prev.currentView,
       recipeGenerationsToday: finalUser.recipeGenerationsToday,
       chefCredits: finalUser.chefCredits
     }));
