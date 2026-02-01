@@ -13,6 +13,12 @@ dist-ssr
 
 
 *.local
+config.js
+verify_fresh.js
+wait-key-3.js
+final_verify.js
+test-proxy.js
+
 
 # Editor directories and files
 .vscode/*
