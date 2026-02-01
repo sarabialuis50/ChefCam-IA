@@ -88,7 +88,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
       {
         id: '1',
         title: 'Recomendación Inteligente',
-        description: 'IA ha generado una recomendación de recetas basada en items de tu despensa.',
+        description: 'IA generó recetas con items de tu despensa.',
         time: 'Hace 5 min',
         icon: 'auto_awesome',
         type: 'recipe',
@@ -96,6 +96,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
         actionLabel: 'Ver Receta',
         actionPayload: ['Salmón', 'Espárragos', 'Limón', 'Ajo']
       },
+
       {
         id: '3',
         title: isUpdateAvailable ? 'Nueva Versión Disponible' : 'Actualización del Núcleo',

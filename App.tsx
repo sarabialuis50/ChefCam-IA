@@ -1370,28 +1370,29 @@ const App: React.FC = () => {
           reason={premiumModal.reason}
         />
       </div>
-      {/* PWA Update Banner */}
+      {/* PWA Update Banner - Mobile Optimized */}
       {needRefresh && (
-        <div className="fixed top-20 left-4 right-4 z-[200] animate-in slide-in-from-top duration-500">
-          <div className="bg-zinc-900/90 backdrop-blur-md border border-[#39FF14]/30 rounded-2xl p-4 shadow-[0_0_30px_rgba(57,255,20,0.15)] flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#39FF14]/20 flex items-center justify-center text-[#39FF14]">
-                <span className="material-symbols-outlined">system_update</span>
+        <div className="fixed top-4 left-2 right-2 z-[200] animate-in slide-in-from-top duration-500 max-w-[420px] mx-auto">
+          <div className="bg-zinc-900/95 backdrop-blur-md border border-[#39FF14]/30 rounded-xl p-3 shadow-[0_0_20px_rgba(57,255,20,0.15)] flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <div className="w-8 h-8 rounded-lg bg-[#39FF14]/20 flex items-center justify-center text-[#39FF14] flex-shrink-0">
+                <span className="material-symbols-outlined text-lg">system_update</span>
               </div>
-              <div>
-                <h4 className="text-white text-xs font-bold uppercase tracking-tight">Nueva versión disponible</h4>
-                <p className="text-zinc-400 text-[10px]">Actualiza para disfrutar las mejoras.</p>
+              <div className="min-w-0">
+                <h4 className="text-white text-[10px] font-bold uppercase tracking-tight truncate">Nueva versión disponible</h4>
+                <p className="text-zinc-400 text-[9px] truncate">Actualiza para disfrutar las mejoras.</p>
               </div>
             </div>
             <button
               onClick={handleUpdatePWA}
-              className="bg-[#39FF14] text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-neon-glow hover:scale-105 active:scale-95 transition-all"
+              className="bg-[#39FF14] text-black px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-wide shadow-neon-glow hover:scale-105 active:scale-95 transition-all flex-shrink-0"
             >
               Actualizar
             </button>
           </div>
         </div>
       )}
+
     </div>
   );
 };
