@@ -264,19 +264,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                 <span className="material-symbols-outlined">{notif.icon}</span>
               </div>
 
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between items-start gap-2">
-                  <h3 style={{ color: notif.unread ? 'var(--text-main)' : 'var(--text-muted)' }} className="text-sm font-bold uppercase tracking-tight leading-tight">
+              <div className="flex-1 min-w-0 overflow-hidden">
+                <div className="flex justify-between items-start gap-1">
+                  <h3 style={{ color: notif.unread ? 'var(--text-main)' : 'var(--text-muted)' }} className="text-[11px] font-bold uppercase tracking-tight leading-tight whitespace-nowrap truncate">
                     {notif.title}
                   </h3>
-                  <span style={{ color: 'var(--text-muted)' }} className="text-[8px] font-bold uppercase tracking-tighter whitespace-nowrap flex-shrink-0 pt-0.5">
+                  <span style={{ color: 'var(--text-muted)' }} className="text-[7px] font-bold uppercase tracking-tighter whitespace-nowrap flex-shrink-0 pt-0.5">
                     {notif.time}
                   </span>
                 </div>
-                <p style={{ color: 'var(--text-muted)' }} className="text-xs leading-relaxed mt-1">
-                  {notif.description}
-                  {/* Action Button Inline */}
-                  {notif.actionLabel && (onGenerateRecipe || (notif.actionPayload === 'pwa-update' && onUpdateAction)) && (
+                <p style={{ color: 'var(--text-muted)' }} className="text-[11px] leading-snug mt-1 line-clamp-2">
+                  {notif.description}{notif.actionLabel && (onGenerateRecipe || (notif.actionPayload === 'pwa-update' && onUpdateAction)) && (
                     <span
                       onClick={(e) => {
                         e.stopPropagation();
@@ -286,7 +284,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                           onGenerateRecipe(notif.actionPayload);
                         }
                       }}
-                      className={`ml-1 text-[10px] font-black uppercase tracking-widest cursor-pointer hover:underline decoration-2 underline-offset-4 transition-all ${notif.actionPayload === 'pwa-update'
+                      className={`ml-1 text-[10px] font-black uppercase tracking-wide cursor-pointer hover:underline decoration-2 underline-offset-2 transition-all ${notif.actionPayload === 'pwa-update'
                         ? "text-[#39FF14] decoration-[#39FF14]"
                         : "text-primary decoration-primary"
                         }`}
@@ -296,6 +294,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                   )}
                 </p>
               </div>
+
 
 
               {notif.unread && (
