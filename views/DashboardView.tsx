@@ -223,13 +223,36 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             className="w-10 h-10 rounded-xl border flex items-center justify-center relative active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-zinc-500 notranslate text-xl">notifications</span>
-            {inventory && inventory.some(item => {
-              const days = getDaysDiff(item.expiryDate);
-              return days <= 1; // Show dot if something is expired or expires today/tomorrow
-            }) && (
-                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
-              )}
+            {(() => {
+              // Check for unread notifications based on localStorage
+              try {
+                const userId = user?.id;
+                const key = userId ? `chefscan_read_notifs_${userId}` : 'chefscan_read_notifs';
+                const readNotifs = JSON.parse(localStorage.getItem(key) || '[]');
+
+                // Base notification IDs that exist
+                const baseNotifIds = ['1', '3', '4'];
+
+                // Check if pantry has urgent items (creates 'pantry_summary' notification)
+                const hasUrgentPantry = inventory && inventory.some(item => {
+                  const days = getDaysDiff(item.expiryDate);
+                  return days <= 1;
+                });
+
+                if (hasUrgentPantry) baseNotifIds.push('pantry_summary');
+
+                // If any notification ID is NOT in readNotifs, there are unread notifications
+                const hasUnread = baseNotifIds.some(id => !readNotifs.includes(id));
+
+                return hasUnread ? (
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
+                ) : null;
+              } catch {
+                return null;
+              }
+            })()}
           </button>
+
 
           <button
             onClick={onSettingsClick}

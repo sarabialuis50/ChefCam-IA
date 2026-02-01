@@ -285,12 +285,13 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                           onGenerateRecipe(notif.actionPayload);
                         }
                       }}
-                      className={`ml-1 text-[10px] font-black uppercase tracking-wide cursor-pointer hover:underline decoration-2 underline-offset-2 transition-all ${notif.actionPayload === 'pwa-update'
+                      className={`ml-1 text-[8px] font-bold uppercase tracking-tight cursor-pointer hover:underline decoration-1 underline-offset-2 transition-all ${notif.actionPayload === 'pwa-update'
                         ? "text-[#39FF14] decoration-[#39FF14]"
                         : "text-primary decoration-primary"
                         }`}
                     >
                       {notif.actionLabel} →
+
                     </span>
                   )}
                 </p>
