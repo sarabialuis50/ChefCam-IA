@@ -2,14 +2,33 @@
 import { Recipe, Ingredient } from "../types";
 import { getRecipeImage } from "./pexelsService";
 
-const API_URL = 'http://localhost:3001/api/gemini';
+// Use local proxy in development, Supabase Edge Function in production
+const isDev = import.meta.env.DEV || window.location.hostname === 'localhost';
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const API_URL = isDev
+  ? 'http://localhost:3001/api/gemini'
+  : `${SUPABASE_URL}/functions/v1/gemini-proxy`;
 
 
 const callGeminiProxy = async (payload: any) => {
+  // For production Edge Function, wrap payload in expected format
+  const body = isDev
+    ? payload
+    : { action: 'generate', payload };
+
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+  // Add auth header for Supabase Edge Function
+  if (!isDev && SUPABASE_ANON_KEY) {
+    headers['Authorization'] = `Bearer ${SUPABASE_ANON_KEY}`;
+    headers['apikey'] = SUPABASE_ANON_KEY;
+  }
+
   const response = await fetch(API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
+    headers,
+    body: JSON.stringify(body)
   });
   if (!response.ok) {
     const error = await response.json();
