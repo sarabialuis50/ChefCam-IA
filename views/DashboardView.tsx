@@ -223,8 +223,14 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             className="w-10 h-10 rounded-xl border flex items-center justify-center relative active:scale-95 transition-all"
           >
             <span className="material-symbols-outlined text-zinc-500 notranslate text-xl">notifications</span>
-            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
+            {inventory && inventory.some(item => {
+              const days = getDaysDiff(item.expiryDate);
+              return days <= 1; // Show dot if something is expired or expires today/tomorrow
+            }) && (
+                <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
+              )}
           </button>
+
           <button
             onClick={onSettingsClick}
             style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
