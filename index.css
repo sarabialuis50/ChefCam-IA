@@ -1,10 +1,75 @@
-@import "tailwindcss";
-@config "./tailwind.config.ts";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer base {
+    :root {
+        --primary: #39FF14;
+        --primary-rgb: 57, 255, 20;
+        --primary-dark: #2ECC71;
+        --primary-glow: rgba(57, 255, 20, 0.4);
+        --primary-text-glow: rgba(57, 255, 20, 0.6);
+        --bg-app: #000000;
+        --bg-app-rgb: 0, 0, 0;
+        --bg-surface: #1e1e1e;
+        --bg-surface-soft: #2a2a2a;
+        --bg-surface-inner: #0f0f0f;
+        --text-main: #ffffff;
+        --text-muted: #a1a1aa;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --card-border: #3a3a3a;
+    }
+
+    .light {
+        --primary: #15803d;
+        --primary-rgb: 21, 128, 61;
+        --primary-dark: #166534;
+        --primary-glow: rgba(21, 128, 61, 0.1);
+        --primary-text-glow: transparent;
+        --bg-app: #f8fafc;
+        --bg-app-rgb: 248, 250, 252;
+        --bg-surface: #ffffff;
+        --bg-surface-soft: #f1f5f9;
+        --bg-surface-inner: #f8fafc;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --glass-bg: rgba(0, 0, 0, 0.02);
+        --glass-border: rgba(0, 0, 0, 0.08);
+        --card-border: #e2e8f0;
+    }
+
     body {
-        @apply bg-[var(--bg-app)] text-[var(--text-main)] antialiased;
+        @apply bg-[var(--bg-app)] text-[var(--text-main)] antialiased m-0 p-0 overflow-x-hidden transition-colors duration-300;
         font-family: 'Inter', sans-serif;
+    }
+
+    /* Skip Navigation Style */
+    .skip-link {
+        @apply absolute -top-10 left-0 bg-[var(--primary)] text-black p-2 z-[100] transition-[top] duration-300 font-bold no-underline rounded-br-lg;
+    }
+
+    .skip-link:focus {
+        @apply top-0;
+    }
+
+    .neon-glow {
+        box-shadow: 0 0 15px var(--primary-glow);
+    }
+
+    .neon-text-glow {
+        text-shadow: 0 0 10px var(--primary-text-glow);
+    }
+
+    .shadow-glow-red {
+        box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+    }
+
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
     }
 
     /* Material Symbols CLS Fix */
@@ -15,5 +80,67 @@
         overflow: hidden;
         display: inline-block;
         vertical-align: middle;
+    }
+}
+
+@layer components {
+    .scanner-line {
+        @apply h-[2px] w-full absolute z-30;
+        background: linear-gradient(to right, transparent, var(--primary), transparent);
+        box-shadow: 0 0 15px var(--primary);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar,
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .custom-scrollbar,
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .fill-icon {
+        font-variation-settings: 'FILL' 1;
+    }
+}
+
+/* Base Utility for animations in index.html */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@layer utilities {
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        background: transparent;
+        bottom: 0;
+        color: transparent;
+        cursor: pointer;
+        height: auto;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: auto;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-clear-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        filter: invert(1) brightness(2);
+        opacity: 1;
+        cursor: pointer;
+    }
+
+    .animate-spin {
+        animation: spin 1s linear infinite;
     }
 }
