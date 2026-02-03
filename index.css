@@ -1,10 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "./tailwind.config.ts";
 
 @layer base {
     body {
-        @apply bg-[var(--bg-app)] text-[var(--text-main)] font-body antialiased;
+        @apply bg-[var(--bg-app)] text-[var(--text-main)] antialiased;
+        font-family: 'Inter', sans-serif;
     }
 
     /* Material Symbols CLS Fix */
