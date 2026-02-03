@@ -37,9 +37,9 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, active
             onClick={() => onNavClick?.('favorites')}
           />
 
-          <div className="w-16 h-16 -mt-12 bg-primary rounded-full flex items-center justify-center p-3 shadow-[0_5px_20px_var(--primary-glow)] border-[3px] border-[var(--bg-app)] active:scale-95 transition-all cursor-pointer z-50"
+          <div className="w-16 h-16 -mt-12 bg-primary rounded-full flex items-center justify-center shadow-[0_5px_20px_var(--primary-glow)] border-[4px] border-[var(--bg-app)] active:scale-95 transition-all cursor-pointer z-50 overflow-hidden"
             onClick={() => onNavClick?.('scanner')}>
-            <span className="material-symbols-outlined text-black text-3xl font-black">photo_camera</span>
+            <span className="material-symbols-outlined text-black text-[32px] notranslate icon-visible transform -translate-y-[1px]">photo_camera</span>
           </div>
 
           <NavItem

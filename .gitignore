@@ -45,3 +45,7 @@ gen-vapid.js
 gen-vapid.mjs
 # Supabase
 supabase/.temp/
+
+# Build
+dist/
+dev-dist/

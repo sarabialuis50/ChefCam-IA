@@ -111,14 +111,14 @@ const InventoryView: React.FC<InventoryViewProps> = ({
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-2 gap-3">
-                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl">
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl btn-clear-border">
                         <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1 flex items-center gap-1">
                             <span className="material-symbols-outlined text-[10px]">inventory_2</span>
                             {t('total_items')}
                         </p>
                         <p style={{ color: 'var(--text-main)' }} className="text-2xl font-black">{inventory.length}</p>
                     </div>
-                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl">
+                    <div style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }} className="border p-4 rounded-2xl btn-clear-border">
                         <p className="text-[10px] text-zinc-500 font-bold uppercase mb-1 flex items-center gap-1">
                             <span className="material-symbols-outlined text-[10px]">timer</span>
                             {t('near_expiry')}
@@ -141,7 +141,7 @@ const InventoryView: React.FC<InventoryViewProps> = ({
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
-                        className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 focus:border-primary/40 outline-none transition-all"
+                        className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-700 focus:border-primary/40 outline-none transition-all input-clear-border"
                     />
                 </div>
             </header>

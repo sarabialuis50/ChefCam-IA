@@ -284,7 +284,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
         {/* Unified Preview Box - RESTORED ORIGINAL LOGIC */}
         <div
           style={{ backgroundColor: 'var(--bg-surface-inner)' }}
-          className="w-full min-h-[16rem] border-2 border-dashed border-primary/30 rounded-[1.5rem] relative overflow-hidden transition-all group flex flex-col items-center justify-center text-center"
+          className="w-full min-h-[16rem] border-2 border-dashed border-primary/30 rounded-[1.5rem] relative overflow-hidden transition-all group flex flex-col items-center justify-center text-center btn-clear-border"
         >
           {previewImage ? (
             <>
@@ -339,7 +339,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
               ) : (
                 <>
                   <div style={{ backgroundColor: 'var(--primary-glow)', color: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center mb-4 border border-primary/30 shadow-[0_0_20px_var(--primary-glow)]">
-                    <span className="material-symbols-outlined text-4xl notranslate" style={{ fontWeight: '300', textShadow: 'var(--primary-text-glow)' }}>photo_camera</span>
+                    <span className="material-symbols-outlined text-4xl notranslate icon-visible transform -translate-y-[1px]" style={{ textShadow: 'var(--primary-text-glow)' }}>photo_camera</span>
                   </div>
                   <h4 style={{ color: 'var(--text-main)' }} className="font-bold text-lg mb-0 leading-tight">Vista previa de la foto</h4>
                   <p style={{ color: 'var(--text-muted)' }} className="text-[12px] font-medium leading-tight">Toma una foto o selecciona de tu galería</p>
@@ -354,17 +354,17 @@ const DashboardView: React.FC<DashboardViewProps> = ({
           <button
             onClick={onScanClick}
             disabled={analyzing}
-            className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm"
+            className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm btn-clear-border"
           >
-            <span className="material-symbols-outlined text-lg notranslate">photo_camera</span>
+            <span className="material-symbols-outlined text-lg notranslate icon-visible">photo_camera</span>
             {t('take_photo')}
           </button>
           <button
             onClick={handleUploadClick}
             disabled={analyzing}
-            className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm"
+            className="flex items-center justify-center gap-2 py-2 rounded-full border border-primary/40 text-[12px] font-bold bg-[var(--bg-surface-soft)] text-[var(--text-main)] hover:bg-primary hover:text-black hover:border-primary transition-all duration-300 active:scale-95 disabled:opacity-50 shadow-sm btn-clear-border"
           >
-            <span className="material-symbols-outlined text-lg notranslate">image</span>
+            <span className="material-symbols-outlined text-lg notranslate icon-visible">image</span>
             {t('gallery')}
           </button>
         </div>
@@ -378,7 +378,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             value={manualInput}
             onChange={(e) => setManualInput(e.target.value)}
             style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)' }}
-            className="w-full border border-primary/40 rounded-full py-2.5 px-6 text-sm placeholder-zinc-500 focus:border-primary outline-none transition-all"
+            className="w-full border border-primary/40 rounded-full py-2.5 px-6 text-sm placeholder-zinc-500 focus:border-primary outline-none transition-all input-clear-border"
           />
           <p style={{ color: 'var(--text-muted)' }} className="text-[10px] font-medium ml-1">{t('manual_input_help')}</p>
         </div>

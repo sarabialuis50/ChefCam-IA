@@ -225,14 +225,14 @@ const SettingsView: React.FC<SettingsViewProps> = ({
                     {/* Badge de Verificado / Premium */}
                     <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--bg-app)' }} className="absolute bottom-1 right-1 w-8 h-8 rounded-full border-2 flex items-center justify-center">
                         <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center shadow-glow">
-                            <span className="material-symbols-outlined text-black text-[14px] font-bold">check</span>
+                            <span className="material-symbols-outlined text-black text-[12px] notranslate transform translate-y-[0.5px]">check</span>
                         </div>
                     </div>
                     <button
                         style={{ backgroundColor: 'var(--bg-surface-soft)', borderColor: 'var(--card-border)' }}
-                        className="absolute top-0 right-0 w-8 h-8 rounded-full border flex items-center justify-center text-primary active:scale-95 transition-all shadow-lg"
+                        className="absolute top-0 right-0 w-8 h-8 rounded-full border flex items-center justify-center text-primary active:scale-95 transition-all shadow-lg overflow-hidden"
                     >
-                        <span className="material-symbols-outlined text-sm">photo_camera</span>
+                        <span className="material-symbols-outlined text-[14px] notranslate transform -translate-y-[0.5px]">photo_camera</span>
                     </button>
                     <input
                         type="file"

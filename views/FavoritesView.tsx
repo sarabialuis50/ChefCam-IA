@@ -110,7 +110,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ backgroundColor: 'var(--bg-surface-inner)', color: 'var(--text-main)', borderColor: 'var(--card-border)' }}
-            className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-500 focus:border-primary/40 outline-none transition-all"
+            className="w-full border rounded-2xl py-4 pl-12 pr-4 text-sm placeholder-zinc-500 focus:border-primary/40 outline-none transition-all input-clear-border"
           />
         </div>
 
@@ -129,7 +129,7 @@ const FavoritesView: React.FC<FavoritesViewProps> = ({ recipes, onRecipeClick, o
               onClick={() => {
                 if (!isDragging) setActiveCategory(cat);
               }}
-              className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-center transition-all border pointer-events-auto hover:bg-primary/10 ${activeCategory === cat
+              className={`flex-shrink-0 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest text-center transition-all border pointer-events-auto hover:bg-primary/10 btn-clear-border ${activeCategory === cat
                 ? 'shadow-lg shadow-primary/20'
                 : ''
                 }`}
