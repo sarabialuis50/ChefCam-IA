@@ -64,7 +64,7 @@ export interface ChefProfile {
   specialty: string;
 }
 
-export type AppView = 'landing' | 'login' | 'reset-password' | 'dashboard' | 'community' | 'profile-detail' | 'challenges' | 'scanner' | 'results' | 'recipe-detail' | 'nutritional-detail' | 'cooking-mode' | 'favorites' | 'history' | 'profile' | 'explore' | 'loading-recipes' | 'notifications' | 'settings' | 'inventory';
+export type AppView = 'landing' | 'login' | 'auth-redirect' | 'reset-password' | 'dashboard' | 'community' | 'profile-detail' | 'challenges' | 'scanner' | 'results' | 'recipe-detail' | 'nutritional-detail' | 'cooking-mode' | 'favorites' | 'history' | 'profile' | 'explore' | 'loading-recipes' | 'notifications' | 'settings' | 'inventory';
 
 export interface AppState {
   user: {

@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { getRedirectUrl } from '../lib/auth';
+import AuthRedirectView from './AuthRedirectView';
 
 interface LoginViewProps {
   onLogin: (user: any) => void;
   onBack?: () => void;
+  onGoogleClick?: () => void;
 }
 
-const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
+const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack, onGoogleClick }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +104,12 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
   };
 
   const handleGoogleLogin = async () => {
-    const siteUrl = import.meta.env.VITE_SITE_URL || window.location.origin;
+    if (onGoogleClick) {
+      onGoogleClick();
+      return;
+    }
+
+    const siteUrl = getRedirectUrl();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -112,13 +120,12 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
         }
       }
     });
-
   };
 
   return (
     <div style={{ backgroundColor: 'var(--bg-app)' }} className="min-h-screen w-full flex flex-col items-center justify-center p-6 relative overflow-hidden">
       {/* Background Grids */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, #39FF14 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
+      <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, var(--primary) 1px, transparent 0)', backgroundSize: '32px 32px' }}></div>
       <div className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[140px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-primary/20 rounded-full blur-[140px] pointer-events-none"></div>
 
@@ -133,7 +140,7 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, onBack }) => {
           </button>
         )}
         <div className="flex flex-col items-center text-center mb-10">
-          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'rgba(var(--primary-rgb), 0.3)' }} className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 neon-glow border overflow-hidden">
+          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--glass-border)' }} className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 shadow-glow border overflow-hidden">
             <img src="/landing-logo.png" alt="ChefScan Logo" className="w-14 h-14 object-contain relative z-10" />
           </div>
           <h2 className="text-3xl font-bold tracking-tighter drop-shadow-lg mb-2">

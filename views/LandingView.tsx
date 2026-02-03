@@ -17,7 +17,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .neon-glow {
-            box-shadow: 0 0 25px rgba(57, 255, 20, 0.4);
+            box-shadow: 0 0 25px var(--primary-glow);
         }
         .bg-hero-image-custom {
             background-image: linear-gradient(to bottom, rgba(var(--bg-app-rgb), 0.85) 0%, rgba(var(--bg-app-rgb), 1) 100%), url(/portada-pc.png);
@@ -27,8 +27,8 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
         }
         .scan-line-custom {
             height: 2px;
-            background: linear-gradient(to right, transparent, #39FF14, transparent);
-            box-shadow: 0 0 15px #39FF14;
+            background: linear-gradient(to right, transparent, var(--primary), transparent);
+            box-shadow: 0 0 15px var(--primary);
             width: 100%;
             position: absolute;
             z-index: 30;
@@ -42,7 +42,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
         .connector-line-custom {
             width: 1px;
             height: 60px;
-            background: linear-gradient(to top, #39FF14, transparent);
+            background: linear-gradient(to top, var(--primary), transparent);
             transform: rotate(-45deg);
             transform-origin: bottom;
         }
@@ -58,7 +58,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-3 group cursor-pointer transition-all duration-300">
             <div className="relative">
-              <div className="absolute -inset-2 bg-[#39FF14]/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="absolute -inset-2 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
               <img
                 src="/landing-logo.png"
                 alt="ChefScan Logo"
@@ -143,7 +143,7 @@ const LandingView: React.FC<LandingViewProps> = ({ onStart }) => {
               <button
                 onClick={onStart}
                 style={{ backgroundColor: 'var(--primary)' }}
-                className="flex h-16 w-full items-center justify-center rounded-full text-black text-lg font-black tracking-widest uppercase neon-glow hover:brightness-110 active:scale-[0.98] transition-all border-none"
+                className="flex h-16 w-full items-center justify-center rounded-full text-black text-lg font-black tracking-widest uppercase shadow-glow hover:brightness-110 active:scale-[0.98] transition-all border-none"
               >
                 Comenzar ahora
               </button>

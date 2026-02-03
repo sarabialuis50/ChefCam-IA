@@ -203,7 +203,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
 
       <header className="flex justify-between items-center w-full pt-2">
         <div className="flex items-center gap-3">
-          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--primary)' }} className="w-12 h-12 border-2 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 shadow-[0_0_15px_rgba(57,255,20,0.5)] border-primary">
+          <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--primary)' }} className="w-12 h-12 border-2 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300 shadow-[0_0_15px_var(--primary-glow)] border-primary">
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
@@ -250,7 +250,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 const hasUnread = baseNotifIds.some(id => !readNotifs.includes(id));
 
                 return hasUnread ? (
-                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full neon-glow"></span>
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-primary rounded-full shadow-[0_0_10px_var(--primary-glow)]"></span>
                 ) : null;
               } catch {
                 return null;
@@ -338,8 +338,8 @@ const DashboardView: React.FC<DashboardViewProps> = ({
                 </div>
               ) : (
                 <>
-                  <div style={{ backgroundColor: 'rgba(57, 255, 20, 0.1)', color: '#39FF14' }} className="w-20 h-20 rounded-full flex items-center justify-center mb-4 border border-[#39FF14]/30 shadow-[0_0_20px_rgba(57,255,20,0.2)]">
-                    <span className="material-symbols-outlined text-4xl notranslate" style={{ fontWeight: '300', textShadow: '0 0 10px rgba(57, 255, 20, 0.5)' }}>photo_camera</span>
+                  <div style={{ backgroundColor: 'var(--primary-glow)', color: 'var(--primary)' }} className="w-20 h-20 rounded-full flex items-center justify-center mb-4 border border-primary/30 shadow-[0_0_20px_var(--primary-glow)]">
+                    <span className="material-symbols-outlined text-4xl notranslate" style={{ fontWeight: '300', textShadow: 'var(--primary-text-glow)' }}>photo_camera</span>
                   </div>
                   <h4 style={{ color: 'var(--text-main)' }} className="font-bold text-lg mb-0 leading-tight">Vista previa de la foto</h4>
                   <p style={{ color: 'var(--text-muted)' }} className="text-[12px] font-medium leading-tight">Toma una foto o selecciona de tu galería</p>
@@ -412,7 +412,7 @@ const DashboardView: React.FC<DashboardViewProps> = ({
             disabled={loading || analyzing || (!manualInput.trim() && scannedIngredients.length === 0)}
             className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 uppercase text-sm active:scale-95 transition-all disabled:opacity-50
               ${manualInput.trim() || scannedIngredients.length > 0
-                ? 'bg-primary text-black font-black shadow-[0_0_20px_rgba(57,255,20,0.4)]'
+                ? 'bg-primary text-black font-black shadow-[0_5px_15px_var(--primary-glow)]'
                 : 'bg-transparent border-2 border-primary/50 text-primary font-bold shadow-none'}`}
           >
             <span className="material-symbols-outlined notranslate">{loading ? 'sync' : 'auto_awesome'}</span>

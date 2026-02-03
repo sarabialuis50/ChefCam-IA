@@ -43,3 +43,5 @@ test-proxy.js
 vapid-keys.txt
 gen-vapid.js
 gen-vapid.mjs
+# Supabase
+supabase/.temp/

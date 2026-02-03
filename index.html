@@ -46,8 +46,8 @@
       theme: {
         extend: {
           colors: {
-            primary: "#39FF14",
-            "primary-dark": "#2ECC71",
+            primary: "var(--primary)",
+            "primary-dark": "var(--primary-dark)",
             "background-dark": "#0A0A0A",
             "pure-black": "#000000",
             "surface-dark": "#161616",
@@ -86,6 +86,10 @@
   <style>
     :root {
       --primary: #39FF14;
+      --primary-rgb: 57, 255, 20;
+      --primary-dark: #2ECC71;
+      --primary-glow: rgba(57, 255, 20, 0.4);
+      --primary-text-glow: rgba(57, 255, 20, 0.6);
       --bg-app: #000000;
       --bg-app-rgb: 0, 0, 0;
       --bg-surface: #1e1e1e;
@@ -99,7 +103,12 @@
     }
 
     .light {
-      --primary: #39FF14;
+      --primary: #15803d;
+      /* Verde 700 para contraste óptimo */
+      --primary-rgb: 21, 128, 61;
+      --primary-dark: #166534;
+      --primary-glow: rgba(21, 128, 61, 0.1);
+      --primary-text-glow: transparent;
       --bg-app: #f8fafc;
       --bg-app-rgb: 248, 250, 252;
       --bg-surface: #ffffff;
@@ -123,11 +132,11 @@
     }
 
     .neon-glow {
-      box-shadow: 0 0 15px rgba(57, 255, 20, 0.4);
+      box-shadow: 0 0 15px var(--primary-glow);
     }
 
     .neon-text-glow {
-      text-shadow: 0 0 10px rgba(57, 255, 20, 0.6);
+      text-shadow: 0 0 10px var(--primary-text-glow);
     }
 
     .shadow-glow-red {
@@ -171,8 +180,8 @@
 
     .scanner-line {
       height: 2px;
-      background: linear-gradient(to right, transparent, #39FF14, transparent);
-      box-shadow: 0 0 15px #39FF14;
+      background: linear-gradient(to right, transparent, var(--primary), transparent);
+      box-shadow: 0 0 15px var(--primary);
       width: 100%;
       position: absolute;
       z-index: 30;

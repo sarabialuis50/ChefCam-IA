@@ -37,7 +37,7 @@ export const Layout: React.FC<LayoutProps> = ({ children, showNav = true, active
             onClick={() => onNavClick?.('favorites')}
           />
 
-          <div className="w-16 h-16 -mt-12 bg-primary rounded-full flex items-center justify-center p-3 shadow-[0_0_25px_rgba(57,255,20,0.6)] border-[3px] border-[#000] active:scale-95 transition-all cursor-pointer z-50"
+          <div className="w-16 h-16 -mt-12 bg-primary rounded-full flex items-center justify-center p-3 shadow-[0_5px_20px_var(--primary-glow)] border-[3px] border-[var(--bg-app)] active:scale-95 transition-all cursor-pointer z-50"
             onClick={() => onNavClick?.('scanner')}>
             <span className="material-symbols-outlined text-black text-3xl font-black">photo_camera</span>
           </div>
@@ -66,10 +66,10 @@ const NavItem = ({ icon, label, active, onClick }: { icon: string; label: string
     className="flex flex-col items-center gap-1 transition-all active:scale-95"
   >
     <span className={`material-symbols-outlined text-2xl notranslate ${active ? 'text-primary fill-icon' : 'text-zinc-500'}`}
-      style={{ color: active ? '#39FF14' : 'var(--text-muted)' }}>
+      style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}>
       {icon}
     </span>
-    <span style={{ color: active ? '#39FF14' : 'var(--text-muted)' }}
+    <span style={{ color: active ? 'var(--primary)' : 'var(--text-muted)' }}
       className="text-[9px] font-bold uppercase tracking-widest mt-1">
       {label}
     </span>

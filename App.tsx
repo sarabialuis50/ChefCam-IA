@@ -24,6 +24,7 @@ import PremiumModal from './components/PremiumModal';
 import InventoryView from './views/InventoryView';
 import ChallengesView from './views/ChallengesView';
 import ResetPasswordView from './views/ResetPasswordView';
+import AuthRedirectView from './views/AuthRedirectView';
 import { generateRecipes } from './services/geminiService';
 import { supabase } from './lib/supabase';
 import { InventoryItem } from './types';
@@ -103,7 +104,7 @@ const App: React.FC = () => {
 
     const root = document.documentElement;
     // Force Dark Mode on specific 'immersive' pages
-    const forcedDarkViews = ['landing', 'login', 'reset-password', 'dashboard'];
+    const forcedDarkViews = ['landing', 'login', 'reset-password'];
     const actuallyDark = isDarkMode || forcedDarkViews.includes(state.currentView);
 
     if (actuallyDark) {
@@ -1081,6 +1082,15 @@ const App: React.FC = () => {
             <LoginView
               onLogin={handleLogin}
               onBack={() => navigateTo('landing')}
+              onGoogleClick={() => navigateTo('auth-redirect')}
+            />
+          </Layout>
+        );
+      case 'auth-redirect':
+        return (
+          <Layout showNav={false}>
+            <AuthRedirectView
+              onBack={() => navigateTo('login')}
             />
           </Layout>
         );
