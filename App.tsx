@@ -474,8 +474,11 @@ const App: React.FC = () => {
         } : null
       })) || []),
       userTags: finalTags,
-      // CRÍTICO: Siempre ir al dashboard si es carga inicial (OAuth o login manual)
-      currentView: isInitialLoad ? 'dashboard' : prev.currentView,
+      // CRÍTICO: Solo ir al dashboard si es carga inicial Y estamos en una pantalla de acceso (gate)
+      // Si el usuario ya está en una vista de la app (ej. Notificaciones), lo dejamos ahí.
+      currentView: (isInitialLoad && ['landing', 'login', 'auth-redirect', 'reset-password'].includes(prev.currentView))
+        ? 'dashboard'
+        : prev.currentView,
       recipeGenerationsToday: finalUser.recipeGenerationsToday,
       chefCredits: finalUser.chefCredits
     }));
@@ -1154,6 +1157,7 @@ const App: React.FC = () => {
           <Layout activeNav="dashboard" onNavClick={handleNavClick}>
             <NotificationsView
               onBack={() => navigateTo('dashboard')}
+              onNavigate={(view) => navigateTo(view)}
               language={state.language}
               inventory={state.inventory}
               onGenerateRecipe={(ingredients) => handleStartGeneration(ingredients, 2)}

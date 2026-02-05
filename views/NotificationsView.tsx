@@ -6,6 +6,7 @@ import { getItemStatus } from '../utils/itemStatus';
 
 interface NotificationsViewProps {
   onBack: () => void;
+  onNavigate?: (view: any) => void;
   language: Language;
   inventory?: InventoryItem[];
   onGenerateRecipe?: (ingredients: string[]) => void;
@@ -21,7 +22,7 @@ interface Notification {
   description: string;
   time: string;
   icon: string;
-  type: 'recipe' | 'system' | 'alert' | 'pantry';
+  type: 'recipe' | 'system' | 'alert' | 'pantry' | 'community';
   unread: boolean;
   actionLabel?: string;
   actionPayload?: any;
@@ -43,6 +44,7 @@ const HEALTH_TIPS = [
 
 const NotificationsView: React.FC<NotificationsViewProps> = ({
   onBack,
+  onNavigate,
   language,
   inventory,
   onGenerateRecipe,
@@ -123,7 +125,22 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
       }
     ];
 
-    if (!inventory) return baseNotifications;
+    // Community Placeholder Notification (Always present to encourage visiting)
+    const communityDiscoveryNotification: Notification = {
+      id: 'community_discovery',
+      title: 'Novedades en Comunidad',
+      description: t('no_community_notifs'),
+      time: 'Ahora',
+      icon: 'groups',
+      type: 'community',
+      unread: false,
+      actionLabel: 'Explorar',
+      actionPayload: 'community-view'
+    };
+
+    const finalBase = [...baseNotifications, communityDiscoveryNotification];
+
+    if (!inventory) return finalBase;
 
     const expiredCount = inventory.filter(i => {
       const s = getItemStatus(i.expiryDate);
@@ -146,7 +163,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
     }).length;
 
     if (expiredCount === 0 && expiringTodayCount === 0 && expiringTomorrowCount === 0 && proxExpiryCount === 0) {
-      return baseNotifications;
+      return finalBase;
     }
 
     let descriptionParts: string[] = [];
@@ -172,7 +189,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
       unread: isUrgent && !readIds.includes('pantry_summary')
     };
 
-    return [pantrySummaryNotification, ...baseNotifications];
+    return [pantrySummaryNotification, ...finalBase];
   });
 
   // Mark notification as read
@@ -198,6 +215,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
     if (activeFilter === 'Sistema') return n.type === 'system';
     if (activeFilter === 'Alertas') return n.type === 'alert';
     if (activeFilter === 'Despensa') return n.type === 'pantry';
+    if (activeFilter === 'Comunidad') return n.type === 'community';
     return true;
   });
 
@@ -224,7 +242,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
 
       {/* Filter Chips */}
       <div className="flex gap-3 pt-2 overflow-x-auto no-scrollbar">
-        {['Todas', 'Recetas', 'Despensa', 'Sistema', 'Alertas'].map(filter => (
+        {['Todas', 'Recetas', 'Despensa', 'Comunidad', 'Sistema', 'Alertas'].map(filter => (
           <button
             key={filter}
             onClick={() => setActiveFilter(filter)}
@@ -275,12 +293,15 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                   </span>
                 </div>
                 <p style={{ color: 'var(--text-muted)' }} className="text-[11px] leading-snug mt-1 line-clamp-2">
-                  {notif.description}{notif.actionLabel && (onGenerateRecipe || (notif.actionPayload === 'pwa-update' && onUpdateAction)) && (
+                  {notif.description}
+                  {notif.actionLabel && (onGenerateRecipe || (notif.actionPayload === 'pwa-update' && onUpdateAction) || notif.actionPayload === 'community-view') && (
                     <span
                       onClick={(e) => {
                         e.stopPropagation();
                         if (notif.actionPayload === 'pwa-update' && onUpdateAction) {
                           onUpdateAction();
+                        } else if (notif.actionPayload === 'community-view') {
+                          onNavigate ? onNavigate('community') : onBack();
                         } else if (onGenerateRecipe) {
                           onGenerateRecipe(notif.actionPayload);
                         }
@@ -291,7 +312,6 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
                         }`}
                     >
                       {notif.actionLabel} →
-
                     </span>
                   )}
                 </p>
@@ -299,15 +319,33 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
 
 
 
-              {notif.unread && (
-                <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full neon-glow"></div>
-              )}
+              {
+                notif.unread && (
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full neon-glow"></div>
+                )
+              }
             </div>
           ))
         ) : (
-          <div style={{ color: 'var(--text-muted)' }} className="flex flex-col items-center justify-center py-20 space-y-4">
-            <span className="material-symbols-outlined text-6xl opacity-20">notifications_off</span>
-            <p className="text-[10px] font-black uppercase tracking-[0.3em]">Nada que reportar por ahora</p>
+          <div style={{ color: 'var(--text-muted)' }} className="flex flex-col items-center justify-center py-20 space-y-4 text-center px-6">
+            <span className="material-symbols-outlined text-6xl opacity-20">
+              {activeFilter === 'Comunidad' ? 'groups' : activeFilter === 'Despensa' ? 'inventory_2' : 'notifications_off'}
+            </span>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] max-w-[250px] leading-relaxed">
+              {activeFilter === 'Comunidad'
+                ? t('no_community_notifs')
+                : activeFilter === 'Despensa'
+                  ? 'No hay alertas de despensa pendientes por ahora'
+                  : 'Nada que reportar por ahora'}
+            </p>
+            {activeFilter === 'Comunidad' && (
+              <button
+                onClick={() => onNavigate ? onNavigate('community') : onBack()}
+                className="text-[9px] font-bold text-primary uppercase tracking-widest border border-primary/20 px-4 py-2 rounded-lg hover:bg-primary/10 transition-all shadow-glow"
+              >
+                Ir a Comunidad
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -316,7 +354,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({
       <div className="text-center mt-auto pb-4">
         <p style={{ color: 'var(--text-muted)', opacity: 0.5 }} className="text-[8px] font-bold uppercase tracking-[0.5em]">Sistema de Alertas ChefScan.IA • Online</p>
       </div>
-    </div>
+    </div >
   );
 };
 

@@ -149,11 +149,20 @@ const InventoryView: React.FC<InventoryViewProps> = ({
             {/* Inventory List */}
             <div className="space-y-3">
                 {filteredInventory.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-                        <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-16 h-16 rounded-full flex items-center justify-center border opacity-40">
-                            <span className="material-symbols-outlined text-3xl text-zinc-500">inventory_2</span>
+                    <div className="flex flex-col items-center justify-center py-20 text-center space-y-6 px-4">
+                        <div style={{ backgroundColor: 'var(--bg-surface-inner)', borderColor: 'var(--card-border)' }} className="w-20 h-20 rounded-full flex items-center justify-center border opacity-40 shadow-inner">
+                            <span className="material-symbols-outlined text-4xl text-primary/60">inventory_2</span>
                         </div>
-                        <p className="text-zinc-500 text-sm">{t('empty_inventory')}</p>
+                        <div className="space-y-2">
+                            <p style={{ color: 'var(--text-main)' }} className="text-base font-bold uppercase tracking-tighter">{t('empty_inventory')}</p>
+                            <p className="text-zinc-500 text-xs max-w-[250px] mx-auto italic">Mantén el control de tus ingredientes y evita que caduquen con la gestión inteligente.</p>
+                        </div>
+                        <button
+                            onClick={() => setIsAdding(true)}
+                            className="px-6 py-3 bg-primary/10 border border-primary/30 text-primary text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary hover:text-black transition-all shadow-glow"
+                        >
+                            {t('empty_inventory_cta')}
+                        </button>
                     </div>
                 ) : (
                     filteredInventory.map(item => {
