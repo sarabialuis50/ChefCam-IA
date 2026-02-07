@@ -58,16 +58,24 @@ export const resizeAndCompressImage = (
 
 /**
  * Obtiene la URL de imagen para una receta de forma consistente.
- * Si la receta tiene imageUrl, la usa. Si no, usa un placeholder basado en el ID.
+ * Si la receta tiene imageUrl, la usa. Si no, usa un placeholder basado en el ID o Título.
  * @param recipe Objeto de la receta.
  * @param width Ancho sugerido para el placeholder.
  * @returns URL de la imagen.
  */
-export const getRecipeImage = (recipe: { imageUrl?: string; id: string }, width: number = 800): string => {
+export const getRecipeImage = (recipe: { imageUrl?: string; id?: string; title?: string }, width: number = 800): string => {
     if (recipe.imageUrl) return recipe.imageUrl;
 
-    // Fallback consistente usando el ID como semilla para Picsum
-    return `https://picsum.photos/seed/${recipe.id}/${width}/${width}`;
+    // Fallback consistente usando el ID o el Título como semilla para Picsum
+    const seed = recipe.id || recipe.title || 'gourmet';
+    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${width}`;
+};
+
+/**
+ * Obtiene un fallback en caso de error de carga de imagen.
+ */
+export const getErrorFallback = (seed: string = 'food', width: number = 800): string => {
+    return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${width}`;
 };
 
 /**

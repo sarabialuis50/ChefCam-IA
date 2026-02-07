@@ -53,7 +53,7 @@ const RecipeDetailView: React.FC<RecipeDetailViewProps> = ({ recipe, isFavorite,
           alt={recipe.title}
           className="w-full h-full object-cover"
           onError={(e) => {
-            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=1000";
+            (e.target as HTMLImageElement).src = getRecipeImage(recipe, 800);
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-app)] via-[var(--bg-app)]/20 to-transparent"></div>

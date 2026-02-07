@@ -74,9 +74,9 @@ export const generateRecipes = async (
     const langLabel = language === 'es' ? 'ESPAÑOL' : 'ENGLISH';
     const systemPrompt = `Actúa como Chef Ejecutivo. Crea ${count} recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
         IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones. TODO EN ${langLabel}.
-        Asegúrate de que "photoQuery" sean 2-3 palabras clave en INGLÉS siempre. Todo lo demás en ${langLabel}.
+        Asegúrate de que "photoQuery" sea una cadena de 2-3 palabras claves ESPECÍFICAS del plato en INGLÉS (ej. "beef tacos", "mushroom risotto"). Cada receta DEBE tener un photoQuery diferente y muy descriptivo.
         {
-          "id": "string",
+          "id": "string (único)",
           "title": "string",
           "description": "string",
           "portions": number,
@@ -91,10 +91,10 @@ export const generateRecipes = async (
           "tips": ["string"],
           "nutriScore": "A" | "B" | "C" | "D",
           "matchPercentage": number,
-          "photoQuery": "string"
+          "photoQuery": "string (en inglés, específico)"
         }
-        REGLA CRÍTICA: El campo "tips" DEBE ser un arreglo con la misma cantidad de elementos que "instructions". Cada tip debe ser un consejo profesional de chef específico para su paso correspondiente. No repitas tips.
-        Asegúrate de que "photoQuery" sean 2-3 palabras clave en INGLÉS. Todo lo demás en ESPAÑOL.`;
+        REGLA CRÍTICA: El campo "tips" DEBE ser un arreglo con la misma cantidad de elementos que "instructions".
+        Cada receta debe tener un "id" único y un "photoQuery" en inglés que describa perfectamente el plato para un buscador de imágenes.`;
 
     const data = await callGeminiProxy({
       model: 'gemini-2.0-flash',
@@ -115,15 +115,18 @@ export const generateRecipes = async (
     const recipes = JSON.parse(cleanJson || "[]");
     if (!Array.isArray(recipes) || recipes.length === 0) return [];
 
-    return await Promise.all(recipes.map(async (recipe: any) => {
+    return await Promise.all(recipes.map(async (recipe: any, index: number) => {
       try {
-        const photoQuery = recipe.photoQuery || recipe.title || "cooking food";
+        // Asegurar ID único si Gemini falla
+        const recipeId = recipe.id || `recipe-${Date.now()}-${index}`;
+        const photoQuery = recipe.photoQuery || recipe.title || "gourmet food dish";
         console.log(`📸 Buscando imagen para: "${recipe.title}" con query: "${photoQuery}"`);
         const imageUrl = await getRecipeImage(photoQuery);
-        return { ...recipe, imageUrl };
+        return { ...recipe, id: recipeId, imageUrl };
       } catch (err) {
         console.warn("Error getting recipe image:", err);
-        return { ...recipe, imageUrl: "https://images.unsplash.com/photo-1495521821757-a1efb6729352?auto=format&fit=crop&q=80&w=800" };
+        // Fallback dinámico basado en el título si falla todo lo anterior
+        return { ...recipe, imageUrl: `https://picsum.photos/seed/${encodeURIComponent(recipe.title || 'recipe')}/800/600` };
       }
     }));
   } catch (error) {

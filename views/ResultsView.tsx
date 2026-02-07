@@ -86,7 +86,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                   alt=""
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=400";
+                    (e.target as HTMLImageElement).src = getRecipeImage(recipe, 400);
                   }}
                 />
               </div>
@@ -98,7 +98,7 @@ const ResultsView: React.FC<ResultsViewProps> = ({
                     alt={recipe.title}
                     className="w-full h-full object-cover"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=300";
+                      (e.target as HTMLImageElement).src = getRecipeImage(recipe, 300);
                     }}
                   />
                   {recipe.category && (
