@@ -1,6 +1,7 @@
 
 import { Recipe, Ingredient } from "../types";
-import { getRecipeImage } from "./pexelsService";
+import { getRecipeImage, clearImageCache } from "./pexelsService";
+
 
 // Use local proxy in development, Supabase Edge Function in production
 const isDev = import.meta.env.DEV || window.location.hostname === 'localhost';
@@ -71,12 +72,17 @@ export const generateRecipes = async (
   language: 'es' | 'en' = 'es'
 ): Promise<Recipe[]> => {
   try {
+    // 🔄 Limpiar cache de imágenes al inicio de cada generación
+    clearImageCache();
+
     const langLabel = language === 'es' ? 'ESPAÑOL' : 'ENGLISH';
+    const generationTimestamp = Date.now(); // Timestamp único para esta generación
+
     const systemPrompt = `Actúa como Chef Ejecutivo. Crea ${count} recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
         IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones. TODO EN ${langLabel}.
-        Asegúrate de que "photoQuery" sea una cadena de 2-3 palabras claves ESPECÍFICAS del plato en INGLÉS (ej. "beef tacos", "mushroom risotto"). Cada receta DEBE tener un photoQuery diferente y muy descriptivo.
+        Asegúrate de que "photoQuery" sea una cadena de 2-3 palabras claves ESPECÍFICAS y DISTINTAS del plato en INGLÉS (ej. "beef tacos", "mushroom risotto", "grilled salmon"). Cada receta DEBE tener un photoQuery DIFERENTE y muy descriptivo.
         {
-          "id": "string (único)",
+          "id": "string (único, formato: recipe-TIMESTAMP-INDEX)",
           "title": "string",
           "description": "string",
           "portions": number,
@@ -91,9 +97,10 @@ export const generateRecipes = async (
           "tips": ["string"],
           "nutriScore": "A" | "B" | "C" | "D",
           "matchPercentage": number,
-          "photoQuery": "string (en inglés, específico)"
+          "photoQuery": "string (en inglés, específico y ÚNICO para cada receta)"
         }
         REGLA CRÍTICA: El campo "tips" DEBE ser un arreglo con la misma cantidad de elementos que "instructions".
+        REGLA CRÍTICA: Cada receta DEBE tener un "photoQuery" DIFERENTE - NO pueden repetir el mismo query.
         Cada receta debe tener un "id" único y un "photoQuery" en inglés que describa perfectamente el plato para un buscador de imágenes.`;
 
     const data = await callGeminiProxy({
@@ -115,20 +122,31 @@ export const generateRecipes = async (
     const recipes = JSON.parse(cleanJson || "[]");
     if (!Array.isArray(recipes) || recipes.length === 0) return [];
 
-    return await Promise.all(recipes.map(async (recipe: any, index: number) => {
+    // Procesar recetas en SECUENCIA para evitar condiciones de carrera en el cache
+    const processedRecipes: Recipe[] = [];
+    for (let index = 0; index < recipes.length; index++) {
+      const recipe = recipes[index];
       try {
-        // Asegurar ID único si Gemini falla
-        const recipeId = recipe.id || `recipe-${Date.now()}-${index}`;
-        const photoQuery = recipe.photoQuery || recipe.title || "gourmet food dish";
-        console.log(`📸 Buscando imagen para: "${recipe.title}" con query: "${photoQuery}"`);
+        // Asegurar ID único usando timestamp de generación + índice
+        const recipeId = recipe.id || `recipe-${generationTimestamp}-${index}`;
+
+        // Añadir variación al photoQuery para garantizar unicidad
+        const baseQuery = recipe.photoQuery || recipe.title || "gourmet food dish";
+        const photoQuery = `${baseQuery}`.trim();
+
+        console.log(`📸 [${index + 1}/${recipes.length}] Buscando imagen para: "${recipe.title}" con query: "${photoQuery}"`);
         const imageUrl = await getRecipeImage(photoQuery);
-        return { ...recipe, id: recipeId, imageUrl };
+
+        processedRecipes.push({ ...recipe, id: recipeId, imageUrl });
       } catch (err) {
-        console.warn("Error getting recipe image:", err);
-        // Fallback dinámico basado en el título si falla todo lo anterior
-        return { ...recipe, imageUrl: `https://picsum.photos/seed/${encodeURIComponent(recipe.title || 'recipe')}/800/600` };
+        console.warn(`Error getting recipe image for recipe ${index}:`, err);
+        // Fallback dinámico único usando timestamp + índice
+        const fallbackUrl = `https://picsum.photos/seed/${encodeURIComponent(recipe.title || 'recipe')}-${generationTimestamp}-${index}/800/600`;
+        processedRecipes.push({ ...recipe, imageUrl: fallbackUrl });
       }
-    }));
+    }
+
+    return processedRecipes;
   } catch (error) {
     console.error("Error generando recetas:", error);
     return [];
