@@ -145,12 +145,12 @@ export const generateRecipes = async (
         processedRecipes.push({ ...recipe, imageUrl: fallbackUrl });
       }
     }
-
     return processedRecipes;
   } catch (error) {
     console.error("Error generando recetas:", error);
     return [];
   }
+
 };
 
 export const checkIngredientsConsistency = async (ingredients: string[]): Promise<string | null> => {
