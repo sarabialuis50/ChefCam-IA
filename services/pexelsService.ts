@@ -14,9 +14,10 @@ export const getRecipeImage = async (query: string): Promise<string> => {
     const cleanQuery = (query || "delicious food").trim();
     const timestamp = Date.now();
 
+    console.log(`🔍 [Pexels] Buscando: "${cleanQuery}" (Key: ${effectiveKey.substring(0, 5)}...)`);
+
     try {
         const fetchImages = async (q: string): Promise<string[]> => {
-            // Aumentamos per_page a 20 y quitamos orientation para más variedad
             const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(q)}&per_page=20`;
             const response = await fetch(url, {
                 headers: {
@@ -25,14 +26,17 @@ export const getRecipeImage = async (query: string): Promise<string> => {
             });
 
             if (!response.ok) {
-                console.warn(`Pexels API error: ${response.status} for query: ${q}`);
+                console.warn(`❌ Pexels API error: ${response.status} (${response.statusText}) para: ${q}`);
                 return [];
             }
 
             const data = await response.json();
-            return (data.photos || [])
+            const photos = (data.photos || [])
                 .map((photo: any) => photo?.src?.large || photo?.src?.original)
                 .filter(Boolean);
+
+            console.log(`✅ Pexels encontró ${photos.length} imágenes para "${q}"`);
+            return photos;
         };
 
         // Búsqueda primaria
@@ -40,33 +44,35 @@ export const getRecipeImage = async (query: string): Promise<string> => {
 
         // Si no hay resultados, intentar con algo genérico pero relacionado
         if (images.length === 0) {
+            console.log(`⚠️ No hay resultados para "${cleanQuery}", intentando búsqueda simplificada...`);
             const firstWord = cleanQuery.split(' ')[0];
-            images = await fetchImages(`${firstWord} dish`);
+            images = await fetchImages(`${firstWord} food`);
         }
 
-        // Filtrar imágenes ya usadas
+        // Filtrar imágenes ya usadas para esta sesión
         let availableImages = images.filter(url => !usedImagesCache.has(url));
 
         // Si no quedan nuevas, reusar de las obtenidas pero aleatoriamente
-        if (availableImages.length === 0) {
-            availableImages = images.length > 0 ? images : [];
+        if (availableImages.length === 0 && images.length > 0) {
+            console.log("♻️ Reusando imágenes del cache para mayor variedad");
+            availableImages = images;
         }
 
         if (availableImages.length > 0) {
             const randomIndex = Math.floor(Math.random() * availableImages.length);
             const selectedImage = availableImages[randomIndex];
             usedImagesCache.add(selectedImage);
-            console.log(`📸 Imagen Pexels para "${cleanQuery}": ${selectedImage.substring(0, 40)}...`);
             return selectedImage;
         }
 
-        // Fallback dinámico si Pexels falla totalmente
+        // Fallback dinámico si Pexels falla totalmente o no hay resultados
         fallbackCounter++;
-        console.warn("Usando fallback Picsum para:", cleanQuery);
-        return `https://picsum.photos/seed/${encodeURIComponent(cleanQuery)}-${timestamp}-${fallbackCounter}/800/600`;
+        const fallbackUrl = `https://picsum.photos/seed/${encodeURIComponent(cleanQuery.split(' ')[0])}-${timestamp}-${fallbackCounter}/800/600`;
+        console.warn(`🚩 Fallback a Picsum: ${fallbackUrl}`);
+        return fallbackUrl;
 
     } catch (error) {
-        console.error("Error en pexelsService:", error);
+        console.error("❌ Error fatal en pexelsService:", error);
         fallbackCounter++;
         return `https://picsum.photos/seed/food-${timestamp}-${fallbackCounter}/800/600`;
     }

@@ -79,10 +79,16 @@ export const generateRecipes = async (
     const generationTimestamp = Date.now(); // Timestamp único para esta generación
 
     const systemPrompt = `Actúa como Chef Ejecutivo. Crea ${count} recetas creativas con: ${ingredients.join(", ")}. Porciones: ${portions}. Alergias: ${allergies ? allergies.join(", ") : "ninguna"}. Meta: ${cookingGoal}. 
-        IMPORTANTE: Devuelve ÚNICAMENTE el arreglo JSON, sin introducciones. TODO EN ${langLabel}.
-        Asegúrate de que "photoQuery" sea una cadena de 2-3 palabras claves ESPECÍFICAS y DISTINTAS del plato en INGLÉS (ej. "beef tacos", "mushroom risotto", "grilled salmon"). Cada receta DEBE tener un photoQuery DIFERENTE y muy descriptivo.
+        IMPORTANTE: TODO EL CONTENIDO (título, descripción, instrucciones, ingredientes, tips) DEBE ESTAR EN ${langLabel}.
+        
+        REGLA CRÍTICA PARA IMÁGENES: El campo "photoQuery" DEBE estar SIEMPRE EN INGLÉS, sin importar que el resto sea en español.
+        - "photoQuery" debe ser un string de 2-4 palabras que describan el plato visualmente (ej: "homemade pepperoni pizza", "creamy mushroom pasta", "fresh caesar salad").
+        - NO uses palabras genéricas como "food" o "recipe".
+        - Cada receta DEBE tener un photoQuery DIFERENTE y muy específico.
+        
+        Formato JSON:
         {
-          "id": "string (único, formato: recipe-TIMESTAMP-INDEX)",
+          "id": "string (único)",
           "title": "string",
           "description": "string",
           "portions": number,
@@ -97,11 +103,9 @@ export const generateRecipes = async (
           "tips": ["string"],
           "nutriScore": "A" | "B" | "C" | "D",
           "matchPercentage": number,
-          "photoQuery": "string (en inglés, específico y ÚNICO para cada receta)"
+          "photoQuery": "string (ALWAYS IN ENGLISH, explicit and unique)"
         }
-        REGLA CRÍTICA: El campo "tips" DEBE ser un arreglo con la misma cantidad de elementos que "instructions".
-        REGLA CRÍTICA: Cada receta DEBE tener un "photoQuery" DIFERENTE - NO pueden repetir el mismo query.
-        Cada receta debe tener un "id" único y un "photoQuery" en inglés que describa perfectamente el plato para un buscador de imágenes.`;
+        REGLA CRÍTICA: Cada receta DEBE tener un "photoQuery" en inglés que describa perfectamente el plato para un buscador de imágenes.`;
 
     const data = await callGeminiProxy({
       model: 'gemini-2.0-flash',

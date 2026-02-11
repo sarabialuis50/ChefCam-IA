@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pexels Debugger</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #121212; color: white; }
+        .card { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        input, button { padding: 10px; border-radius: 4px; border: 1px solid #444; background: #2a2a2a; color: white; }
+        button { background: #39FF14; color: black; font-weight: bold; cursor: pointer; border: none; }
+        #results { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        img { width: 100%; border-radius: 4px; }
+        .error { color: #ff5555; }
+        .success { color: #39FF14; }
+    </style>
+</head>
+<body>
+    <h1>Pexels Debugger</h1>
+    
+    <div class="card">
+        <h3>Probar Clave y Búsqueda</h3>
+        <p>Esta prueba simula una llamada desde el navegador tal como lo hace la app.</p>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="text" id="apiKey" placeholder="Pexels API Key" style="flex: 1;" value="NcAFAIe1Vdf4ufPGwuxFmjbCjWpf4yeCRrd4goHlM8rBaPD9c4S3UZEL">
+            <input type="text" id="query" placeholder="Búsqueda (ej: pizza)" value="margherita pizza">
+            <button onclick="testPexels()">Probar</button>
+        </div>
+        <div id="status"></div>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        async function testPexels() {
+            const key = document.getElementById('apiKey').value;
+            const query = document.getElementById('query').value;
+            const statusDiv = document.getElementById('status');
+            const resultsDiv = document.getElementById('results');
+            
+            statusDiv.innerHTML = "Cargando...";
+            resultsDiv.innerHTML = "";
+
+            try {
+                const url = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=5`;
+                const response = await fetch(url, {
+                    headers: {
+                        "Authorization": key
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    statusDiv.innerHTML = `<span class="success">✅ Éxito: Status ${response.status}</span>`;
+                    if (data.photos && data.photos.length > 0) {
+                        data.photos.forEach(photo => {
+                            const img = document.createElement('img');
+                            img.src = photo.src.medium;
+                            resultsDiv.appendChild(img);
+                        });
+                    } else {
+                        statusDiv.innerHTML += " - No se encontraron fotos.";
+                    }
+                } else {
+                    const errorData = await response.json();
+                    statusDiv.innerHTML = `<span class="error">❌ Error: Status ${response.status} - ${JSON.stringify(errorData)}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span class="error">❌ Error fatal: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
